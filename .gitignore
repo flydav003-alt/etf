@@ -1,0 +1,12 @@
+# Python 暫存
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# 快取資料夾（重新執行時自動重建，不需要進 git）
+cache/
+
+# 本地開發用
+.DS_Store
+Thumbs.db
