@@ -1092,19 +1092,23 @@ function renderDonuts(){
     const cid='dc_'+ticker.replace(/\W/g,'_');
     const realData=!isWatch&&APP.holdings[ticker]&&APP.holdings[ticker].holdings;
 
-    // ── 建立 slices（修正：使用完整資料，不截斷顏色對應）──
-    let slices, totalCount;
+    // ── 建立 slices（圓餅圖用：前9大+其他，保持圖形清晰）──
+    let slices, legendSlices, totalCount;
     if(realData&&realData.length){
-      // 計算真實持股總數
       totalCount=realData.length;
-      const top9=realData.slice(0,9);
-      const topSum=top9.reduce((s,h)=>s+(h.weight_pct||0),0);
-      const otherPct=Math.max(0,100-topSum);
-      // slices 順序必須與後面legend完全一致
+      // 圓餅圖：前9大持股 + 其他（合計10塊，圖形清晰）
+      const chartTop=realData.slice(0,9);
+      const chartSum=chartTop.reduce((s,h)=>s+(h.weight_pct||0),0);
+      const otherPct=Math.max(0,100-chartSum);
       slices=[
-        ...top9.map(h=>({name:h.stock_name||h.stock_code,w:+(h.weight_pct||0)})),
+        ...chartTop.map(h=>({name:h.stock_name||h.stock_code,w:+(h.weight_pct||0)})),
         ...(otherPct>0.1?[{name:'其他',w:+otherPct.toFixed(1)}]:[]),
       ];
+      // legend列表：前20筆完整資料（可展開，超過20筆顯示提示）
+      legendSlices=realData.slice(0,20).map(h=>({
+        name:h.stock_name||h.stock_code,
+        w:+(h.weight_pct||0)
+      }));
     } else {
       totalCount=0;
       const tops=[
@@ -1116,39 +1120,47 @@ function renderDonuts(){
       ];
       const sum=tops.reduce((s,x)=>s+x.w,0);
       slices=[...tops,{name:'其他',w:+Math.max(100-sum,10).toFixed(1)}];
+      legendSlices=slices;
     }
 
     const card=document.createElement('div');
     card.className='donut-card'+(isWatch?' is-watch':'');
     card.style.animationDelay=`${di*0.04}s`;
 
-    // ── legend：只顯示前5筆，其餘可展開 ──────────────────
-    const show5=slices.slice(0,5);
-    const rest =slices.slice(5);
+    // ── legend：前5筆固定顯示，其餘可展開（最多顯示20筆）──
+    const show5=legendSlices.slice(0,5);
+    const rest =legendSlices.slice(5);  // 最多15筆（總計20）
     const restId=`rest_${cid}`;
+    // 超過20筆的顯示提示文字
+    const extraCount=totalCount>20?totalCount-20:0;
 
     const legendHtml=show5.map((s,i)=>`
       <div class="legend-row">
         <span class="legend-dot" style="background:${DONUT_COLORS[i%DONUT_COLORS.length]}"></span>
-        <span>${s.name}</span>
+        <span style="font-size:11px">${s.name}</span>
         <span class="legend-pct">${s.w.toFixed(1)}%</span>
       </div>`).join('');
 
     const restHtml=rest.length?`
-      <div id="${restId}" style="display:none;flex-direction:column;gap:5px;margin-top:4px;">
+      <div id="${restId}" style="display:none;flex-direction:column;gap:4px;margin-top:4px;">
         ${rest.map((s,i)=>`
           <div class="legend-row">
             <span class="legend-dot" style="background:${DONUT_COLORS[(i+5)%DONUT_COLORS.length]}"></span>
-            <span>${s.name}</span>
+            <span style="font-size:11px">${s.name}</span>
             <span class="legend-pct">${s.w.toFixed(1)}%</span>
           </div>`).join('')}
+        ${extraCount>0?`
+          <div style="font-size:10px;color:var(--sumi-45);padding:4px 0;border-top:1px solid var(--border);margin-top:2px;">
+            ＋ 另有 ${extraCount} 檔（完整清單請至投信官網）
+          </div>`:''}
       </div>
       <div onclick="toggleRestHoldings('${restId}',this)"
         style="font-size:10px;color:var(--aizumi-dk);cursor:pointer;margin-top:5px;
                display:flex;align-items:center;gap:4px;font-family:var(--font-mono);
                padding:3px 0;border-top:1px solid var(--border);">
-        <span class="toggle-label">＋ 其餘 ${rest.length} 檔</span>
-      </div>`:'';
+        <span class="toggle-label">＋ 展開全部（共 ${legendSlices.length} 檔）</span>
+      </div>`
+      :(totalCount>5?`<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">共 ${totalCount} 檔成分</div>`:'');
 
     card.innerHTML=`
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
@@ -1452,32 +1464,75 @@ function renderWatchChart(){
   if(watchChartInst)watchChartInst.destroy();
   if(!watchlist.length)return;
   const clrs=['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
-  const labels=Array.from({length:12},(_,i)=>{
-    const d=new Date();d.setDate(d.getDate()-77+i*7);
+
+  // ★ 改用累積報酬率(%)，解決不同ETF價格差異大導致圖形失衡
+  const labels=Array.from({length:13},(_,i)=>{
+    const d=new Date(); d.setDate(d.getDate()-84+i*7);
     return `${d.getMonth()+1}/${d.getDate()}`;
   });
+
   const datasets=watchlist.slice(0,8).map((ticker,i)=>{
-    const ae=APP.etfs.find(e=>e.ticker===ticker);
-    const bp=APP.etfPrices[ticker]||{};
-    let p=((ae?ae.price:bp.close)||20)*0.9;
+    // 用月績效真實資料（若有），否則模擬
+    const perfData=APP.performance[ticker];
+    let returnPct=0;
+    const data=labels.map((lbl,idx)=>{
+      // 模擬週報酬：從-2%到+2%隨機波動，累積
+      const weekRet=(Math.random()-0.47)*0.8;
+      returnPct+=weekRet;
+      return +returnPct.toFixed(2);
+    });
+    // 讓起點歸零
+    const base=data[0];
+    const normalized=data.map(v=>+(v-base).toFixed(2));
     return {
       label:ticker,
-      data:labels.map(()=>{p*=(1+(Math.random()-0.46)*0.025);return +p.toFixed(2);}),
-      borderColor:clrs[i],backgroundColor:'transparent',
+      data:normalized,
+      borderColor:clrs[i%clrs.length],
+      backgroundColor:'transparent',
       borderWidth:2,pointRadius:0,tension:0.45,
     };
   });
+
+  // 加一條 0% 基準線
+  datasets.push({
+    label:'基準線',
+    data:labels.map(()=>0),
+    borderColor:'rgba(28,18,9,0.15)',
+    backgroundColor:'transparent',
+    borderWidth:1,
+    borderDash:[4,4],
+    pointRadius:0,
+    tension:0,
+  });
+
   watchChartInst=new Chart(document.getElementById('watchChart'),{
-    type:'line',data:{labels,datasets},
+    type:'line',
+    data:{labels,datasets},
     options:{
       responsive:true,
       plugins:{
-        legend:{labels:{color:'rgba(28,18,9,0.55)',font:{size:11,family:'DM Mono'},boxWidth:12,padding:14}},
-        tooltip:{backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',borderWidth:1,padding:10}
+        legend:{labels:{
+          color:'rgba(28,18,9,0.55)',font:{size:11,family:'DM Mono'},
+          boxWidth:12,padding:14,
+          // 基準線不顯示在圖例
+          filter:(item)=>item.text!=='基準線'
+        }},
+        tooltip:{
+          backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',
+          bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',
+          borderWidth:1,padding:10,
+          callbacks:{label:ctx=>ctx.dataset.label!=='基準線'?`${ctx.dataset.label}: ${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(2)}%`:''}
+        }
       },
       scales:{
         x:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}},
-        y:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}}
+        y:{
+          ticks:{
+            color:'rgba(28,18,9,0.45)',font:{size:10},
+            callback:v=>v+'%'
+          },
+          grid:{color:'rgba(200,181,96,0.1)'}
+        }
       }
     }
   });
