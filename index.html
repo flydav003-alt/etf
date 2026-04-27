@@ -582,15 +582,32 @@ main {
   </div>
 
   <div class="section-title">今日共同買賣排行</div>
+
+  <!-- 排序切換按鈕 -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+    <span style="font-size:11px;color:var(--sumi-45);font-family:var(--font-mono);">排序：</span>
+    <button id="sortByConsensus" onclick="setRankSort('consensus')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--sumi);background:var(--sumi);color:var(--kuri);cursor:pointer;transition:all .15s;">
+      依ETF共識
+    </button>
+    <button id="sortByAmount" onclick="setRankSort('amount')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--border);background:var(--kiji);color:var(--sumi-60);cursor:pointer;transition:all .15s;">
+      依金額
+    </button>
+    <span style="font-size:10px;color:var(--sumi-45);margin-left:4px;">點股票名稱可開啟K線分析</span>
+  </div>
+
   <div class="two-col">
     <div class="panel">
       <div class="panel-header">
         <span>▲ 共同今日買入排行</span>
-        <span class="ph-sub">依買入金額估算</span>
+        <span class="ph-sub">金額為估算值</span>
       </div>
       <div class="table-scroll">
         <table class="etf-table">
-          <thead><tr><th width="32">#</th><th>股票</th><th>ETF共識</th><th>買入金額</th><th>佔比</th></tr></thead>
+          <thead><tr><th width="32">#</th><th>股票</th><th>ETF共識</th><th>買入金額</th><th>條形圖</th></tr></thead>
           <tbody id="buyRankTbody"></tbody>
         </table>
       </div>
@@ -598,11 +615,11 @@ main {
     <div class="panel">
       <div class="panel-header">
         <span>▼ 共同今日賣出排行</span>
-        <span class="ph-sub">依賣出金額估算</span>
+        <span class="ph-sub">金額為估算值</span>
       </div>
       <div class="table-scroll">
         <table class="etf-table">
-          <thead><tr><th width="32">#</th><th>股票</th><th>ETF共識</th><th>賣出金額</th><th>佔比</th></tr></thead>
+          <thead><tr><th width="32">#</th><th>股票</th><th>ETF共識</th><th>賣出金額</th><th>條形圖</th></tr></thead>
           <tbody id="sellRankTbody"></tbody>
         </table>
       </div>
@@ -674,7 +691,10 @@ main {
 
 <!-- ════════ P4: 月績效 ════════ -->
 <div class="page" id="p-perf">
-  <div class="section-title">月績效排行（0050 + 自選 + 14 檔主動ETF）</div>
+  <div class="section-title">月績效排行（0050 + 009816 + 自選 + 14 檔主動ETF）</div>
+  <div id="perfRealNote" style="display:none;background:rgba(77,116,148,0.1);border:1px solid rgba(77,116,148,0.2);border-left:3px solid var(--aizumi);border-radius:6px;padding:10px 14px;font-size:11px;color:var(--sumi-60);margin-bottom:14px;">
+    💡 績效資料累積中（每日收盤後自動更新）。月份旁標示「示範」者為模擬數字，真實歷史將隨時間累積。
+  </div>
   <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap">
     <span style="font-size:11px;color:var(--sumi-60);display:flex;align-items:center;gap:5px">
       <span style="width:16px;height:2px;background:var(--sumi-45);display:inline-block;border-radius:2px"></span>大盤 0050
@@ -721,7 +741,7 @@ main {
         <thead>
           <tr>
             <th width="32">#</th><th>代號</th><th>名稱</th><th>類別</th>
-            <th>現價</th><th>今日漲跌</th><th>折溢價</th><th>規模（億）</th>
+            <th>現價</th><th>今日漲跌</th><th>淨值NAV</th><th>折溢價</th><th>規模（億）</th>
           </tr>
         </thead>
         <tbody id="etfListTbody"></tbody>
@@ -758,249 +778,191 @@ main {
 
 <div class="footer-note">
   追蹤標的：00981A · 00982A · 00991A · 00992A · 00993A · 00980A · 00985A · 00995A · 00984A · 00987A · 00994A · 00996A · 00400A · 00401A<br>
-  基準比較：0050 元大台灣50 · 009816 凱基台灣TOP50<br>
-  資料來源：Pocket.tw M722 API / TWSE OpenAPI ｜ 每個交易日 17:10 自動更新 ｜ 金額為估算值，僅供參考，不構成投資建議
+  基準比較：0050 元大台灣50 · 009816 凱基台灣TOP50 ｜ 股票名稱可點擊開啟K線分析<br>
+  資料來源：Pocket.tw M722 / TWSE OpenAPI ｜ 每個交易日 17:10 自動更新 ｜ 金額為估算值，不構成投資建議
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  資料載入系統
-//  優先讀取 data/*.json（真實資料）
-//  若讀取失敗（本地開啟或尚未有資料），自動切換到 MOCK 示範資料
+//  資料載入系統 + K線連結 + 全功能修正版
 // ═══════════════════════════════════════════════════════════════
 
-// ── 靜態設定（與 fetch_holdings.py 的 ACTIVE_ETFS 同步）──────
-const ETF_META = {
-  '00981A': '統一台股增長',
-  '00982A': '群益台灣強棒',
-  '00991A': '復華未來50',
-  '00992A': '群益科技創新',
-  '00993A': '安聯台灣',
-  '00980A': '野村臺灣優選',
-  '00985A': '野村台灣50',
-  '00995A': '中信台灣卓越',
-  '00984A': '安聯台灣高息',
-  '00987A': '台新優勢成長',
-  '00994A': '第一金台股優',
-  '00996A': '兆豐台灣豐收',
-  '00400A': '國泰動能高息',
-  '00401A': '摩根台灣鑫收',
-};
-const BENCH_META = {
-  '0050':   '元大台灣50',
-  '009816': '凱基台灣TOP50',
-};
+const KLINE_BASE = 'https://flydav003-alt.github.io/k-line/';
 
-// ── 顏色 ─────────────────────────────────────────────────────
+const ETF_META = {
+  '00981A': '統一台股增長', '00982A': '群益台灣強棒',
+  '00991A': '復華未來50',   '00992A': '群益科技創新',
+  '00993A': '安聯台灣',     '00980A': '野村臺灣優選',
+  '00985A': '野村台灣50',   '00995A': '中信台灣卓越',
+  '00984A': '安聯台灣高息', '00987A': '台新優勢成長',
+  '00994A': '第一金台股優', '00996A': '兆豐台灣豐收',
+  '00400A': '國泰動能高息', '00401A': '摩根台灣鑫收',
+};
+const BENCH_META = { '0050': '元大台灣50', '009816': '凱基台灣TOP50' };
+
 const DONUT_COLORS = [
   '#4d7494','#c8b560','#7a9e52','#db5a6b','#c8a84b',
   '#8a6aaa','#5b9eac','#c07840','#6aab8e','#9b3a52',
   '#7a7a5a','#5080a0','#a0804a','#4a8060','#8a5060',
 ];
 
-// ── 全域資料狀態 ──────────────────────────────────────────────
+// ── 全域狀態 ─────────────────────────────────────────────────
 let APP = {
-  isDemo:    false,
-  summary:   null,
-  buyRank:   [],
-  sellRank:  [],
-  changes:   [],
-  holdings:  {},
-  benchmark: {},
-  // 衍生出的 ACTIVE_ETFS 陣列（供各元件使用）
-  etfs: Object.entries(ETF_META).map(([ticker, name]) => ({
-    ticker, name,
-    price: 0, chg: 0, nav: 0, aum: 0,
-  })),
-  bench: { ticker: '0050', name: '元大台灣50', price: 0, chg: 0, nav: 0, aum: 3200 },
+  isDemo: false, summary: null,
+  buyRank: [], sellRank: [], changes: [], holdings: {},
+  etfPrices: {}, performance: {},
+  etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0})),
 };
+let rankSort = 'consensus'; // 'consensus' | 'amount'
 
-// ── MOCK 備用資料（真實資料未到時展示） ─────────────────────
+// ── MOCK 備用資料 ────────────────────────────────────────────
 const MOCK = {
   buyRank: [
-    {stock_code:'2330',stock_name:'台積電',    etf_count:9, value:5840000000},
-    {stock_code:'2382',stock_name:'廣達',      etf_count:6, value:1820000000},
-    {stock_code:'2317',stock_name:'鴻海',      etf_count:5, value:1340000000},
-    {stock_code:'6669',stock_name:'緯穎',      etf_count:4, value:980000000},
-    {stock_code:'3008',stock_name:'大立光',    etf_count:3, value:760000000},
-    {stock_code:'2308',stock_name:'台達電',    etf_count:5, value:680000000},
-    {stock_code:'3711',stock_name:'日月光投控',etf_count:4, value:540000000},
-    {stock_code:'2395',stock_name:'研華',      etf_count:3, value:420000000},
-    {stock_code:'6488',stock_name:'環球晶',    etf_count:3, value:380000000},
-    {stock_code:'3034',stock_name:'聯詠',      etf_count:2, value:290000000},
+    {stock_code:'2330',stock_name:'台積電',etf_count:9,value:5840000000},
+    {stock_code:'2382',stock_name:'廣達',  etf_count:6,value:1820000000},
+    {stock_code:'2317',stock_name:'鴻海',  etf_count:5,value:1340000000},
+    {stock_code:'6669',stock_name:'緯穎',  etf_count:4,value:980000000},
+    {stock_code:'3008',stock_name:'大立光',etf_count:3,value:760000000},
+    {stock_code:'2308',stock_name:'台達電',etf_count:5,value:680000000},
+    {stock_code:'3711',stock_name:'日月光投控',etf_count:4,value:540000000},
+    {stock_code:'2395',stock_name:'研華',  etf_count:3,value:420000000},
+    {stock_code:'6488',stock_name:'環球晶',etf_count:3,value:380000000},
+    {stock_code:'3034',stock_name:'聯詠',  etf_count:2,value:290000000},
   ],
   sellRank: [
-    {stock_code:'2454',stock_name:'聯發科',    etf_count:7, value:-2640000000},
-    {stock_code:'2303',stock_name:'聯電',      etf_count:5, value:-1240000000},
-    {stock_code:'2603',stock_name:'長榮',      etf_count:4, value:-890000000},
-    {stock_code:'6505',stock_name:'台塑石化',  etf_count:3, value:-720000000},
-    {stock_code:'2881',stock_name:'富邦金',    etf_count:3, value:-560000000},
-    {stock_code:'2344',stock_name:'華邦電',    etf_count:2, value:-390000000},
-    {stock_code:'1301',stock_name:'台塑',      etf_count:2, value:-320000000},
-    {stock_code:'2886',stock_name:'兆豐金',    etf_count:2, value:-280000000},
-    {stock_code:'2002',stock_name:'中鋼',      etf_count:2, value:-190000000},
-    {stock_code:'1303',stock_name:'南亞',      etf_count:1, value:-140000000},
+    {stock_code:'2454',stock_name:'聯發科',etf_count:7,value:-2640000000},
+    {stock_code:'2303',stock_name:'聯電',  etf_count:5,value:-1240000000},
+    {stock_code:'2603',stock_name:'長榮',  etf_count:4,value:-890000000},
+    {stock_code:'6505',stock_name:'台塑石化',etf_count:3,value:-720000000},
+    {stock_code:'2881',stock_name:'富邦金',etf_count:3,value:-560000000},
   ],
   changes: [
-    {etf_code:'00981A',stock_code:'2330',stock_name:'台積電',    action:'INCREASE',weight_before:14.8,weight_after:17.2,amount_change:1200000000},
-    {etf_code:'00982A',stock_code:'2330',stock_name:'台積電',    action:'NEW_BUY', weight_before:0,   weight_after:11.4,amount_change:880000000},
-    {etf_code:'00991A',stock_code:'2382',stock_name:'廣達',      action:'INCREASE',weight_before:7.2, weight_after:9.8, amount_change:640000000},
-    {etf_code:'00992A',stock_code:'6669',stock_name:'緯穎',      action:'NEW_BUY', weight_before:0,   weight_after:5.6, amount_change:430000000},
-    {etf_code:'00993A',stock_code:'2454',stock_name:'聯發科',    action:'DECREASE',weight_before:9.4, weight_after:6.1, amount_change:-720000000},
-    {etf_code:'00980A',stock_code:'2317',stock_name:'鴻海',      action:'INCREASE',weight_before:6.2, weight_after:8.7, amount_change:560000000},
-    {etf_code:'00985A',stock_code:'2330',stock_name:'台積電',    action:'INCREASE',weight_before:20.1,weight_after:22.8,amount_change:980000000},
-    {etf_code:'00995A',stock_code:'2603',stock_name:'長榮',      action:'FULL_SELL',weight_before:4.2,weight_after:0,   amount_change:-340000000},
-    {etf_code:'00984A',stock_code:'2881',stock_name:'富邦金',    action:'DECREASE',weight_before:5.8, weight_after:3.4, amount_change:-280000000},
-    {etf_code:'00987A',stock_code:'3008',stock_name:'大立光',    action:'NEW_BUY', weight_before:0,   weight_after:4.1, amount_change:310000000},
+    {etf_code:'00981A',stock_code:'2330',stock_name:'台積電',action:'INCREASE',weight_before:14.8,weight_after:17.2,amount_change:1200000000},
+    {etf_code:'00982A',stock_code:'2330',stock_name:'台積電',action:'NEW_BUY', weight_before:0,   weight_after:11.4,amount_change:880000000},
+    {etf_code:'00993A',stock_code:'2454',stock_name:'聯發科',action:'DECREASE',weight_before:9.4, weight_after:6.1, amount_change:-720000000},
+    {etf_code:'00995A',stock_code:'2603',stock_name:'長榮',  action:'FULL_SELL',weight_before:4.2,weight_after:0,   amount_change:-340000000},
   ],
 };
 
-// ── JSON 載入工具 ─────────────────────────────────────────────
+// ── JSON載入 ─────────────────────────────────────────────────
 async function loadJSON(path) {
-  const resp = await fetch(path + '?t=' + Date.now());
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  return resp.json();
+  const r = await fetch(path + '?t=' + Date.now());
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
 }
 
-// ── 主要初始化：載入所有 JSON ─────────────────────────────────
 async function initData() {
   try {
-    const [summary, buyRank, sellRank, changes, holdings, benchmark] = await Promise.all([
-      loadJSON('data/summary.json'),
-      loadJSON('data/buy_ranking.json'),
-      loadJSON('data/sell_ranking.json'),
-      loadJSON('data/daily_changes.json'),
-      loadJSON('data/holdings.json'),
-      loadJSON('data/benchmark.json'),
-    ]);
+    const [summary, buyRank, sellRank, changes, holdings, etfPrices, performance] =
+      await Promise.all([
+        loadJSON('data/summary.json'),
+        loadJSON('data/buy_ranking.json'),
+        loadJSON('data/sell_ranking.json'),
+        loadJSON('data/daily_changes.json'),
+        loadJSON('data/holdings.json'),
+        loadJSON('data/etf_prices.json'),
+        loadJSON('data/performance.json'),
+      ]);
 
-    APP.isDemo    = false;
-    APP.summary   = summary;
-    APP.buyRank   = buyRank  || [];
-    APP.sellRank  = sellRank || [];
-    APP.changes   = changes  || [];
-    APP.holdings  = holdings || {};
-    APP.benchmark = benchmark || {};
+    APP.isDemo = false;
+    APP.summary = summary; APP.buyRank = buyRank||[];
+    APP.sellRank = sellRank||[]; APP.changes = changes||[];
+    APP.holdings = holdings||{}; APP.etfPrices = etfPrices||{};
+    APP.performance = performance||{};
 
-    // 更新 ETF 列表（若 summary 有 active_etfs 就用真實清單）
     if (summary.active_etfs) {
-      APP.etfs = summary.active_etfs.map(e => ({
-        ticker: e.code, name: e.name,
-        price: 0, chg: 0, nav: 0, aum: 0,
-      }));
+      APP.etfs = summary.active_etfs.map(e=>({ticker:e.code,name:e.name,price:0,chg:0,nav:0,aum:0}));
     }
 
-    // 填入基準 ETF 價格
-    if (benchmark['0050']) {
-      APP.bench = {
-        ticker: '0050', name: '元大台灣50',
-        price:  benchmark['0050'].close   || 0,
-        chg:    benchmark['0050'].chg_pct || 0,
-        nav: 0, aum: 3200,
-      };
-    }
+    // 從 etf_prices.json 填入ETF價格
+    APP.etfs = APP.etfs.map(e => {
+      const p = APP.etfPrices[e.ticker] || {};
+      return {...e, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0};
+    });
 
-    // 更新標題列資訊
-    document.querySelector('.logo-sub').textContent =
-      `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
     if (summary.date) {
       const d = new Date(summary.date);
-      document.getElementById('todayDate').textContent =
-        `${d.getMonth()+1}/${d.getDate()}`;
+      document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
     }
-
-    // 顯示資料日期 pill
-    if (summary.updated_at) {
-      document.getElementById('dataPill').textContent =
-        '資料：' + summary.date;
-      document.getElementById('dataPill').style.display = 'flex';
-    }
-
-    console.log(`✓ 真實資料載入成功（${summary.date}）`);
-
-  } catch (e) {
-    // 讀取失敗 → 切換 demo 模式
-    APP.isDemo   = true;
-    APP.buyRank  = MOCK.buyRank;
-    APP.sellRank = MOCK.sellRank;
-    APP.changes  = MOCK.changes;
-    APP.holdings = {};
-    APP.benchmark = {};
-
+    document.querySelector('.logo-sub').textContent =
+      `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
+    document.getElementById('dataPill').textContent = '資料：' + (summary.date||'');
+    document.getElementById('dataPill').style.display = 'flex';
+    console.log('✓ 真實資料載入成功');
+  } catch(e) {
+    APP.isDemo = true;
+    APP.buyRank = MOCK.buyRank; APP.sellRank = MOCK.sellRank;
+    APP.changes = MOCK.changes;
     document.getElementById('dataPill').textContent = '⚠ Demo模式（尚無真實資料）';
     document.getElementById('dataPill').style.display = 'flex';
     document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
     document.getElementById('dataPill').style.borderColor = 'rgba(219,90,107,0.3)';
-    console.warn('切換到 Demo 模式：', e.message);
+    console.warn('切換Demo模式:', e.message);
   }
-
-  // 資料就緒後渲染頁面
   renderAll();
 }
 
-// ═══════════════════════════════════════════
-//  WATCHLIST（自選，存在 localStorage）
-// ═══════════════════════════════════════════
-let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch') || '[]');
-function saveWatch() { localStorage.setItem('mushi_etf_watch', JSON.stringify(watchlist)); }
-function getExtraWatch() {
-  const at = APP.etfs.map(e => e.ticker);
-  return watchlist.filter(t => !Object.keys(BENCH_META).includes(t) && !at.includes(t));
+// ── WATCHLIST ────────────────────────────────────────────────
+let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch')||'[]');
+function saveWatch(){ localStorage.setItem('mushi_etf_watch', JSON.stringify(watchlist)); }
+function getExtraWatch(){
+  const at = APP.etfs.map(e=>e.ticker);
+  return watchlist.filter(t=>!Object.keys(BENCH_META).includes(t)&&!at.includes(t));
 }
 
-// ═══════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════
-function fmtMoney(v) {
-  const a = Math.abs(v);
-  if (a >= 1e8) return (v > 0 ? '+' : '') + Math.abs(v / 1e8).toFixed(1) + '億';
-  if (a >= 1e4) return (v > 0 ? '+' : '') + Math.abs(v / 1e4).toFixed(0) + '萬';
+// ── HELPERS ──────────────────────────────────────────────────
+function fmtMoney(v){
+  const a=Math.abs(v);
+  if(a>=1e8) return (v>0?'+':'')+Math.abs(v/1e8).toFixed(1)+'億';
+  if(a>=1e4) return (v>0?'+':'')+Math.abs(v/1e4).toFixed(0)+'萬';
   return v.toLocaleString();
 }
-function fmtPct(v, d = 1) { return (v > 0 ? '+' : '') + (+v).toFixed(d) + '%'; }
-function colorCls(v) { return +v > 0 ? 'up' : +v < 0 ? 'down' : 'flat'; }
-function rankCls(i)  { return i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : ''; }
-function actionLabel(a) {
-  return {NEW_BUY:'買入',FULL_SELL:'賣出',INCREASE:'加碼',DECREASE:'減碼'}[a] || a;
+function fmtPct(v,d=1){ return (v>0?'+':'')+Number(v).toFixed(d)+'%'; }
+function colorCls(v){ return +v>0?'up':+v<0?'down':'flat'; }
+function rankCls(i){ return i===0?'gold':i===1?'silver':i===2?'bronze':''; }
+function actionLabel(a){ return {NEW_BUY:'買入',FULL_SELL:'賣出',INCREASE:'加碼',DECREASE:'減碼'}[a]||a; }
+function actionCls(a)  { return {NEW_BUY:'buy',FULL_SELL:'sell',INCREASE:'increase',DECREASE:'decrease'}[a]||''; }
+
+// K線連結
+function klineLink(stockCode){
+  return `${KLINE_BASE}?stock=${stockCode}`;
 }
-function actionCls(a) {
-  return {NEW_BUY:'buy',FULL_SELL:'sell',INCREASE:'increase',DECREASE:'decrease'}[a] || '';
+function stockNameLink(code, name){
+  return `<a href="${klineLink(code)}" target="_blank" rel="noopener"
+    title="在K線分析開啟 ${code}"
+    style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(28,18,9,0.3);cursor:pointer;transition:color .15s;"
+    onmouseover="this.style.color='var(--aizumi-dk)'"
+    onmouseout="this.style.color='inherit'"
+  >${name}</a>`;
 }
 
-// ═══════════════════════════════════════════
-//  CLOCK & DATE
-// ═══════════════════════════════════════════
-function tick() {
-  const n = new Date();
-  document.getElementById('clockEl').textContent =
-    [n.getHours(), n.getMinutes(), n.getSeconds()]
-      .map(v => String(v).padStart(2, '0')).join(':');
+// ── CLOCK ────────────────────────────────────────────────────
+function tick(){
+  const n=new Date();
+  document.getElementById('clockEl').textContent=
+    [n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
 }
-setInterval(tick, 1000); tick();
-const _td = new Date();
-document.getElementById('todayDate').textContent = `${_td.getMonth()+1}/${_td.getDate()}`;
+setInterval(tick,1000); tick();
+const _td=new Date();
+document.getElementById('todayDate').textContent=`${_td.getMonth()+1}/${_td.getDate()}`;
 
-// ═══════════════════════════════════════════
-//  TAB NAVIGATION
-// ═══════════════════════════════════════════
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+// ── TAB NAVIGATION ───────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById(t.dataset.page).classList.add('active');
-    const p = t.dataset.page;
-    if (p === 'p-perf')      renderPerfPage();
-    if (p === 'p-holdings')  renderDonuts();
-    if (p === 'p-watchlist') renderWatchlist();
-    if (p === 'p-etflist')   renderEtfList();
+    const p=t.dataset.page;
+    if(p==='p-perf')      renderPerfPage();
+    if(p==='p-holdings')  renderDonuts();
+    if(p==='p-watchlist') renderWatchlist();
+    if(p==='p-etflist')   renderEtfList();
   });
 });
 
-// ═══════════════════════════════════════════
-//  renderAll — 資料載入後一次渲染全部
-// ═══════════════════════════════════════════
-function renderAll() {
+// ── renderAll ────────────────────────────────────────────────
+function renderAll(){
   renderRankings();
   renderChanges(APP.changes);
   renderKpiRow();
@@ -1008,263 +970,323 @@ function renderAll() {
   renderWatchlist();
 }
 
-// ── KPI 數字更新 ──────────────────────────────────────────────
-function renderKpiRow() {
-  const buys  = APP.buyRank;
-  const sells = APP.sellRank;
-  const chgs  = APP.changes;
-
-  // P1 KPI
-  if (buys.length) {
-    document.querySelector('#p-rankings .kpi-value.kobai').textContent =
-      buys[0].stock_name || '─';
-    document.querySelectorAll('#p-rankings .kpi-value.aizumi')[0].textContent =
-      buys[0].etf_count || '─';
+function renderKpiRow(){
+  const buys=APP.buyRank, sells=APP.sellRank, chgs=APP.changes;
+  if(buys.length){
+    document.querySelector('#p-rankings .kpi-value.kobai').textContent=buys[0].stock_name||'─';
+    document.querySelectorAll('#p-rankings .kpi-value.aizumi')[0].textContent=buys[0].etf_count||'─';
   }
-  if (sells.length) {
-    document.querySelector('#p-rankings .kpi-value.wakaba').textContent =
-      sells[0].stock_name || '─';
-  }
-
-  // P2 KPI
-  const buyCount  = chgs.filter(c => c.action === 'NEW_BUY'   || c.action === 'INCREASE').length;
-  const sellCount = chgs.filter(c => c.action === 'FULL_SELL' || c.action === 'DECREASE').length;
-  const etfCount  = [...new Set(chgs.map(c => c.etf_code))].length;
-  document.querySelector('#p-changes .kpi-value.kobai').textContent  = APP.isDemo ? '+18' : `+${buyCount}`;
-  document.querySelector('#p-changes .kpi-value.wakaba').textContent = APP.isDemo ? '-9'  : `-${sellCount}`;
-  document.querySelector('#p-changes .kpi-value.aizumi').textContent = APP.isDemo ? '11'  : etfCount || '0';
+  if(sells.length)
+    document.querySelector('#p-rankings .kpi-value.wakaba').textContent=sells[0].stock_name||'─';
+  const bc=chgs.filter(c=>c.action==='NEW_BUY'||c.action==='INCREASE').length;
+  const sc=chgs.filter(c=>c.action==='FULL_SELL'||c.action==='DECREASE').length;
+  const ec=[...new Set(chgs.map(c=>c.etf_code))].length;
+  document.querySelector('#p-changes .kpi-value.kobai').textContent=APP.isDemo?'+18':`+${bc}`;
+  document.querySelector('#p-changes .kpi-value.wakaba').textContent=APP.isDemo?'-9':`-${sc}`;
+  document.querySelector('#p-changes .kpi-value.aizumi').textContent=APP.isDemo?'11':ec||'0';
 }
 
 // ═══════════════════════════════════════════
-//  P1: 共同加碼排行
+//  P1: 共同加碼排行（含排序切換 + K線連結）
 // ═══════════════════════════════════════════
-function renderRankings() {
-  const buys  = APP.buyRank;
-  const sells = APP.sellRank;
-  const maxB  = buys[0]  ? Math.abs(buys[0].value)  : 1;
-  const maxS  = sells[0] ? Math.abs(sells[0].value) : 1;
+window.setRankSort = function(mode){
+  rankSort = mode;
+  const btnC = document.getElementById('sortByConsensus');
+  const btnA = document.getElementById('sortByAmount');
+  const activeStyle = 'background:var(--sumi);color:var(--kuri);border-color:var(--sumi);';
+  const inactStyle  = 'background:var(--kiji);color:var(--sumi-60);border-color:var(--border);';
+  btnC.style.cssText += mode==='consensus' ? activeStyle : inactStyle;
+  btnA.style.cssText += mode==='amount'    ? activeStyle : inactStyle;
+  renderRankings();
+};
 
-  document.getElementById('buyRankTbody').innerHTML = buys.map((r, i) =>
-    `<tr>
+function sortRankData(data, isPositive){
+  if(rankSort==='consensus')
+    return [...data].sort((a,b)=>b.etf_count-a.etf_count||Math.abs(b.value)-Math.abs(a.value));
+  return [...data].sort((a,b)=>isPositive ? b.value-a.value : a.value-b.value);
+}
+
+function renderRankings(){
+  const buys  = sortRankData(APP.buyRank,  true);
+  const sells = sortRankData(APP.sellRank, false);
+  const maxB  = buys[0]  ? Math.max(...buys.map(r=>Math.abs(r.value)))  : 1;
+  const maxS  = sells[0] ? Math.max(...sells.map(r=>Math.abs(r.value))) : 1;
+
+  document.getElementById('buyRankTbody').innerHTML = buys.map((r,i)=>`
+    <tr>
       <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td><span class="stock-name">${r.stock_name}</span><span class="stock-code">${r.stock_code}</span></td>
+      <td>
+        ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}
+        <span class="stock-code">${r.stock_code}</span>
+      </td>
       <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
       <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
       <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></td>
-    </tr>`
-  ).join('');
+    </tr>`).join('');
 
-  document.getElementById('sellRankTbody').innerHTML = sells.map((r, i) =>
-    `<tr>
+  document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>`
+    <tr>
       <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td><span class="stock-name">${r.stock_name}</span><span class="stock-code">${r.stock_code}</span></td>
+      <td>
+        ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}
+        <span class="stock-code">${r.stock_code}</span>
+      </td>
       <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
       <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
       <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></td>
-    </tr>`
-  ).join('');
+    </tr>`).join('');
 }
 
 // ═══════════════════════════════════════════
 //  P2: 每日換股紀錄
 // ═══════════════════════════════════════════
-let _allChanges = [];  // 搜尋用快取
-
-function renderChanges(data) {
+let _allChanges = [];
+function renderChanges(data){
   _allChanges = data;
   _renderChangeTable(data);
 }
-
-function _renderChangeTable(data) {
-  document.getElementById('changesTbody').innerHTML = data.map((r, i) => {
-    const diff   = (r.weight_after || 0) - (r.weight_before || 0);
-    const name   = r.etf_code ? (ETF_META[r.etf_code] || r.etf_code) : '';
-    const isBuy  = r.action === 'NEW_BUY';
-    const isSell = r.action === 'FULL_SELL';
+function _renderChangeTable(data){
+  document.getElementById('changesTbody').innerHTML = data.map((r,i)=>{
+    const diff = (r.weight_after||0)-(r.weight_before||0);
+    const name = ETF_META[r.etf_code]||r.etf_code||'';
+    const isBuy=r.action==='NEW_BUY', isSell=r.action==='FULL_SELL';
     return `<tr>
       <td><span class="rn">${i+1}</span></td>
       <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
-      <td><span class="stock-name">${r.stock_name||''}</span><span class="stock-code">${r.stock_code||''}</span></td>
+      <td>
+        ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}
+        <span class="stock-code">${r.stock_code||''}</span>
+      </td>
       <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
-      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0 ? r.weight_before.toFixed(1)+'%' : '—'}</td>
-      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0 ? r.weight_after.toFixed(1)+'%' : '—'}</td>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
+      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
       <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">
-        ${isBuy ? '<span class="tag buy">新增</span>' : isSell ? '<span class="tag sell">移除</span>' : fmtPct(diff)}
+        ${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}
       </td>
     </tr>`;
   }).join('');
 }
-
-window.filterChanges = function () {
-  const q = document.getElementById('changeSearch').value.toLowerCase();
-  _renderChangeTable(_allChanges.filter(r =>
-    (r.etf_code||'').toLowerCase().includes(q) ||
-    (ETF_META[r.etf_code]||'').includes(q) ||
-    (r.stock_name||'').includes(q) ||
-    (r.stock_code||'').includes(q)
-  ));
+window.filterChanges=function(){
+  const q=document.getElementById('changeSearch').value.toLowerCase();
+  _renderChangeTable(_allChanges.filter(r=>
+    (r.etf_code||'').toLowerCase().includes(q)||
+    (ETF_META[r.etf_code]||'').includes(q)||
+    (r.stock_name||'').includes(q)||(r.stock_code||'').includes(q)));
 };
 
 // ═══════════════════════════════════════════
-//  P3: 成分佔比圓餅圖
+//  P3: 成分佔比（修正顏色對應 + 展開全部 + 真實成分數）
 // ═══════════════════════════════════════════
-let donutsDone = false;
-function renderDonuts() {
-  if (donutsDone) return;
-  donutsDone = true;
-  const grid  = document.getElementById('donutGrid');
-  grid.innerHTML = '';
-  const extra = getExtraWatch();
-  const items = [
-    ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, isWatch: false })),
-    ...extra.map(t => ({ ticker: t, name: `自選 ${t}`, isWatch: true })),
+let donutsDone=false;
+function renderDonuts(){
+  if(donutsDone)return;
+  donutsDone=true;
+  const grid=document.getElementById('donutGrid');
+  grid.innerHTML='';
+  const extra=getExtraWatch();
+  const items=[
+    ...APP.etfs.map(e=>({ticker:e.ticker,name:e.name,isWatch:false})),
+    ...extra.map(t=>({ticker:t,name:`自選 ${t}`,isWatch:true})),
   ];
+  items.forEach(({ticker,name,isWatch},di)=>{
+    const cid='dc_'+ticker.replace(/\W/g,'_');
+    const realData=!isWatch&&APP.holdings[ticker]&&APP.holdings[ticker].holdings;
 
-  items.forEach(({ ticker, name, isWatch }, di) => {
-    const cid = 'dc_' + ticker.replace(/\W/g, '_');
-
-    // 真實持股 or mock
-    let slices;
-    const real = !isWatch && APP.holdings[ticker] && APP.holdings[ticker].holdings;
-    if (real && real.length) {
-      const top9 = real.slice(0, 9);
-      const topSum = top9.reduce((s, h) => s + (h.weight_pct || 0), 0);
-      slices = [
-        ...top9.map(h => ({ name: h.stock_name, w: +(h.weight_pct || 0) })),
-        { name: '其他', w: +Math.max(100 - topSum, 0).toFixed(1) },
-      ].filter(s => s.w > 0);
-    } else {
-      // Mock slices
-      const tops = [
-        { name: '台積電', w: +(15+Math.random()*18).toFixed(1) },
-        { name: '廣達',   w: +(4+Math.random()*7).toFixed(1) },
-        { name: '鴻海',   w: +(4+Math.random()*6).toFixed(1) },
-        { name: '台達電', w: +(3+Math.random()*5).toFixed(1) },
-        { name: '聯發科', w: +(3+Math.random()*6).toFixed(1) },
+    // ── 建立 slices（修正：使用完整資料，不截斷顏色對應）──
+    let slices, totalCount;
+    if(realData&&realData.length){
+      // 計算真實持股總數
+      totalCount=realData.length;
+      const top9=realData.slice(0,9);
+      const topSum=top9.reduce((s,h)=>s+(h.weight_pct||0),0);
+      const otherPct=Math.max(0,100-topSum);
+      // slices 順序必須與後面legend完全一致
+      slices=[
+        ...top9.map(h=>({name:h.stock_name||h.stock_code,w:+(h.weight_pct||0)})),
+        ...(otherPct>0.1?[{name:'其他',w:+otherPct.toFixed(1)}]:[]),
       ];
-      const sum = tops.reduce((s, x) => s + x.w, 0);
-      slices = [...tops, { name: '其他', w: +Math.max(100 - sum, 10).toFixed(1) }];
+    } else {
+      totalCount=0;
+      const tops=[
+        {name:'台積電',w:+(15+Math.random()*18).toFixed(1)},
+        {name:'廣達',  w:+(4+Math.random()*7).toFixed(1)},
+        {name:'鴻海',  w:+(4+Math.random()*6).toFixed(1)},
+        {name:'台達電',w:+(3+Math.random()*5).toFixed(1)},
+        {name:'聯發科',w:+(3+Math.random()*6).toFixed(1)},
+      ];
+      const sum=tops.reduce((s,x)=>s+x.w,0);
+      slices=[...tops,{name:'其他',w:+Math.max(100-sum,10).toFixed(1)}];
     }
 
-    const card = document.createElement('div');
-    card.className = 'donut-card' + (isWatch ? ' is-watch' : '');
-    card.style.animationDelay = `${di * 0.04}s`;
-    const top5 = slices.slice(0, 5);
-    card.innerHTML = `
+    const card=document.createElement('div');
+    card.className='donut-card'+(isWatch?' is-watch':'');
+    card.style.animationDelay=`${di*0.04}s`;
+
+    // ── legend：只顯示前5筆，其餘可展開 ──────────────────
+    const show5=slices.slice(0,5);
+    const rest =slices.slice(5);
+    const restId=`rest_${cid}`;
+
+    const legendHtml=show5.map((s,i)=>`
+      <div class="legend-row">
+        <span class="legend-dot" style="background:${DONUT_COLORS[i%DONUT_COLORS.length]}"></span>
+        <span>${s.name}</span>
+        <span class="legend-pct">${s.w.toFixed(1)}%</span>
+      </div>`).join('');
+
+    const restHtml=rest.length?`
+      <div id="${restId}" style="display:none;flex-direction:column;gap:5px;margin-top:4px;">
+        ${rest.map((s,i)=>`
+          <div class="legend-row">
+            <span class="legend-dot" style="background:${DONUT_COLORS[(i+5)%DONUT_COLORS.length]}"></span>
+            <span>${s.name}</span>
+            <span class="legend-pct">${s.w.toFixed(1)}%</span>
+          </div>`).join('')}
+      </div>
+      <div onclick="toggleRestHoldings('${restId}',this)"
+        style="font-size:10px;color:var(--aizumi-dk);cursor:pointer;margin-top:5px;
+               display:flex;align-items:center;gap:4px;font-family:var(--font-mono);
+               padding:3px 0;border-top:1px solid var(--border);">
+        <span class="toggle-label">＋ 其餘 ${rest.length} 檔</span>
+      </div>`:'';
+
+    card.innerHTML=`
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
         <div>
           <div class="donut-ticker">${ticker}</div>
           <div class="donut-name">${name}</div>
         </div>
-        <span class="tag ${isWatch ? 'watch-t' : 'active-t'}">${isWatch ? '自選' : '主動ETF'}</span>
+        <span class="tag ${isWatch?'watch-t':'active-t'}">${isWatch?'自選':'主動ETF'}</span>
       </div>
       <div class="donut-wrap">
         <canvas id="${cid}" width="120" height="120"></canvas>
         <div class="donut-center">
-          <div class="donut-center-val">${real ? real.length : slices.length}</div>
+          <div class="donut-center-val">${totalCount||slices.length}</div>
           <div class="donut-center-sub">成分</div>
         </div>
       </div>
       <div class="donut-legend">
-        ${top5.map((s, i) => `
-          <div class="legend-row">
-            <span class="legend-dot" style="background:${DONUT_COLORS[i % DONUT_COLORS.length]}"></span>
-            <span>${s.name}</span>
-            <span class="legend-pct">${s.w.toFixed(1)}%</span>
-          </div>`).join('')}
-        ${slices.length > 5 ? `<div class="legend-row" style="font-size:10px;color:var(--sumi-45)">＋ 其餘 ${slices.length - 5} 檔</div>` : ''}
+        ${legendHtml}
+        ${restHtml}
       </div>`;
     grid.appendChild(card);
 
-    new Chart(document.getElementById(cid), {
-      type: 'doughnut',
-      data: {
-        labels: slices.map(s => s.name),
-        datasets: [{
-          data: slices.map(s => s.w),
-          backgroundColor: slices.map((_, i) => DONUT_COLORS[i % DONUT_COLORS.length]),
-          borderColor: '#fff8e8', borderWidth: 2,
-          hoverBorderColor: '#e8dfc0', hoverBorderWidth: 3,
+    // ── 圓餅圖：顏色順序與legend完全一致 ────────────────
+    new Chart(document.getElementById(cid),{
+      type:'doughnut',
+      data:{
+        labels:slices.map(s=>s.name),
+        datasets:[{
+          data:slices.map(s=>s.w),
+          // 關鍵：直接用 slices 的 index 取色，與legend保持一致
+          backgroundColor:slices.map((_,i)=>DONUT_COLORS[i%DONUT_COLORS.length]),
+          borderColor:'#fff8e8',borderWidth:2,
+          hoverBorderColor:'#e8dfc0',hoverBorderWidth:3,
         }]
       },
-      options: {
-        cutout: '70%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(28,18,9,0.88)',
-            titleColor: '#f0ead2', bodyColor: 'rgba(240,234,210,0.75)',
-            borderColor: 'rgba(200,181,96,0.3)', borderWidth: 1, padding: 10,
-            callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(1)}%` }
+      options:{
+        cutout:'70%',
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            backgroundColor:'rgba(28,18,9,0.88)',titleColor:'#f0ead2',
+            bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',
+            borderWidth:1,padding:10,
+            callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed.toFixed(1)}%`}
           }
         },
-        animation: { animateRotate: true, duration: 700 }
+        animation:{animateRotate:true,duration:700}
       }
     });
   });
 }
 
+window.toggleRestHoldings=function(id, btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'flex';
+  const label=btn.querySelector('.toggle-label');
+  if(label){
+    const count=el.querySelectorAll('.legend-row').length;
+    label.textContent=open?`＋ 其餘 ${count} 檔`:`－ 收合`;
+  }
+};
+
 // ═══════════════════════════════════════════
-//  P4: 月績效（持續使用 mock，未來可接真實資料）
+//  P4: 月績效（真實資料 + 修正折線圖隨月份變動）
 // ═══════════════════════════════════════════
-const MONTHS_6 = (() => {
-  const months = [];
-  const d = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
+// 動態產生近12個月清單
+const MONTHS_12=(()=>{
+  const months=[]; const d=new Date();
+  for(let i=11;i>=0;i--){
+    const m=new Date(d.getFullYear(),d.getMonth()-i,1);
     months.push(`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`);
   }
   return months;
 })();
 
-const MOCK_PERF = {};
-[...APP.etfs, APP.bench].forEach(e => {
-  MOCK_PERF[e.ticker] = MONTHS_6.map(() => +(Math.random() * 18 - 6).toFixed(2));
-});
+let selMonth=MONTHS_12[MONTHS_12.length-1];
+let perfChartInst=null;
 
-let selMonth     = MONTHS_6[MONTHS_6.length - 1];
-let perfChartInst = null;
-
-function ensureWatchPerf() {
-  getExtraWatch().forEach(t => {
-    if (!MOCK_PERF[t]) MOCK_PERF[t] = MONTHS_6.map(() => +(Math.random() * 16 - 5).toFixed(2));
-  });
+function getPerfData(ticker){
+  const real=APP.performance[ticker];
+  if(real&&Object.keys(real).length>0)return real;
+  // 無真實資料用隨機（有標示）
+  const fake={};
+  MONTHS_12.forEach(m=>{ fake[m]=+(Math.random()*18-6).toFixed(2); });
+  return fake;
 }
-function getPerfItems() {
-  ensureWatchPerf();
-  const at = APP.etfs.map(e => e.ticker);
+
+function getPerfItems(){
+  const at=APP.etfs.map(e=>e.ticker);
   return [
-    { ticker: APP.bench.ticker, name: APP.bench.name, cat: 'bench' },
-    ...watchlist.filter(t => !Object.keys(BENCH_META).includes(t) && !at.includes(t))
-                .map(t => ({ ticker: t, name: `自選 ${t}`, cat: 'watch' })),
-    ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, cat: 'active' })),
+    {ticker:'0050',name:'元大台灣50',cat:'bench'},
+    {ticker:'009816',name:'凱基台灣TOP50',cat:'bench'},
+    ...watchlist.filter(t=>!Object.keys(BENCH_META).includes(t)&&!at.includes(t))
+                .map(t=>({ticker:t,name:`自選 ${t}`,cat:'watch'})),
+    ...APP.etfs.map(e=>({ticker:e.ticker,name:e.name,cat:'active'})),
   ];
 }
-function renderMonthSel() {
-  document.getElementById('monthSelector').innerHTML = MONTHS_6.map(m =>
-    `<button class="month-btn${m === selMonth ? ' active' : ''}" onclick="selectMonth('${m}')">${m}</button>`
+
+function renderMonthSel(){
+  document.getElementById('monthSelector').innerHTML=MONTHS_12.map(m=>
+    `<button class="month-btn${m===selMonth?' active':''}" onclick="selectMonth('${m}')">${m}</button>`
   ).join('');
 }
-window.selectMonth = m => { selMonth = m; renderMonthSel(); renderPerfTable(); };
+window.selectMonth=m=>{
+  selMonth=m; renderMonthSel(); renderPerfTable();
+  // ★ 修正：切換月份同步更新折線圖
+  renderPerfChartFn();
+};
 
-function renderPerfTable() {
-  const mi   = MONTHS_6.indexOf(selMonth);
-  const list = getPerfItems().filter(e => MOCK_PERF[e.ticker])
-    .map(e => ({ ...e, ret: MOCK_PERF[e.ticker][mi] }))
-    .sort((a, b) => b.ret - a.ret);
-  const maxR = Math.max(...list.map(r => Math.abs(r.ret)));
+function hasRealPerf(){
+  return APP.etfs.some(e=>{
+    const p=APP.performance[e.ticker];
+    return p&&Object.keys(p).length>0;
+  });
+}
 
-  document.getElementById('perfTbody').innerHTML = list.map((r, i) => {
-    const catTag = r.cat === 'bench'
-      ? '<span class="tag bench-t">大盤</span>'
-      : r.cat === 'watch'
-      ? '<span class="tag watch-t">自選</span>'
-      : '<span class="tag active-t">主動</span>';
+function renderPerfTable(){
+  const list=getPerfItems().map(e=>{
+    const pd=getPerfData(e.ticker);
+    const ret=pd[selMonth]??null;
+    return {...e,ret};
+  }).filter(e=>e.ret!==null).sort((a,b)=>b.ret-a.ret);
+  const maxR=Math.max(1,...list.map(r=>Math.abs(r.ret)));
+
+  const isRealData=hasRealPerf();
+  document.getElementById('perfTbody').innerHTML=list.map((r,i)=>{
+    const catTag=r.cat==='bench'
+      ?'<span class="tag bench-t">大盤</span>'
+      :r.cat==='watch'?'<span class="tag watch-t">自選</span>'
+      :'<span class="tag active-t">主動</span>';
+    const fakeNote=!isRealData?'<span style="font-size:9px;color:var(--sumi-30);margin-left:4px;">示範</span>':'';
     return `<tr>
       <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
       <td>
-        <span class="etf-pill" style="${r.cat==='watch'?'border-color:rgba(200,168,75,0.42);background:rgba(200,168,75,0.15);color:#7a5a10':''}${r.cat==='bench'?'border-color:var(--sumi-15);background:rgba(28,18,9,0.05);color:var(--sumi-60)':''}">${r.ticker}</span>
-        <span class="etf-sub">${r.name}</span>
+        <span class="etf-pill" style="${r.cat==='watch'?'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10':''}${r.cat==='bench'?'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)':''}">${r.ticker}</span>
+        <span class="etf-sub">${r.name}</span>${fakeNote}
       </td>
       <td>${catTag}</td>
       <td class="${colorCls(r.ret)}" style="font-size:14px">${fmtPct(r.ret)}</td>
@@ -1273,84 +1295,116 @@ function renderPerfTable() {
   }).join('');
 }
 
-function renderPerfChartFn() {
-  if (perfChartInst) perfChartInst.destroy();
-  const items    = getPerfItems().filter(e => MOCK_PERF[e.ticker]);
-  const top5     = items.filter(e => e.cat !== 'bench').slice(0, 5);
-  const benchItem = items.find(e => e.cat === 'bench');
-  const toChart  = benchItem ? [...top5, benchItem] : top5;
-  const clrs     = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#9a9080'];
+function renderPerfChartFn(){
+  if(perfChartInst)perfChartInst.destroy();
+  // ★ 修正：每次重算 Top5（基於當前月份排序）
+  const allItems=getPerfItems();
+  const sortedBySelMonth=[...allItems].filter(e=>{
+    const pd=getPerfData(e.ticker);
+    return pd[selMonth]!=null;
+  }).sort((a,b)=>{
+    const pa=getPerfData(a.ticker)[selMonth]??-999;
+    const pb=getPerfData(b.ticker)[selMonth]??-999;
+    return pb-pa;
+  });
+  const top5=sortedBySelMonth.filter(e=>e.cat!=='bench').slice(0,5);
+  const benchItems=allItems.filter(e=>e.cat==='bench');
+  const toChart=[...top5,...benchItems];
+  const clrs=['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#9a9080','#5b9eac'];
 
-  perfChartInst = new Chart(document.getElementById('perfChart'), {
-    type: 'line',
-    data: {
-      labels: MONTHS_6,
-      datasets: toChart.map((e, i) => ({
-        label: e.ticker,
-        data: MOCK_PERF[e.ticker],
-        borderColor: clrs[i], backgroundColor: clrs[i] + '18',
-        borderWidth: e.cat === 'bench' ? 1.5 : 2,
-        borderDash: e.cat === 'bench' ? [4, 3] : [],
-        pointRadius: 4, pointHoverRadius: 6,
-        tension: 0.4, fill: false,
+  // 只顯示有資料的月份
+  const validMonths=MONTHS_12.filter(m=>toChart.some(e=>{
+    const pd=getPerfData(e.ticker);
+    return pd[m]!=null;
+  }));
+
+  perfChartInst=new Chart(document.getElementById('perfChart'),{
+    type:'line',
+    data:{
+      labels:validMonths,
+      datasets:toChart.map((e,i)=>({
+        label:e.ticker,
+        data:validMonths.map(m=>getPerfData(e.ticker)[m]??null),
+        borderColor:clrs[i%clrs.length],
+        backgroundColor:clrs[i%clrs.length]+'18',
+        borderWidth:e.cat==='bench'?1.5:2,
+        borderDash:e.cat==='bench'?[4,3]:[],
+        pointRadius:4,pointHoverRadius:6,tension:0.4,fill:false,
+        spanGaps:true,
       }))
     },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: 'rgba(28,18,9,0.55)', font: { size: 11, family: 'DM Mono' }, boxWidth: 12, padding: 14 } },
-        tooltip: {
-          backgroundColor: 'rgba(28,18,9,0.9)', titleColor: '#f0ead2',
-          bodyColor: 'rgba(240,234,210,0.75)', borderColor: 'rgba(200,181,96,0.3)',
-          borderWidth: 1, padding: 10,
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{color:'rgba(28,18,9,0.55)',font:{size:11,family:'DM Mono'},boxWidth:12,padding:14}},
+        tooltip:{
+          backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',
+          bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',
+          borderWidth:1,padding:10,
         }
       },
-      scales: {
-        x: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 } }, grid: { color: 'rgba(200,181,96,0.1)' } },
-        y: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, callback: v => v + '%' }, grid: { color: 'rgba(200,181,96,0.1)' } }
+      scales:{
+        x:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}},
+        y:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10},callback:v=>v+'%'},grid:{color:'rgba(200,181,96,0.1)'}}
       }
     }
   });
 }
 
-function renderPerfPage() {
-  ensureWatchPerf(); renderMonthSel(); renderPerfTable(); renderPerfChartFn();
+function renderPerfPage(){
+  renderMonthSel(); renderPerfTable(); renderPerfChartFn();
+  if(!hasRealPerf()){
+    const note=document.getElementById('perfRealNote');
+    if(note)note.style.display='block';
+  }
 }
 
 // ═══════════════════════════════════════════
-//  P5: ETF 總覽
+//  P5: ETF 總覽（補真實價格、NAV、規模）
 // ═══════════════════════════════════════════
-function renderEtfList() {
-  const q    = (document.getElementById('etfSearch') || {}).value?.toLowerCase() || '';
-  const at   = APP.etfs.map(e => e.ticker);
-  const extraW = getExtraWatch().map(t => ({
-    ticker: t, name: `自選ETF ${t}`,
-    price: 0, chg: 0, nav: 0, aum: 0, cat: 'watch'
-  }));
-  const benchRows = Object.entries(BENCH_META).map(([ticker, name]) => {
-    const bp = APP.benchmark[ticker] || {};
-    return { ticker, name, price: bp.close || 0, chg: bp.chg_pct || 0, nav: 0, aum: 0, cat: 'bench' };
-  });
-  const rows = [...benchRows, ...extraW, ...APP.etfs.map(e => ({ ...e, cat: 'active' }))]
-    .filter((r, i, a) => a.findIndex(x => x.ticker === r.ticker) === i)
-    .filter(r => !q || r.ticker.toLowerCase().includes(q) || r.name.includes(q));
+function renderEtfList(){
+  const q=(document.getElementById('etfSearch')||{}).value?.toLowerCase()||'';
+  const at=APP.etfs.map(e=>e.ticker);
 
-  document.getElementById('etfListTbody').innerHTML = rows.map((r, i) => {
-    const prem   = r.nav > 0 ? ((r.price - r.nav) / r.nav * 100).toFixed(2) : '─';
-    const catTag = r.cat === 'bench'
-      ? '<span class="tag bench-t">大盤基準</span>'
-      : r.cat === 'watch'
-      ? '<span class="tag watch-t">自選</span>'
-      : '<span class="tag active-t">主動ETF</span>';
-    const pillStyle = r.cat === 'watch'
-      ? 'border-color:rgba(200,168,75,0.42);background:rgba(200,168,75,0.15);color:#7a5a10'
-      : r.cat === 'bench'
-      ? 'border-color:var(--sumi-15);background:rgba(28,18,9,0.05);color:var(--sumi-60)'
-      : '';
-    const priceStr = r.price > 0 ? (+r.price).toFixed(2) : '─';
-    const chgStr   = r.chg   != 0 ? fmtPct(r.chg) : '─';
-    const premStr  = prem !== '─' ? ((+prem > 0 ? '+' : '') + prem + '%') : '─';
-    const aumStr   = r.aum > 0 ? r.aum : '─';
+  // 基準ETF
+  const benchRows=Object.entries(BENCH_META).map(([ticker,name])=>{
+    const p=APP.etfPrices[ticker]||{};
+    return {ticker,name,price:p.close||0,chg:p.chg_pct||0,nav:p.nav||0,
+            aum:p.aum_billion||0,premium:p.premium_pct||0,cat:'bench'};
+  });
+  // 自選（非主動ETF）
+  const extraW=getExtraWatch().map(t=>{
+    const p=APP.etfPrices[t]||{};
+    return {ticker:t,name:`自選ETF ${t}`,price:p.close||0,chg:p.chg_pct||0,
+            nav:p.nav||0,aum:p.aum_billion||0,premium:p.premium_pct||0,cat:'watch'};
+  });
+  // 主動ETF
+  const activeRows=APP.etfs.map(e=>{
+    const p=APP.etfPrices[e.ticker]||{};
+    return {ticker:e.ticker,name:e.name,
+            price:p.close||0,chg:p.chg_pct||0,
+            nav:p.nav||0,aum:p.aum_billion||0,
+            premium:p.premium_pct||0,cat:'active'};
+  });
+
+  const rows=[...benchRows,...extraW,...activeRows]
+    .filter((r,i,a)=>a.findIndex(x=>x.ticker===r.ticker)===i)
+    .filter(r=>!q||r.ticker.toLowerCase().includes(q)||r.name.includes(q));
+
+  document.getElementById('etfListTbody').innerHTML=rows.map((r,i)=>{
+    const catTag=r.cat==='bench'
+      ?'<span class="tag bench-t">大盤基準</span>'
+      :r.cat==='watch'?'<span class="tag watch-t">自選</span>'
+      :'<span class="tag active-t">主動ETF</span>';
+    const pillStyle=r.cat==='watch'
+      ?'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10'
+      :r.cat==='bench'
+      ?'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)':'';
+    const priceStr=r.price>0?r.price.toFixed(2):'─';
+    const chgStr=r.chg!==0?fmtPct(r.chg):'─';
+    const navStr=r.nav>0?r.nav.toFixed(2):'─';
+    const premStr=r.nav>0?(r.premium>0?'+':'')+r.premium.toFixed(2)+'%':'─';
+    const aumStr=r.aum>0?r.aum.toFixed(1):'─';
     return `<tr>
       <td><span class="rn ${i===0?'gold':''}">${i+1}</span></td>
       <td><span class="etf-pill" style="${pillStyle}">${r.ticker}</span></td>
@@ -1358,7 +1412,8 @@ function renderEtfList() {
       <td>${catTag}</td>
       <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${priceStr}</td>
       <td class="${colorCls(r.chg)}">${chgStr}</td>
-      <td class="${colorCls(prem)}" style="font-family:var(--font-mono)">${premStr}</td>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${navStr}</td>
+      <td class="${colorCls(r.premium)}" style="font-family:var(--font-mono)">${premStr}</td>
       <td style="font-family:var(--font-mono);color:var(--sumi-60)">${aumStr}</td>
     </tr>`;
   }).join('');
@@ -1367,95 +1422,89 @@ function renderEtfList() {
 // ═══════════════════════════════════════════
 //  P6: 自選ETF
 // ═══════════════════════════════════════════
-let watchChartInst = null;
+let watchChartInst=null;
 
-function renderWatchlist() {
-  const at   = APP.etfs.map(e => e.ticker);
-  const grid = document.getElementById('watchlistGrid');
-  const cards = watchlist.map(ticker => {
-    const info   = APP.etfs.find(e => e.ticker === ticker);
-    const bp     = APP.benchmark[ticker];
-    const price  = info ? info.price : (bp ? bp.close : 0);
-    const chg    = info ? info.chg   : (bp ? bp.chg_pct : 0);
-    const name   = info ? info.name  : (ETF_META[ticker] || BENCH_META[ticker] || ticker);
-    const isExtra = !at.includes(ticker) && !Object.keys(BENCH_META).includes(ticker);
+function renderWatchlist(){
+  const at=APP.etfs.map(e=>e.ticker);
+  const grid=document.getElementById('watchlistGrid');
+  const cards=watchlist.map(ticker=>{
+    const ae=APP.etfs.find(e=>e.ticker===ticker);
+    const bp=APP.etfPrices[ticker]||{};
+    const price=ae?ae.price:(bp.close||0);
+    const chg  =ae?ae.chg:(bp.chg_pct||0);
+    const name =ae?ae.name:(ETF_META[ticker]||BENCH_META[ticker]||ticker);
+    const isExtra=!at.includes(ticker)&&!Object.keys(BENCH_META).includes(ticker);
     return `<div class="watch-card">
       <span class="wc-remove" onclick="removeWatch('${ticker}')">✕</span>
       <div class="wc-ticker">${ticker}</div>
-      <div class="wc-name">${name}${isExtra ? '&nbsp;<span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>' : ''}</div>
-      <div class="wc-price ${colorCls(chg)}">${price > 0 ? (+price).toFixed(2) : '─'}</div>
-      <div class="wc-change ${colorCls(chg)}">${chg != 0 ? fmtPct(chg)+' 今日' : '─'}</div>
+      <div class="wc-name">${name}${isExtra?'&nbsp;<span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>':''}</div>
+      <div class="wc-price ${colorCls(chg)}">${price>0?price.toFixed(2):'─'}</div>
+      <div class="wc-change ${colorCls(chg)}">${chg!==0?fmtPct(chg)+' 今日':'─'}</div>
     </div>`;
   }).join('');
-
-  const addBtn = watchlist.length < 8
-    ? `<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>` : '';
-  grid.innerHTML = cards + addBtn;
+  const addBtn=watchlist.length<8
+    ?`<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>`:'';
+  grid.innerHTML=cards+addBtn;
   renderWatchChart();
 }
 
-function renderWatchChart() {
-  if (watchChartInst) watchChartInst.destroy();
-  if (!watchlist.length) return;
-  const clrs  = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
-  const labels = Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() - 77 + i * 7);
+function renderWatchChart(){
+  if(watchChartInst)watchChartInst.destroy();
+  if(!watchlist.length)return;
+  const clrs=['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
+  const labels=Array.from({length:12},(_,i)=>{
+    const d=new Date();d.setDate(d.getDate()-77+i*7);
     return `${d.getMonth()+1}/${d.getDate()}`;
   });
-  const datasets = watchlist.slice(0, 8).map((ticker, i) => {
-    const info = APP.etfs.find(e => e.ticker === ticker);
-    let p = (info && info.price > 0 ? info.price : 20) * 0.9;
+  const datasets=watchlist.slice(0,8).map((ticker,i)=>{
+    const ae=APP.etfs.find(e=>e.ticker===ticker);
+    const bp=APP.etfPrices[ticker]||{};
+    let p=((ae?ae.price:bp.close)||20)*0.9;
     return {
-      label: ticker,
-      data: labels.map(() => { p *= (1 + (Math.random() - 0.46) * 0.025); return +p.toFixed(2); }),
-      borderColor: clrs[i], backgroundColor: 'transparent',
-      borderWidth: 2, pointRadius: 0, tension: 0.45,
+      label:ticker,
+      data:labels.map(()=>{p*=(1+(Math.random()-0.46)*0.025);return +p.toFixed(2);}),
+      borderColor:clrs[i],backgroundColor:'transparent',
+      borderWidth:2,pointRadius:0,tension:0.45,
     };
   });
-  watchChartInst = new Chart(document.getElementById('watchChart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: 'rgba(28,18,9,0.55)', font: { size: 11, family: 'DM Mono' }, boxWidth: 12, padding: 14 } },
-        tooltip: {
-          backgroundColor: 'rgba(28,18,9,0.9)', titleColor: '#f0ead2',
-          bodyColor: 'rgba(240,234,210,0.75)', borderColor: 'rgba(200,181,96,0.3)',
-          borderWidth: 1, padding: 10,
-        }
+  watchChartInst=new Chart(document.getElementById('watchChart'),{
+    type:'line',data:{labels,datasets},
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{color:'rgba(28,18,9,0.55)',font:{size:11,family:'DM Mono'},boxWidth:12,padding:14}},
+        tooltip:{backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',borderWidth:1,padding:10}
       },
-      scales: {
-        x: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 } }, grid: { color: 'rgba(200,181,96,0.1)' } },
-        y: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 } }, grid: { color: 'rgba(200,181,96,0.1)' } }
+      scales:{
+        x:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}},
+        y:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}}
       }
     }
   });
 }
 
-function removeWatch(t) {
-  watchlist = watchlist.filter(x => x !== t);
-  saveWatch(); donutsDone = false;
-  renderWatchlist(); renderEtfList();
+function removeWatch(t){
+  watchlist=watchlist.filter(x=>x!==t);
+  saveWatch();donutsDone=false;
+  renderWatchlist();renderEtfList();
 }
 
-window.openModal  = () => { document.getElementById('addModal').classList.add('open');    document.getElementById('addInput').focus(); };
-window.closeModal = () => { document.getElementById('addModal').classList.remove('open'); document.getElementById('addInput').value = ''; };
-document.getElementById('addModal').addEventListener('click', e => { if (e.target.id === 'addModal') closeModal(); });
-document.getElementById('addInput').addEventListener('keydown', e => { if (e.key === 'Enter') confirmAdd(); });
-
-window.confirmAdd = function () {
-  const v = document.getElementById('addInput').value.trim().toUpperCase();
-  if (!v) { alert('請輸入ETF代號'); return; }
-  if (watchlist.includes(v)) { alert('已在自選清單中'); closeModal(); return; }
-  if (watchlist.length >= 8) { alert('最多8檔'); closeModal(); return; }
-  watchlist.push(v); saveWatch(); donutsDone = false;
-  renderWatchlist(); renderEtfList(); closeModal();
+window.openModal  =()=>{document.getElementById('addModal').classList.add('open');document.getElementById('addInput').focus();};
+window.closeModal =()=>{document.getElementById('addModal').classList.remove('open');document.getElementById('addInput').value='';};
+document.getElementById('addModal').addEventListener('click',e=>{if(e.target.id==='addModal')closeModal();});
+document.getElementById('addInput').addEventListener('keydown',e=>{if(e.key==='Enter')confirmAdd();});
+window.confirmAdd=function(){
+  const v=document.getElementById('addInput').value.trim().toUpperCase();
+  if(!v){alert('請輸入ETF代號');return;}
+  if(watchlist.includes(v)){alert('已在自選清單中');closeModal();return;}
+  if(watchlist.length>=8){alert('最多8檔');closeModal();return;}
+  watchlist.push(v);saveWatch();donutsDone=false;
+  renderWatchlist();renderEtfList();closeModal();
 };
 
-// ═══════════════════════════════════════════
-//  啟動
-// ═══════════════════════════════════════════
+renderWatchlist();
+
+// ── 啟動 ─────────────────────────────────────────────────────
 initData();
 </script>
 </body>
