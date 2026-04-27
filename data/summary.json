@@ -1,10 +1,67 @@
 {
-  "date": "",
+  "date": "2026-04-27",
   "etf_count": 14,
-  "total_holdings": 0,
+  "total_holdings": 766,
   "has_changes": false,
   "change_count": 0,
-  "updated_at": "",
-  "source": "尚未執行",
-  "active_etfs": []
+  "updated_at": "2026-04-27 16:48:27",
+  "source": "Pocket.tw M722 API",
+  "active_etfs": [
+    {
+      "code": "00981A",
+      "name": "統一台股增長"
+    },
+    {
+      "code": "00982A",
+      "name": "群益台灣強棒"
+    },
+    {
+      "code": "00991A",
+      "name": "復華未來50"
+    },
+    {
+      "code": "00992A",
+      "name": "群益科技創新"
+    },
+    {
+      "code": "00993A",
+      "name": "安聯台灣"
+    },
+    {
+      "code": "00980A",
+      "name": "野村臺灣優選"
+    },
+    {
+      "code": "00985A",
+      "name": "野村台灣50"
+    },
+    {
+      "code": "00995A",
+      "name": "中信台灣卓越"
+    },
+    {
+      "code": "00984A",
+      "name": "安聯台灣高息"
+    },
+    {
+      "code": "00987A",
+      "name": "台新優勢成長"
+    },
+    {
+      "code": "00994A",
+      "name": "第一金台股優"
+    },
+    {
+      "code": "00996A",
+      "name": "兆豐台灣豐收"
+    },
+    {
+      "code": "00400A",
+      "name": "國泰動能高息"
+    },
+    {
+      "code": "00401A",
+      "name": "摩根台灣鑫收"
+    }
+  ]
 }
