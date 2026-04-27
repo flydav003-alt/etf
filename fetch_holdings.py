@@ -130,6 +130,27 @@ def init_db():
     CREATE INDEX IF NOT EXISTS idx_etf_prices    ON etf_prices(trade_date, etf_code);
     """)
     conn.commit()
+
+    # ── DB 遷移：補舊版 etf_prices 表缺少的欄位 ──────────
+    # 第一次用新版時，舊表只有 close_price，需要補其他欄位
+    migrations = [
+        "ALTER TABLE etf_prices ADD COLUMN open_price  REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN high_price  REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN low_price   REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN volume      REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN chg_amt     REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN chg_pct     REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN nav         REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN premium_pct REAL DEFAULT 0",
+        "ALTER TABLE etf_prices ADD COLUMN aum_billion REAL DEFAULT 0",
+    ]
+    for sql in migrations:
+        try:
+            conn.execute(sql)
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass  # 欄位已存在，忽略
+
     conn.close()
     log.info("✓ 資料庫初始化完成")
 
@@ -201,45 +222,58 @@ def fetch_stock_close_prices(stock_codes: set) -> dict[str, float]:
 
 
 # ══════════════════════════════════════════════════════════
-# 4. 抓取 ETF 今日收盤價（TWSE 上市 ETF 行情）
-#    來源：TWSE ETF 每日行情 API
+# 4. 抓取 ETF 今日收盤價
+#    來源：TWSE STOCK_DAY_ALL（ETF 也在上市股票清單內）
 # ══════════════════════════════════════════════════════════
 def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
     """
-    從 TWSE 抓取今日所有ETF收盤價
+    從 TWSE STOCK_DAY_ALL 抓取 ETF 今日收盤價
     回傳 { etf_code: { close, open, high, low, volume, chg_amt, chg_pct } }
     """
     results = {}
     try:
-        # 上市 ETF 日行情
         resp = requests.get(
             'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
             timeout=25
         )
-        if resp.status_code == 200:
-            all_data = {item.get('Code', ''): item for item in resp.json()}
-            for code in ALL_PRICE_ETFS:
-                item = all_data.get(code)
-                if not item:
-                    continue
+        if resp.status_code != 200:
+            log.warning(f"STOCK_DAY_ALL 回傳 {resp.status_code}")
+            return results
+
+        all_data = {item.get('Code', ''): item for item in resp.json()}
+        for code in ALL_PRICE_ETFS:
+            item = all_data.get(code)
+            if not item:
+                continue
+            try:
+                def _f(key, fallback='0'):
+                    v = item.get(key, fallback) or fallback
+                    return float(str(v).replace(',', '').replace('+', '').strip() or '0')
+
+                close   = _f('ClosingPrice')
+                open_   = _f('OpeningPrice')
+                high    = _f('HighestPrice')
+                low     = _f('LowestPrice')
+                vol     = _f('TradeVolume')
+                chg_raw = str(item.get('Change', '0') or '0').replace(',', '').replace('+', '').strip()
+                # 過濾非數字值（除息、X、-- 等）
                 try:
-                    close = float(item.get('ClosingPrice', '0').replace(',', '') or 0)
-                    open_ = float(item.get('OpeningPrice', '0').replace(',', '') or 0)
-                    high  = float(item.get('HighestPrice', '0').replace(',', '') or 0)
-                    low   = float(item.get('LowestPrice',  '0').replace(',', '') or 0)
-                    vol   = float(item.get('TradeVolume',  '0').replace(',', '') or 0)
-                    chg   = item.get('Change', '0').replace(',', '').replace('+', '') or '0'
-                    chg_amt = float(chg) if chg not in ('', '--', '除息', 'X') else 0.0
-                    prev  = close - chg_amt
-                    chg_pct = round(chg_amt / prev * 100, 2) if prev > 0 else 0.0
-                    if close > 0:
-                        results[code] = {
-                            'close': close, 'open': open_, 'high': high,
-                            'low': low, 'volume': vol,
-                            'chg_amt': chg_amt, 'chg_pct': chg_pct,
-                        }
-                except (ValueError, TypeError):
-                    continue
+                    chg_amt = float(chg_raw) if chg_raw and chg_raw not in ('--','X','除息','除權','除權息') else 0.0
+                except ValueError:
+                    chg_amt = 0.0
+                prev    = close - chg_amt
+                chg_pct = round(chg_amt / prev * 100, 2) if prev > 0 else 0.0
+
+                if close > 0:
+                    results[code] = {
+                        'close': close, 'open': open_, 'high': high,
+                        'low': low,     'volume': vol,
+                        'chg_amt': chg_amt, 'chg_pct': chg_pct,
+                    }
+            except (ValueError, TypeError) as e:
+                log.debug(f"ETF價格解析失敗 {code}: {e}")
+                continue
+
     except Exception as e:
         log.error(f"ETF今日收盤價抓取失敗: {e}")
 
@@ -248,78 +282,111 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 
 
 # ══════════════════════════════════════════════════════════
-# 5. 抓取 ETF NAV 淨值（TWSE 每日淨值公告）
+# 5. 抓取 ETF NAV 淨值
+#    來源：Pocket.tw M031（ETF 基本資訊，含淨值）
+#    TWSE TWT38U 在 GitHub Actions 環境回傳 403，改用此來源
 # ══════════════════════════════════════════════════════════
 def fetch_etf_nav(trade_date: str) -> dict[str, float]:
     """
-    從 TWSE 抓取 ETF 每日基金淨值
+    從 Pocket.tw 抓取 ETF 每日基金淨值
     回傳 { etf_code: nav_price }
     """
     nav_map = {}
-    try:
-        # TWSE ETF淨值API（單位淨值）
-        date_nodash = trade_date.replace('-', '')
-        url = f"https://www.twse.com.tw/fund/TWT38U?response=json&date={date_nodash}&_={int(time.time()*1000)}"
-        resp = requests.get(url, headers={
-            'User-Agent': 'Mozilla/5.0',
-            'Referer': 'https://www.twse.com.tw/'
-        }, timeout=20)
-        data = resp.json()
-        if data.get('stat') == 'OK':
-            for row in data.get('data', []):
-                if len(row) < 4:
-                    continue
-                code = str(row[0]).strip()
-                if code in ALL_PRICE_ETFS:
+    for code in ALL_PRICE_ETFS:
+        try:
+            # M031 = ETF 基本資訊（含 NAV / 溢折價）
+            param = (
+                f"AssignID%3D{code}%3B"
+                "MTPeriod%3D0%3BDTMode%3D0%3BDTRange%3D1%3BDTOrder%3D1%3BMajorTable%3DM031%3B"
+            )
+            url = (
+                "https://www.pocket.tw/api/cm/MobileService/ashx/GetDtnoData.ashx"
+                f"?action=getdtnodata&DtNo=59449513&ParamStr={param}&FilterNo=0"
+            )
+            resp = requests.get(url, headers=HEADERS, timeout=15)
+            if resp.status_code != 200:
+                continue
+            j = resp.json()
+            data = j.get('Data', [])
+            title = j.get('Title', [])
+            # 找 NAV 欄位位置（Title 裡找「淨值」）
+            nav_idx = None
+            for i, t in enumerate(title):
+                if '淨值' in str(t) or 'NAV' in str(t).upper():
+                    nav_idx = i
+                    break
+            if nav_idx is None and len(title) >= 3:
+                nav_idx = 2  # 通常第3欄是淨值
+            if data and nav_idx is not None:
+                row = data[0]
+                if len(row) > nav_idx:
                     try:
-                        nav_str = str(row[3]).replace(',', '').strip()
-                        nav = float(nav_str)
+                        nav = float(str(row[nav_idx]).replace(',', '').strip())
                         if nav > 0:
                             nav_map[code] = nav
-                    except (ValueError, IndexError):
-                        continue
-    except Exception as e:
-        log.warning(f"ETF NAV抓取失敗（非致命）: {e}")
+                    except (ValueError, TypeError):
+                        pass
+        except Exception as e:
+            log.debug(f"  {code} NAV抓取失敗: {e}")
+        time.sleep(0.3)
 
     log.info(f"✓ ETF NAV：{len(nav_map)} 檔")
     return nav_map
 
 
 # ══════════════════════════════════════════════════════════
-# 6. 抓取 ETF 規模（TWSE 基金規模）
+# 6. 抓取 ETF 規模
+#    來源：Pocket.tw（ETF 基本資訊含規模）
+#    TWSE TWT07U 在 GitHub Actions 環境回傳 403
 # ══════════════════════════════════════════════════════════
 def fetch_etf_aum() -> dict[str, float]:
     """
-    從 TWSE 抓取 ETF 基金規模（億元）
+    從 Pocket.tw 抓取 ETF 基金規模（億元）
     回傳 { etf_code: aum_billion }
+    注意：若 Pocket.tw 也失敗，回傳空 dict，前端顯示「─」
     """
     aum_map = {}
-    try:
-        # TWSE ETF規模資訊
-        url = "https://www.twse.com.tw/fund/TWT07U?response=json"
-        resp = requests.get(url, headers={
-            'User-Agent': 'Mozilla/5.0',
-            'Referer': 'https://www.twse.com.tw/'
-        }, timeout=20)
-        data = resp.json()
-        if data.get('stat') == 'OK':
-            for row in data.get('data', []):
-                if len(row) < 5:
-                    continue
-                code = str(row[0]).strip()
-                if code in ALL_PRICE_ETFS:
+    for code in ALL_PRICE_ETFS:
+        try:
+            param = (
+                f"AssignID%3D{code}%3B"
+                "MTPeriod%3D0%3BDTMode%3D0%3BDTRange%3D1%3BDTOrder%3D1%3BMajorTable%3DM031%3B"
+            )
+            url = (
+                "https://www.pocket.tw/api/cm/MobileService/ashx/GetDtnoData.ashx"
+                f"?action=getdtnodata&DtNo=59449513&ParamStr={param}&FilterNo=0"
+            )
+            resp = requests.get(url, headers=HEADERS, timeout=15)
+            if resp.status_code != 200:
+                continue
+            j = resp.json()
+            data  = j.get('Data', [])
+            title = j.get('Title', [])
+            # 找規模欄位（Title 裡找「規模」「基金規模」「資產」）
+            aum_idx = None
+            for i, t in enumerate(title):
+                ts = str(t)
+                if '規模' in ts or '資產' in ts or 'AUM' in ts.upper():
+                    aum_idx = i
+                    break
+            if data and aum_idx is not None:
+                row = data[0]
+                if len(row) > aum_idx:
                     try:
-                        # 規模通常是第4或第5欄（千元），轉換成億
-                        aum_str = str(row[4]).replace(',', '').strip()
-                        aum_thousand = float(aum_str)
-                        aum_billion  = round(aum_thousand / 100000, 2)  # 千元 → 億
-                        if aum_billion > 0:
-                            aum_map[code] = aum_billion
-                    except (ValueError, IndexError):
-                        continue
-    except Exception as e:
-        log.warning(f"ETF規模抓取失敗（非致命）: {e}")
+                        # 可能單位是億元或千元，做基本判斷
+                        raw = float(str(row[aum_idx]).replace(',', '').strip())
+                        # 如果數字很大（>1000），可能是千元，轉換為億
+                        aum = raw / 100000 if raw > 1000 else raw
+                        if aum > 0:
+                            aum_map[code] = round(aum, 2)
+                    except (ValueError, TypeError):
+                        pass
+        except Exception as e:
+            log.debug(f"  {code} AUM抓取失敗: {e}")
+        time.sleep(0.3)
 
+    if not aum_map:
+        log.warning("ETF規模：Pocket.tw M031 無規模資料，前端顯示「─」")
     log.info(f"✓ ETF規模：{len(aum_map)} 檔")
     return aum_map
 
