@@ -10,7 +10,7 @@
     "chg_pct": 0.36,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 2120.76,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00982A": {
@@ -24,7 +24,7 @@
     "chg_pct": -0.96,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 388.55,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00991A": {
@@ -38,7 +38,7 @@
     "chg_pct": 2.52,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 336.63,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00992A": {
@@ -52,7 +52,7 @@
     "chg_pct": -0.59,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 485.5,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00993A": {
@@ -66,7 +66,7 @@
     "chg_pct": 1.13,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 124.74,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00980A": {
@@ -80,7 +80,7 @@
     "chg_pct": 0.84,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 143.13,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00985A": {
@@ -94,7 +94,7 @@
     "chg_pct": 1.92,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 102.74,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00995A": {
@@ -108,7 +108,7 @@
     "chg_pct": 0.25,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 49.6,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00984A": {
@@ -122,7 +122,7 @@
     "chg_pct": -0.43,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 66.34,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00987A": {
@@ -136,7 +136,7 @@
     "chg_pct": 0.0,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 29.53,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00994A": {
@@ -150,7 +150,7 @@
     "chg_pct": 0.36,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 38.07,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00996A": {
@@ -164,7 +164,7 @@
     "chg_pct": -0.39,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 39.31,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00400A": {
@@ -178,7 +178,7 @@
     "chg_pct": 0.08,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 180.47,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "00401A": {
@@ -192,7 +192,7 @@
     "chg_pct": 0.25,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 30.65,
+    "aum_billion": 0,
     "is_benchmark": false
   },
   "0050": {
@@ -206,7 +206,7 @@
     "chg_pct": 3.39,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 16612.06,
+    "aum_billion": 0,
     "is_benchmark": true
   },
   "009816": {
@@ -220,7 +220,7 @@
     "chg_pct": 2.33,
     "nav": 0,
     "premium_pct": 0,
-    "aum_billion": 1030.7,
+    "aum_billion": 0,
     "is_benchmark": true
   }
 }
