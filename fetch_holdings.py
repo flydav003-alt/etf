@@ -146,6 +146,8 @@ def init_db():
         "ALTER TABLE etf_prices ADD COLUMN nav         REAL DEFAULT 0",
         "ALTER TABLE etf_prices ADD COLUMN premium_pct REAL DEFAULT 0",
         "ALTER TABLE etf_prices ADD COLUMN aum_billion REAL DEFAULT 0",
+        # 除息防呆：同日 ≥5 檔 ETF 對同一股票同步減碼 → 標記為除息非主動賣出
+        "ALTER TABLE holdings_changes ADD COLUMN is_dividend INTEGER DEFAULT 0",
     ]
     for sql in migrations:
         try:
@@ -687,6 +689,54 @@ def save_holdings(etf_code: str, trade_date: str,
 
 
 # ══════════════════════════════════════════════════════════
+# 8b. 補抓 close_price=0 的持股（TWSE/TPEx 有時部分股票回傳空值）
+# ══════════════════════════════════════════════════════════
+def reprice_zero_holdings(trade_date: str):
+    """
+    對 daily_holdings 中 close_price=0 的持股，
+    重新抓一次 TWSE + TPEx 收盤價並更新 DB。
+    這樣 detect_changes 算出的 amount_change 才會正確。
+    """
+    conn = sqlite3.connect(DB_PATH)
+    missing = pd.read_sql("""
+        SELECT DISTINCT stock_code FROM daily_holdings
+        WHERE trade_date = ? AND close_price = 0 AND stock_code != 'CASH'
+    """, conn, params=[trade_date])
+    conn.close()
+
+    if missing.empty:
+        log.info("✓ 所有持股均有收盤價，無需補抓")
+        return
+
+    miss_codes = set(missing['stock_code'].tolist())
+    log.info(f"  補抓 {len(miss_codes)} 支缺收盤價的股票：{sorted(miss_codes)}")
+
+    prices = fetch_stock_close_prices(miss_codes)
+    if not prices:
+        log.warning("  補抓收盤價：無結果，跳過")
+        return
+
+    conn = sqlite3.connect(DB_PATH)
+    updated = 0
+    for code, price in prices.items():
+        if price <= 0:
+            continue
+        conn.execute("""
+            UPDATE daily_holdings
+            SET close_price = ?,
+                amount_est  = shares * ?
+            WHERE trade_date = ? AND stock_code = ? AND close_price = 0
+        """, (price, price, trade_date, code))
+        updated += conn.total_changes
+    conn.commit()
+    conn.close()
+
+    still_missing = len(miss_codes) - len(prices)
+    log.info(f"✓ 補價完成：更新 {len(prices)} 支，仍缺 {still_missing} 支"
+             f"（可能是未上市/下市/非台股）")
+
+
+# ══════════════════════════════════════════════════════════
 # 9. 存入 ETF 今日價格
 # ══════════════════════════════════════════════════════════
 def save_etf_prices_today(trade_date: str,
@@ -728,6 +778,8 @@ def save_etf_prices_today(trade_date: str,
 # ══════════════════════════════════════════════════════════
 # 10. 偵測今昨持股變化
 # ══════════════════════════════════════════════════════════
+DIVIDEND_ETF_THRESHOLD = 5  # 同日同股 ≥ 這個數量的 ETF 同步減碼 → 視為除息
+
 def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
     conn = sqlite3.connect(DB_PATH)
 
@@ -736,8 +788,8 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
         conn, params=[trade_date]
     )
 
-    # ★ 修正：不靠傳入的 yesterday，直接查 DB 裡最近一個有資料的交易日
-    # 這樣週一也能正確找到上週五，不受週末計算邏輯影響
+    # 不靠傳入的 yesterday，直接查 DB 裡最近一個有資料的交易日
+    # 這樣週一也能正確找到上週五
     prev_dates = pd.read_sql("""
         SELECT DISTINCT trade_date FROM daily_holdings
         WHERE trade_date < ?
@@ -757,6 +809,7 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
         "SELECT * FROM daily_holdings WHERE trade_date=?",
         conn, params=[prev_date]
     )
+    conn.close()
 
     merged = pd.merge(
         df_t[['etf_code','stock_code','stock_name','weight_pct','shares','close_price']],
@@ -788,21 +841,40 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
             'shares_change': round(shares_chg, 0),
             'close_price':   price,
             'amount_change': round(shares_chg * price, 0),
+            'is_dividend':   0,  # 預設非除息，下面再標記
         })
 
-    if changes:
-        df_c = pd.DataFrame(changes)
-        # 先刪今天舊紀錄,避免重跑時 UNIQUE constraint 衝突
-        conn.execute(
-            "DELETE FROM holdings_changes WHERE trade_date = ?", (trade_date,)
-        )
-        conn.commit()
-        df_c.to_sql('holdings_changes', conn, if_exists='append', index=False, method='multi')
-        conn.close()
-        log.info(f"✓ 偵測到 {len(df_c)} 筆持股變化")
-        return df_c
+    if not changes:
+        return pd.DataFrame()
 
+    df_c = pd.DataFrame(changes)
+
+    # ── 除息防呆：同日同一股票，DECREASE/FULL_SELL 的 ETF 數 ≥ 閾值 → 標記除息 ──
+    sell_actions = {'DECREASE', 'FULL_SELL'}
+    sell_counts = (
+        df_c[df_c['action'].isin(sell_actions)]
+        .groupby('stock_code')['etf_code']
+        .nunique()
+    )
+    dividend_stocks = set(sell_counts[sell_counts >= DIVIDEND_ETF_THRESHOLD].index)
+    if dividend_stocks:
+        df_c.loc[
+            df_c['stock_code'].isin(dividend_stocks) &
+            df_c['action'].isin(sell_actions),
+            'is_dividend'
+        ] = 1
+        log.info(f"  ⚠ 除息防呆：標記 {len(dividend_stocks)} 支股票"
+                 f"（{sorted(dividend_stocks)}）共 "
+                 f"{(df_c['is_dividend']==1).sum()} 筆為除息，不計入賣出排行")
+
+    # 先刪今天舊紀錄，避免重跑時 UNIQUE constraint 衝突
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM holdings_changes WHERE trade_date = ?", (trade_date,))
+    conn.commit()
+    df_c.to_sql('holdings_changes', conn, if_exists='append', index=False, method='multi')
     conn.close()
+    log.info(f"✓ 偵測到 {len(df_c)} 筆持股變化（除息標記 {(df_c['is_dividend']==1).sum()} 筆）")
+    return df_c
     return pd.DataFrame()
 
 
@@ -996,7 +1068,16 @@ def export_json(trade_date: str,
     _export_price_history()
 
     if not df_changes.empty:
-        buy = (df_changes[df_changes['amount_change'] > 0]
+        # 確保 is_dividend 欄位存在（舊版 df_changes 可能沒有）
+        if 'is_dividend' not in df_changes.columns:
+            df_changes['is_dividend'] = 0
+
+        # 買入排行：排除除息標記的條目
+        df_buy = df_changes[
+            (df_changes['amount_change'] > 0) &
+            (df_changes['is_dividend'] == 0)
+        ]
+        buy = (df_buy
                .groupby(['stock_code','stock_name'])
                .agg(etf_count=('etf_code','nunique'),
                     value=('amount_change','sum'),
@@ -1005,7 +1086,12 @@ def export_json(trade_date: str,
                .reset_index().head(20).to_dict('records'))
         _wj('data/buy_ranking.json', buy)
 
-        sell = (df_changes[df_changes['amount_change'] < 0]
+        # 賣出排行：排除除息標記的條目（除息不是主動賣出）
+        df_sell = df_changes[
+            (df_changes['amount_change'] < 0) &
+            (df_changes['is_dividend'] == 0)
+        ]
+        sell = (df_sell
                 .groupby(['stock_code','stock_name'])
                 .agg(etf_count=('etf_code','nunique'),
                      value=('amount_change','sum'),
@@ -1014,6 +1100,7 @@ def export_json(trade_date: str,
                 .reset_index().head(20).to_dict('records'))
         _wj('data/sell_ranking.json', sell)
 
+        # daily_changes.json 保留所有記錄（含除息），前端自行判斷顯示
         df_changes.to_json('data/daily_changes.json', orient='records', force_ascii=False)
     else:
         # 第一天：用共識持股填入買入排行
@@ -1182,6 +1269,11 @@ def run(target_date: str | None = None):
         if etf_h:
             total_saved += save_holdings(etf_code, today_str, etf_h, stock_prices)
     log.info(f"✓ 儲存 {total_saved} 筆持股")
+
+    # 補抓 close_price=0 的持股（TWSE/TPEx 有時部分股票當下回傳空值）
+    # 必須在 detect_changes 之前執行，才能確保 amount_change 計算正確
+    log.info("補抓缺收盤價的持股...")
+    reprice_zero_holdings(today_str)
 
     # 抓 ETF 今日收盤價、NAV、規模（NAV和AUM合併一次呼叫）
     etf_prices_today = fetch_etf_prices_today(today_str)
