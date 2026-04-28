@@ -1092,25 +1092,24 @@ function renderDonuts(){
     const cid='dc_'+ticker.replace(/\W/g,'_');
     const realData=!isWatch&&APP.holdings[ticker]&&APP.holdings[ticker].holdings;
 
-    // ── 建立 slices（圓餅圖用：前9大+其他，保持圖形清晰）──
-    let slices, legendSlices, totalCount;
+    // ── 建立 coloredSlices：圓餅圖和legend共用同一個陣列 ──
+    // 關鍵：顏色由 index 決定，兩者必須用完全相同的陣列
+    let coloredSlices, totalCount, extraCount;
+
     if(realData&&realData.length){
-      totalCount=realData.length;
-      // 圓餅圖：前9大持股 + 其他（合計10塊，圖形清晰）
-      const chartTop=realData.slice(0,9);
-      const chartSum=chartTop.reduce((s,h)=>s+(h.weight_pct||0),0);
-      const otherPct=Math.max(0,100-chartSum);
-      slices=[
-        ...chartTop.map(h=>({name:h.stock_name||h.stock_code,w:+(h.weight_pct||0)})),
-        ...(otherPct>0.1?[{name:'其他',w:+otherPct.toFixed(1)}]:[]),
+      totalCount = realData.length;
+      // 前9大持股（有具體顏色）+ 其他（最後一色）
+      const top9    = realData.slice(0,9);
+      const top9sum = top9.reduce((s,h)=>s+(h.weight_pct||0),0);
+      const otherPct= Math.max(0, +(100-top9sum).toFixed(1));
+      coloredSlices = [
+        ...top9.map(h=>({name:h.stock_name||h.stock_code, w:+(h.weight_pct||0)})),
+        ...(otherPct>0.1 ? [{name:'其他', w:otherPct}] : []),
       ];
-      // legend列表：前20筆完整資料（可展開，超過20筆顯示提示）
-      legendSlices=realData.slice(0,20).map(h=>({
-        name:h.stock_name||h.stock_code,
-        w:+(h.weight_pct||0)
-      }));
+      // legend 展開後額外顯示的資料（6~20名，純文字列表，不對應圓餅顏色）
+      extraCount = totalCount > 9 ? Math.min(totalCount, 20) - 9 : 0;
     } else {
-      totalCount=0;
+      totalCount = 0; extraCount = 0;
       const tops=[
         {name:'台積電',w:+(15+Math.random()*18).toFixed(1)},
         {name:'廣達',  w:+(4+Math.random()*7).toFixed(1)},
@@ -1119,48 +1118,62 @@ function renderDonuts(){
         {name:'聯發科',w:+(3+Math.random()*6).toFixed(1)},
       ];
       const sum=tops.reduce((s,x)=>s+x.w,0);
-      slices=[...tops,{name:'其他',w:+Math.max(100-sum,10).toFixed(1)}];
-      legendSlices=slices;
+      coloredSlices=[...tops,{name:'其他',w:+Math.max(100-sum,10).toFixed(1)}];
     }
 
     const card=document.createElement('div');
     card.className='donut-card'+(isWatch?' is-watch':'');
     card.style.animationDelay=`${di*0.04}s`;
 
-    // ── legend：前5筆固定顯示，其餘可展開（最多顯示20筆）──
-    const show5=legendSlices.slice(0,5);
-    const rest =legendSlices.slice(5);  // 最多15筆（總計20）
+    // ── legend：前5用coloredSlices（顏色對應圓餅），展開後補充6~20名 ──
+    const show5 = coloredSlices.slice(0,5);
+    // 6~9名也有圓餅顏色，10+（其他）只有一個合計色
+    const rest9 = coloredSlices.slice(5);   // 6~9名 + 其他（有顏色）
+    // 額外的10~20名：只顯示文字，無對應圓餅顏色，用灰點區分
+    const extraSlices = (realData&&extraCount>0)
+      ? realData.slice(9, Math.min(totalCount,20)).map(h=>({
+          name:h.stock_name||h.stock_code, w:+(h.weight_pct||0)
+        }))
+      : [];
     const restId=`rest_${cid}`;
-    // 超過20筆的顯示提示文字
-    const extraCount=totalCount>20?totalCount-20:0;
 
+    // legend前5（顏色完全對應圓餅）
     const legendHtml=show5.map((s,i)=>`
       <div class="legend-row">
-        <span class="legend-dot" style="background:${DONUT_COLORS[i%DONUT_COLORS.length]}"></span>
+        <span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span>
         <span style="font-size:11px">${s.name}</span>
         <span class="legend-pct">${s.w.toFixed(1)}%</span>
       </div>`).join('');
 
-    const restHtml=rest.length?`
+    // 展開後：6~9名有顏色 + 10~20名無顏色 + 超過20提示
+    const hasRest = rest9.length > 0 || extraSlices.length > 0;
+    const restHtml = hasRest ? `
       <div id="${restId}" style="display:none;flex-direction:column;gap:4px;margin-top:4px;">
-        ${rest.map((s,i)=>`
+        ${rest9.map((s,i)=>`
           <div class="legend-row">
-            <span class="legend-dot" style="background:${DONUT_COLORS[(i+5)%DONUT_COLORS.length]}"></span>
+            <span class="legend-dot" style="background:${DONUT_COLORS[i+5]}"></span>
             <span style="font-size:11px">${s.name}</span>
             <span class="legend-pct">${s.w.toFixed(1)}%</span>
           </div>`).join('')}
-        ${extraCount>0?`
+        ${extraSlices.length?`
+          <div style="font-size:9px;color:var(--sumi-45);padding:3px 0 2px;margin-top:2px;letter-spacing:0.5px;">─ 以下合計於「其他」 ─</div>
+          ${extraSlices.map(s=>`
+            <div class="legend-row">
+              <span class="legend-dot" style="background:rgba(28,18,9,0.2)"></span>
+              <span style="font-size:11px;color:var(--sumi-60)">${s.name}</span>
+              <span class="legend-pct" style="color:var(--sumi-45)">${s.w.toFixed(1)}%</span>
+            </div>`).join('')}`:''}
+        ${totalCount>20?`
           <div style="font-size:10px;color:var(--sumi-45);padding:4px 0;border-top:1px solid var(--border);margin-top:2px;">
-            ＋ 另有 ${extraCount} 檔（完整清單請至投信官網）
+            ＋ 另有 ${totalCount-20} 檔，完整清單請至投信官網
           </div>`:''}
       </div>
       <div onclick="toggleRestHoldings('${restId}',this)"
         style="font-size:10px;color:var(--aizumi-dk);cursor:pointer;margin-top:5px;
                display:flex;align-items:center;gap:4px;font-family:var(--font-mono);
                padding:3px 0;border-top:1px solid var(--border);">
-        <span class="toggle-label">＋ 展開全部（共 ${legendSlices.length} 檔）</span>
-      </div>`
-      :(totalCount>5?`<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">共 ${totalCount} 檔成分</div>`:'');
+        <span class="toggle-label">＋ 展開（共 ${Math.min(totalCount||coloredSlices.length,20)} 檔）</span>
+      </div>` : (totalCount>5?`<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">共 ${totalCount} 檔成分</div>`:'');
 
     card.innerHTML=`
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
@@ -1173,7 +1186,7 @@ function renderDonuts(){
       <div class="donut-wrap">
         <canvas id="${cid}" width="120" height="120"></canvas>
         <div class="donut-center">
-          <div class="donut-center-val">${totalCount||slices.length}</div>
+          <div class="donut-center-val">${totalCount||coloredSlices.length}</div>
           <div class="donut-center-sub">成分</div>
         </div>
       </div>
@@ -1183,15 +1196,14 @@ function renderDonuts(){
       </div>`;
     grid.appendChild(card);
 
-    // ── 圓餅圖：顏色順序與legend完全一致 ────────────────
+    // ── 圓餅圖用 coloredSlices，與 legend 顏色 100% 一致 ──
     new Chart(document.getElementById(cid),{
       type:'doughnut',
       data:{
-        labels:slices.map(s=>s.name),
+        labels:coloredSlices.map(s=>s.name),
         datasets:[{
-          data:slices.map(s=>s.w),
-          // 關鍵：直接用 slices 的 index 取色，與legend保持一致
-          backgroundColor:slices.map((_,i)=>DONUT_COLORS[i%DONUT_COLORS.length]),
+          data:coloredSlices.map(s=>s.w),
+          backgroundColor:coloredSlices.map((_,i)=>DONUT_COLORS[i]),
           borderColor:'#fff8e8',borderWidth:2,
           hoverBorderColor:'#e8dfc0',hoverBorderWidth:3,
         }]
@@ -1465,44 +1477,39 @@ function renderWatchChart(){
   if(!watchlist.length)return;
   const clrs=['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
 
-  // ★ 改用累積報酬率(%)，解決不同ETF價格差異大導致圖形失衡
+  // 13週標籤（約3個月）
   const labels=Array.from({length:13},(_,i)=>{
     const d=new Date(); d.setDate(d.getDate()-84+i*7);
     return `${d.getMonth()+1}/${d.getDate()}`;
   });
 
   const datasets=watchlist.slice(0,8).map((ticker,i)=>{
-    // 用月績效真實資料（若有），否則模擬
-    const perfData=APP.performance[ticker];
-    let returnPct=0;
-    const data=labels.map((lbl,idx)=>{
-      // 模擬週報酬：從-2%到+2%隨機波動，累積
-      const weekRet=(Math.random()-0.47)*0.8;
-      returnPct+=weekRet;
-      return +returnPct.toFixed(2);
+    // 模擬週報酬：±1.5%波動，累積報酬率，起點=0
+    let cum=0;
+    const data=labels.map(()=>{
+      // 台股近期偏多，模擬略正偏的隨機漫步
+      cum += (Math.random()-0.44) * 3;
+      return +cum.toFixed(2);
     });
-    // 讓起點歸零
+    // 起點強制歸零
     const base=data[0];
-    const normalized=data.map(v=>+(v-base).toFixed(2));
     return {
       label:ticker,
-      data:normalized,
+      data:data.map(v=>+(v-base).toFixed(2)),
       borderColor:clrs[i%clrs.length],
       backgroundColor:'transparent',
-      borderWidth:2,pointRadius:0,tension:0.45,
+      borderWidth:2,pointRadius:0,tension:0.4,
     };
   });
 
-  // 加一條 0% 基準線
+  // 0% 基準虛線
   datasets.push({
-    label:'基準線',
+    label:'_baseline',
     data:labels.map(()=>0),
-    borderColor:'rgba(28,18,9,0.15)',
+    borderColor:'rgba(28,18,9,0.18)',
     backgroundColor:'transparent',
-    borderWidth:1,
-    borderDash:[4,4],
-    pointRadius:0,
-    tension:0,
+    borderWidth:1,borderDash:[5,4],
+    pointRadius:0,tension:0,
   });
 
   watchChartInst=new Chart(document.getElementById('watchChart'),{
@@ -1510,26 +1517,38 @@ function renderWatchChart(){
     data:{labels,datasets},
     options:{
       responsive:true,
+      maintainAspectRatio:true,
+      aspectRatio:2.4,          // ← 控制圖形高度比例，不會太高也不會壓死
       plugins:{
         legend:{labels:{
-          color:'rgba(28,18,9,0.55)',font:{size:11,family:'DM Mono'},
+          color:'rgba(28,18,9,0.55)',
+          font:{size:11,family:'DM Mono'},
           boxWidth:12,padding:14,
-          // 基準線不顯示在圖例
-          filter:(item)=>item.text!=='基準線'
+          filter:item=>item.text!=='_baseline'
         }},
         tooltip:{
           backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',
-          bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',
-          borderWidth:1,padding:10,
-          callbacks:{label:ctx=>ctx.dataset.label!=='基準線'?`${ctx.dataset.label}: ${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(2)}%`:''}
+          bodyColor:'rgba(240,234,210,0.75)',
+          borderColor:'rgba(200,181,96,0.3)',borderWidth:1,padding:10,
+          callbacks:{
+            label:ctx=>{
+              if(ctx.dataset.label==='_baseline')return null;
+              const v=ctx.parsed.y;
+              return `${ctx.dataset.label}: ${v>0?'+':''}${v.toFixed(1)}%`;
+            }
+          }
         }
       },
       scales:{
-        x:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}},
+        x:{
+          ticks:{color:'rgba(28,18,9,0.45)',font:{size:10},maxTicksLimit:7},
+          grid:{color:'rgba(200,181,96,0.1)'}
+        },
         y:{
           ticks:{
             color:'rgba(28,18,9,0.45)',font:{size:10},
-            callback:v=>v+'%'
+            // ★ 修正浮點數顯示問題
+            callback:v=>(+v).toFixed(1)+'%'
           },
           grid:{color:'rgba(200,181,96,0.1)'}
         }
