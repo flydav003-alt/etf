@@ -7,6 +7,19 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>主動ETF追蹤儀表板</title>
+<script>
+// ★ GitHub Pages CDN 快取強制破解
+// 若 URL 沒有 v= 參數，加上今天的日期+時（每小時更新一次）
+(function(){
+  const url = new URL(location.href);
+  const now = new Date();
+  const v   = `${now.getFullYear()}${now.getMonth()}${now.getDate()}${now.getHours()}`;
+  if (!url.searchParams.get('v')) {
+    url.searchParams.set('v', v);
+    location.replace(url.toString());
+  }
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -522,6 +535,44 @@ main {
   border-top: 1px solid var(--border); margin-top: 32px;
   letter-spacing: 0.5px; line-height: 2;
 }
+
+/* ═══ 手機版響應式 ═══ */
+@media (max-width: 600px) {
+  /* Header 手機版：隱藏副標題和日期pill */
+  .logo-sub          { display: none; }
+  #dataPill          { display: none !important; }
+  .hide-mobile       { display: none; }
+
+  /* Logo 縮小 */
+  .logo-stamp        { font-size: 8px; padding: 3px 7px; }
+  .logo-name         { font-size: 13px; }
+
+  /* 時鐘縮小 */
+  .clock             { font-size: 11px; }
+  #updatePill        { padding: 3px 7px; }
+
+  /* Header 右側間距縮小 */
+  .header-right      { gap: 8px; }
+  header             { padding: 0 12px; }
+
+  /* 主要內容縮小 padding */
+  main               { padding: 14px 12px 40px; }
+
+  /* KPI 卡片單欄 */
+  .kpi-row           { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-value         { font-size: 20px; }
+
+  /* 表格縮小字體 */
+  .etf-table         { font-size: 11px; }
+  .etf-table th,
+  .etf-table td      { padding: 7px 8px; }
+
+  /* 兩欄變單欄 */
+  .two-col           { grid-template-columns: 1fr; }
+
+  /* 甜甜圈縮小 */
+  .donut-grid        { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
+}
 </style>
 </head>
 <body>
@@ -532,12 +583,12 @@ main {
     <div class="logo-stamp">主動 ETF</div>
     <div>
       <div class="logo-name">主動ETF追蹤儀表板</div>
-      <div class="logo-sub">TAIWAN ACTIVE ETF TRACKER — 14 FUNDS</div>
+      <div class="logo-sub" id="logoSub">TAIWAN ACTIVE ETF TRACKER — 14 FUNDS</div>
     </div>
   </div>
   <div class="header-right">
     <div class="live-pill" id="dataPill" style="display:none"></div>
-    <div class="live-pill"><span class="live-dot"></span>每日收盤後更新</div>
+    <div class="live-pill" id="updatePill"><span class="live-dot"></span><span class="hide-mobile">每日收盤後更新</span></div>
     <div class="clock" id="clockEl">──:──:──</div>
   </div>
 </header>
@@ -1554,8 +1605,6 @@ function renderWatchChart(){
   if(watchChartInst){ watchChartInst.destroy(); watchChartInst=null; }
   const canvas  = document.getElementById('watchChart');
   const emptyEl = document.getElementById('watchChartEmpty');
-  if(!watchlist.length){ canvas.style.display='none'; return; }
-  canvas.style.display='block';
 
   const days = PERIOD_DAYS[watchPeriod] || 90;
   const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
@@ -1565,14 +1614,11 @@ function renderWatchChart(){
   watchlist.slice(0,8).forEach((ticker,i)=>{
     const series = calcCumReturn(ticker, days);
     if (series) {
-      validDatasets.push({
-        ticker, series,
-        color: clrs[i%clrs.length],
-      });
+      validDatasets.push({ ticker, series, color: clrs[i%clrs.length] });
     }
   });
 
-  // ── 加 0050 基準線 ───────────────────────────────────────
+  // ── 0050 基準線（永遠顯示，不管有沒有自選）────────────
   const bench0050 = calcCumReturn('0050', days);
 
   // ── 若完全無資料，顯示提示 ───────────────────────────────
@@ -1582,6 +1628,7 @@ function renderWatchChart(){
     return;
   }
   if(emptyEl) emptyEl.style.display='none';
+  canvas.style.display='block';
 
   // ── 對齊日期：取所有序列共有的日期範圍 ──────────────────
   // 用 0050 或第一個有資料的 ETF 的日期序列作為 X 軸基準
