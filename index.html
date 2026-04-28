@@ -671,6 +671,25 @@ main {
     <span class="search-icon">🔍</span>
     <input class="search-input" id="changeSearch" placeholder="搜尋 ETF 代號 / 成分股名稱 / 股票代號…" oninput="filterChanges()">
   </div>
+  <!-- 排序按鈕 -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+    <span style="font-size:11px;color:var(--sumi-45);font-family:var(--font-mono);">排序：</span>
+    <button id="chgSortEtf"    onclick="setChangeSort('etf')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--sumi);background:var(--sumi);color:var(--kuri);cursor:pointer;transition:all .15s;">
+      依 ETF
+    </button>
+    <button id="chgSortAmount" onclick="setChangeSort('amount')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--border);background:var(--kiji);color:var(--sumi-60);cursor:pointer;transition:all .15s;">
+      依金額
+    </button>
+    <button id="chgSortAction" onclick="setChangeSort('action')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--border);background:var(--kiji);color:var(--sumi-60);cursor:pointer;transition:all .15s;">
+      依動作
+    </button>
+  </div>
   <div class="panel">
     <div class="panel-header">
       <span>換股明細 — 今日異動</span>
@@ -1145,9 +1164,69 @@ function renderRankings() {
 //  P2: 每日換股紀錄
 // ═══════════════════════════════════════════════════════════
 let _allChanges = [];
+let changeSort  = 'etf';  // 'etf' | 'amount' | 'action'
+
+// 動作排序優先序：新買入 > 加碼 > 減碼 > 完全賣出
+const ACTION_ORDER = { NEW_BUY: 0, INCREASE: 1, DECREASE: 2, FULL_SELL: 3 };
+
+function _sortChanges(data) {
+  const arr = [...data];
+  if (changeSort === 'etf') {
+    // 依 ETF 代號字母序，同 ETF 內再依金額絕對值降序
+    arr.sort((a, b) => {
+      const ec = (a.etf_code||'').localeCompare(b.etf_code||'');
+      if (ec !== 0) return ec;
+      return Math.abs(b.amount_change||0) - Math.abs(a.amount_change||0);
+    });
+  } else if (changeSort === 'amount') {
+    // 有金額的依絕對值降序，無金額（0）排最後
+    arr.sort((a, b) => {
+      const aa = Math.abs(a.amount_change||0);
+      const ba = Math.abs(b.amount_change||0);
+      if (aa === 0 && ba === 0) return 0;
+      if (aa === 0) return 1;
+      if (ba === 0) return -1;
+      return ba - aa;
+    });
+  } else if (changeSort === 'action') {
+    // 依動作分組（新買入→加碼→減碼→完全賣出），同組內依金額絕對值降序
+    arr.sort((a, b) => {
+      const ao = ACTION_ORDER[a.action] ?? 9;
+      const bo = ACTION_ORDER[b.action] ?? 9;
+      if (ao !== bo) return ao - bo;
+      return Math.abs(b.amount_change||0) - Math.abs(a.amount_change||0);
+    });
+  }
+  return arr;
+}
+
+window.setChangeSort = function(mode) {
+  changeSort = mode;
+  const btns = {
+    etf:    document.getElementById('chgSortEtf'),
+    amount: document.getElementById('chgSortAmount'),
+    action: document.getElementById('chgSortAction'),
+  };
+  const activeStyle   = 'background:var(--sumi);color:var(--kuri);border-color:var(--sumi);';
+  const inactiveStyle = 'background:var(--kiji);color:var(--sumi-60);border-color:var(--border);';
+  Object.entries(btns).forEach(([k, btn]) => {
+    if (btn) btn.style.cssText = (k === mode) ? activeStyle : inactiveStyle;
+  });
+  // 保留目前搜尋關鍵字，重新渲染
+  const q = (document.getElementById('changeSearch')?.value || '').toLowerCase();
+  const filtered = q
+    ? _allChanges.filter(r =>
+        (r.etf_code||'').toLowerCase().includes(q) ||
+        (ETF_META[r.etf_code]||'').includes(q) ||
+        (r.stock_name||'').includes(q) ||
+        (r.stock_code||'').includes(q))
+    : _allChanges;
+  _renderChangeTable(_sortChanges(filtered));
+};
+
 function renderChanges(data) {
   _allChanges = data;
-  _renderChangeTable(data);
+  _renderChangeTable(_sortChanges(data));
   updateKpi();
 }
 function _renderChangeTable(data) {
@@ -1177,12 +1256,13 @@ function _renderChangeTable(data) {
 }
 window.filterChanges = function() {
   const q = document.getElementById('changeSearch').value.toLowerCase();
-  _renderChangeTable(_allChanges.filter(r =>
+  const filtered = _allChanges.filter(r =>
     (r.etf_code||'').toLowerCase().includes(q) ||
     (ETF_META[r.etf_code]||'').includes(q) ||
     (r.stock_name||'').includes(q) ||
     (r.stock_code||'').includes(q)
-  ));
+  );
+  _renderChangeTable(_sortChanges(filtered));
 };
 function updateKpi() {
   const bc = APP.changes.filter(c => c.action==='NEW_BUY'||c.action==='INCREASE').length;
