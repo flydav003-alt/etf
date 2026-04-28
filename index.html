@@ -1470,7 +1470,7 @@ function renderEtfList(){
     const priceStr=r.price>0?r.price.toFixed(2):'─';
     const chgStr=r.chg!==0?fmtPct(r.chg):'─';
     const navStr=r.nav>0?r.nav.toFixed(2):'─';
-    const premStr=r.nav>0?(r.premium>0?'+':'')+r.premium.toFixed(2)+'%':'─';
+    const premStr=r.premium!==0?(r.premium>0?'+':'')+r.premium.toFixed(2)+'%':'─';
     const aumStr=r.aum>0?r.aum.toFixed(1):'─';
     return `<tr>
       <td><span class="rn ${i===0?'gold':''}">${i+1}</span></td>
