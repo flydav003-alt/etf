@@ -754,10 +754,25 @@ main {
 <div class="page" id="p-watchlist">
   <div class="section-title">自選追蹤（最多 8 檔）</div>
   <div class="watchlist-grid" id="watchlistGrid"></div>
-  <div class="section-title" style="margin-top:8px">自選 vs. 0050 近3個月走勢</div>
+
+  <div class="section-title" style="margin-top:8px">自選 vs. 0050 累積績效</div>
   <div class="panel">
-    <div class="panel-header"><span>近3個月模擬走勢</span></div>
-    <div style="padding:18px"><canvas id="watchChart" height="240"></canvas></div>
+    <div class="panel-header">
+      <span id="watchChartTitle">累積報酬率</span>
+      <div style="display:flex;gap:5px;">
+        <button class="month-btn active" id="wc_1m"  onclick="setWatchPeriod('1m')">1個月</button>
+        <button class="month-btn"        id="wc_3m"  onclick="setWatchPeriod('3m')">3個月</button>
+        <button class="month-btn"        id="wc_6m"  onclick="setWatchPeriod('6m')">6個月</button>
+        <button class="month-btn"        id="wc_1y"  onclick="setWatchPeriod('1y')">1年</button>
+      </div>
+    </div>
+    <div style="padding:16px 18px 12px">
+      <div id="watchChartEmpty" style="display:none;text-align:center;padding:40px;color:var(--sumi-45);font-size:12px;">
+        📊 尚無足夠歷史資料<br>
+        <span style="font-size:10px;font-family:var(--font-mono);margin-top:6px;display:block;">資料每日收盤後自動更新，累積後即可顯示真實走勢</span>
+      </div>
+      <canvas id="watchChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -853,7 +868,7 @@ async function loadJSON(path) {
 
 async function initData() {
   try {
-    const [summary, buyRank, sellRank, changes, holdings, etfPrices, performance] =
+    const [summary, buyRank, sellRank, changes, holdings, etfPrices, performance, priceHistory] =
       await Promise.all([
         loadJSON('data/summary.json'),
         loadJSON('data/buy_ranking.json'),
@@ -862,6 +877,7 @@ async function initData() {
         loadJSON('data/holdings.json'),
         loadJSON('data/etf_prices.json'),
         loadJSON('data/performance.json'),
+        loadJSON('data/price_history.json').catch(()=>({})),  // 不存在時不中斷
       ]);
 
     APP.isDemo = false;
@@ -869,12 +885,12 @@ async function initData() {
     APP.sellRank = sellRank||[]; APP.changes = changes||[];
     APP.holdings = holdings||{}; APP.etfPrices = etfPrices||{};
     APP.performance = performance||{};
+    APP.priceHistory = priceHistory||{};  // ← 每日收盤價歷史
 
     if (summary.active_etfs) {
       APP.etfs = summary.active_etfs.map(e=>({ticker:e.code,name:e.name,price:0,chg:0,nav:0,aum:0}));
     }
 
-    // 從 etf_prices.json 填入ETF價格
     APP.etfs = APP.etfs.map(e => {
       const p = APP.etfPrices[e.ticker] || {};
       return {...e, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0};
@@ -888,11 +904,12 @@ async function initData() {
       `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
     document.getElementById('dataPill').textContent = '資料：' + (summary.date||'');
     document.getElementById('dataPill').style.display = 'flex';
-    console.log('✓ 真實資料載入成功');
+    console.log('✓ 真實資料載入成功，價格歷史:', Object.keys(APP.priceHistory).length, '檔');
   } catch(e) {
     APP.isDemo = true;
     APP.buyRank = MOCK.buyRank; APP.sellRank = MOCK.sellRank;
     APP.changes = MOCK.changes;
+    APP.priceHistory = {};
     document.getElementById('dataPill').textContent = '⚠ Demo模式（尚無真實資料）';
     document.getElementById('dataPill').style.display = 'flex';
     document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
@@ -1447,6 +1464,41 @@ function renderEtfList(){
 //  P6: 自選ETF
 // ═══════════════════════════════════════════
 let watchChartInst=null;
+let watchPeriod='3m';  // 預設3個月
+
+// ── 從 price_history 計算指定期間的累積報酬率序列 ────────────
+function calcCumReturn(ticker, days) {
+  const history = APP.priceHistory[ticker];
+  if (!history || history.length < 2) return null;
+
+  // 取最近 days 天的資料
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutStr = cutoff.toISOString().slice(0,10);
+
+  const filtered = history.filter(d => d.date >= cutStr);
+  if (filtered.length < 2) return null;
+
+  // 以第一筆為基準，計算累積報酬率
+  const base = filtered[0].close;
+  return filtered.map(d => ({
+    date:  d.date,
+    value: +((d.close - base) / base * 100).toFixed(2),
+  }));
+}
+
+// ── 期間天數對應 ─────────────────────────────────────────────
+const PERIOD_DAYS = { '1m':30, '3m':90, '6m':180, '1y':365 };
+const PERIOD_LABEL= { '1m':'1個月', '3m':'3個月', '6m':'6個月', '1y':'1年' };
+
+window.setWatchPeriod = function(p) {
+  watchPeriod = p;
+  ['1m','3m','6m','1y'].forEach(k => {
+    const btn = document.getElementById(`wc_${k}`);
+    if (btn) btn.classList.toggle('active', k===p);
+  });
+  renderWatchChart();
+};
 
 function renderWatchlist(){
   const at=APP.etfs.map(e=>e.ticker);
@@ -1473,84 +1525,148 @@ function renderWatchlist(){
 }
 
 function renderWatchChart(){
-  if(watchChartInst)watchChartInst.destroy();
-  if(!watchlist.length)return;
-  const clrs=['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
+  if(watchChartInst){ watchChartInst.destroy(); watchChartInst=null; }
+  const canvas  = document.getElementById('watchChart');
+  const emptyEl = document.getElementById('watchChartEmpty');
+  if(!watchlist.length){ canvas.style.display='none'; return; }
+  canvas.style.display='block';
 
-  // 13週標籤（約3個月）
-  const labels=Array.from({length:13},(_,i)=>{
-    const d=new Date(); d.setDate(d.getDate()-84+i*7);
-    return `${d.getMonth()+1}/${d.getDate()}`;
+  const days = PERIOD_DAYS[watchPeriod] || 90;
+  const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
+
+  // ── 建立各自選ETF的資料序列 ──────────────────────────────
+  const validDatasets = [];
+  watchlist.slice(0,8).forEach((ticker,i)=>{
+    const series = calcCumReturn(ticker, days);
+    if (series) {
+      validDatasets.push({
+        ticker, series,
+        color: clrs[i%clrs.length],
+      });
+    }
   });
 
-  const datasets=watchlist.slice(0,8).map((ticker,i)=>{
-    // 模擬週報酬：±1.5%波動，累積報酬率，起點=0
-    let cum=0;
-    const data=labels.map(()=>{
-      // 台股近期偏多，模擬略正偏的隨機漫步
-      cum += (Math.random()-0.44) * 3;
-      return +cum.toFixed(2);
+  // ── 加 0050 基準線 ───────────────────────────────────────
+  const bench0050 = calcCumReturn('0050', days);
+
+  // ── 若完全無資料，顯示提示 ───────────────────────────────
+  if (validDatasets.length === 0 && !bench0050) {
+    if(emptyEl) emptyEl.style.display='block';
+    canvas.style.display='none';
+    return;
+  }
+  if(emptyEl) emptyEl.style.display='none';
+
+  // ── 對齊日期：取所有序列共有的日期範圍 ──────────────────
+  // 用 0050 或第一個有資料的 ETF 的日期序列作為 X 軸基準
+  const baseSeries = bench0050 || validDatasets[0]?.series || [];
+  const labels = baseSeries.map(d=>{
+    // 顯示格式：1個月用 M/D，較長用 YY/MM
+    const dt = new Date(d.date);
+    return days <= 60
+      ? `${dt.getMonth()+1}/${dt.getDate()}`
+      : `${dt.getFullYear().toString().slice(2)}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+  });
+
+  // 工具函數：把任意序列對應到 baseSeries 的日期（最近鄰插值）
+  function alignToDates(series) {
+    const map = {};
+    series.forEach(d => map[d.date] = d.value);
+    return baseSeries.map(d => {
+      if (map[d.date] !== undefined) return map[d.date];
+      // 找最近的日期
+      const closest = series.reduce((best, s) =>
+        Math.abs(new Date(s.date)-new Date(d.date)) < Math.abs(new Date(best.date)-new Date(d.date)) ? s : best
+      );
+      return closest ? closest.value : null;
     });
-    // 起點強制歸零
-    const base=data[0];
-    return {
-      label:ticker,
-      data:data.map(v=>+(v-base).toFixed(2)),
-      borderColor:clrs[i%clrs.length],
-      backgroundColor:'transparent',
-      borderWidth:2,pointRadius:0,tension:0.4,
-    };
+  }
+
+  const datasets = [];
+
+  // 自選ETF線條
+  validDatasets.forEach(({ticker, series, color}) => {
+    datasets.push({
+      label: ticker,
+      data: alignToDates(series),
+      borderColor: color,
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.3,
+      spanGaps: true,
+    });
   });
 
-  // 0% 基準虛線
+  // 0050 基準線（灰色虛線，較細）
+  if (bench0050) {
+    datasets.push({
+      label: '0050基準',
+      data: alignToDates(bench0050),
+      borderColor: 'rgba(28,18,9,0.45)',
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderDash: [5,3],
+      pointRadius: 0,
+      tension: 0.3,
+      spanGaps: true,
+    });
+  }
+
+  // 0% 水平基準
   datasets.push({
-    label:'_baseline',
-    data:labels.map(()=>0),
-    borderColor:'rgba(28,18,9,0.18)',
-    backgroundColor:'transparent',
-    borderWidth:1,borderDash:[5,4],
-    pointRadius:0,tension:0,
+    label: '_zero',
+    data: labels.map(()=>0),
+    borderColor: 'rgba(28,18,9,0.12)',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderDash: [3,3],
+    pointRadius: 0,
+    tension: 0,
   });
 
-  watchChartInst=new Chart(document.getElementById('watchChart'),{
+  watchChartInst = new Chart(canvas, {
     type:'line',
-    data:{labels,datasets},
+    data:{ labels, datasets },
     options:{
-      responsive:true,
-      maintainAspectRatio:true,
-      aspectRatio:2.4,          // ← 控制圖形高度比例，不會太高也不會壓死
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2.2,
       plugins:{
-        legend:{labels:{
+        legend:{ labels:{
           color:'rgba(28,18,9,0.55)',
           font:{size:11,family:'DM Mono'},
-          boxWidth:12,padding:14,
-          filter:item=>item.text!=='_baseline'
+          boxWidth:12, padding:14,
+          filter: item => item.text !== '_zero',
         }},
         tooltip:{
-          backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',
+          backgroundColor:'rgba(28,18,9,0.9)',
+          titleColor:'#f0ead2',
           bodyColor:'rgba(240,234,210,0.75)',
-          borderColor:'rgba(200,181,96,0.3)',borderWidth:1,padding:10,
+          borderColor:'rgba(200,181,96,0.3)',
+          borderWidth:1, padding:10,
           callbacks:{
-            label:ctx=>{
-              if(ctx.dataset.label==='_baseline')return null;
-              const v=ctx.parsed.y;
-              return `${ctx.dataset.label}: ${v>0?'+':''}${v.toFixed(1)}%`;
+            label: ctx => {
+              if(ctx.dataset.label==='_zero') return null;
+              const v = ctx.parsed.y;
+              if(v===null||v===undefined) return null;
+              const prefix = ctx.dataset.label==='0050基準'?'0050: ':'';
+              return `${prefix}${ctx.dataset.label !== '0050基準' ? ctx.dataset.label+': ' : ''}${v>0?'+':''}${(+v).toFixed(2)}%`;
             }
           }
         }
       },
       scales:{
         x:{
-          ticks:{color:'rgba(28,18,9,0.45)',font:{size:10},maxTicksLimit:7},
-          grid:{color:'rgba(200,181,96,0.1)'}
+          ticks:{ color:'rgba(28,18,9,0.45)', font:{size:10}, maxTicksLimit:8 },
+          grid:{ color:'rgba(200,181,96,0.1)' }
         },
         y:{
           ticks:{
-            color:'rgba(28,18,9,0.45)',font:{size:10},
-            // ★ 修正浮點數顯示問題
-            callback:v=>(+v).toFixed(1)+'%'
+            color:'rgba(28,18,9,0.45)', font:{size:10},
+            callback: v => (Number.isFinite(+v) ? (+v).toFixed(1) : v) + '%'
           },
-          grid:{color:'rgba(200,181,96,0.1)'}
+          grid:{ color:'rgba(200,181,96,0.1)' }
         }
       }
     }
