@@ -3,13 +3,13 @@
     "stock_code": "6805",
     "stock_name": "富世達",
     "etf_count": 11,
-    "value": 5969056915.0
+    "value": 6452192070.0
   },
   {
     "stock_code": "2330",
     "stock_name": "台積電",
     "etf_count": 9,
-    "value": 31627872815.0
+    "value": 32785872735.0
   },
   {
     "stock_code": "6223",
@@ -21,61 +21,19 @@
     "stock_code": "3665",
     "stock_name": "貿聯-KY",
     "etf_count": 9,
-    "value": 16247095760.0
+    "value": 15453837920.0
   },
   {
     "stock_code": "2345",
     "stock_name": "智邦",
     "etf_count": 8,
-    "value": 16929540000.0
+    "value": 17206425000.0
   },
   {
     "stock_code": "3017",
     "stock_name": "奇鋐",
     "etf_count": 8,
-    "value": 16431627500.0
-  },
-  {
-    "stock_code": "2454",
-    "stock_name": "聯發科",
-    "etf_count": 7,
-    "value": 13119780000.0
-  },
-  {
-    "stock_code": "2449",
-    "stock_name": "京元電子",
-    "etf_count": 7,
-    "value": 3628625000.0
-  },
-  {
-    "stock_code": "3653",
-    "stock_name": "健策",
-    "etf_count": 7,
-    "value": 14270780370.0
-  },
-  {
-    "stock_code": "3037",
-    "stock_name": "欣興",
-    "etf_count": 7,
-    "value": 11521360790.0
-  },
-  {
-    "stock_code": "2368",
-    "stock_name": "金像電",
-    "etf_count": 7,
-    "value": 13817990000.0
-  },
-  {
-    "stock_code": "2360",
-    "stock_name": "致茂",
-    "etf_count": 7,
-    "value": 3419520000.0
-  },
-  {
-    "stock_code": "2308",
-    "stock_name": "台達電",
-    "etf_count": 7,
-    "value": 16439185425.0
+    "value": 15817882500.0
   },
   {
     "stock_code": "6510",
@@ -84,39 +42,81 @@
     "value": 0.0
   },
   {
+    "stock_code": "2360",
+    "stock_name": "致茂",
+    "etf_count": 7,
+    "value": 3428425000.0
+  },
+  {
+    "stock_code": "2308",
+    "stock_name": "台達電",
+    "etf_count": 7,
+    "value": 16003447980.0
+  },
+  {
+    "stock_code": "3653",
+    "stock_name": "健策",
+    "etf_count": 7,
+    "value": 13181204960.0
+  },
+  {
+    "stock_code": "3037",
+    "stock_name": "欣興",
+    "etf_count": 7,
+    "value": 12235976839.0
+  },
+  {
+    "stock_code": "2449",
+    "stock_name": "京元電子",
+    "etf_count": 7,
+    "value": 3596906250.0
+  },
+  {
+    "stock_code": "2454",
+    "stock_name": "聯發科",
+    "etf_count": 7,
+    "value": 13119780000.0
+  },
+  {
+    "stock_code": "2368",
+    "stock_name": "金像電",
+    "etf_count": 7,
+    "value": 14116220000.0
+  },
+  {
+    "stock_code": "6669",
+    "stock_name": "緯穎",
+    "etf_count": 6,
+    "value": 12606420000.0
+  },
+  {
     "stock_code": "2313",
     "stock_name": "華通",
     "etf_count": 6,
-    "value": 1235091000.0
+    "value": 1356009000.0
+  },
+  {
+    "stock_code": "2383",
+    "stock_name": "台光電",
+    "etf_count": 6,
+    "value": 27306290000.0
+  },
+  {
+    "stock_code": "8046",
+    "stock_name": "南電",
+    "etf_count": 6,
+    "value": 12966426000.0
+  },
+  {
+    "stock_code": "3443",
+    "stock_name": "創意",
+    "etf_count": 6,
+    "value": 2420657750.0
   },
   {
     "stock_code": "6274",
     "stock_name": "台燿",
     "etf_count": 6,
     "value": 0.0
-  },
-  {
-    "stock_code": "2383",
-    "stock_name": "台光電",
-    "etf_count": 6,
-    "value": 25834175000.0
-  },
-  {
-    "stock_code": "3711",
-    "stock_name": "日月光投控",
-    "etf_count": 6,
-    "value": 4621232992.0
-  },
-  {
-    "stock_code": "8046",
-    "stock_name": "南電",
-    "etf_count": 6,
-    "value": 12412548000.0
-  },
-  {
-    "stock_code": "3443",
-    "stock_name": "創意",
-    "etf_count": 6,
-    "value": 2469621750.0
   }
 ]
