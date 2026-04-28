@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "stock_code": "2383",
+    "stock_name": "台光電子",
+    "etf_count": 1,
+    "value": -23650000.0,
+    "etf_list": [
+      "00996A"
+    ]
+  },
+  {
+    "stock_code": "6805",
+    "stock_name": "富世達",
+    "etf_count": 1,
+    "value": -22770000.0,
+    "etf_list": [
+      "00996A"
+    ]
+  },
+  {
+    "stock_code": "3017",
+    "stock_name": "奇鋐科技",
+    "etf_count": 1,
+    "value": -22680000.0,
+    "etf_list": [
+      "00996A"
+    ]
+  }
+]
