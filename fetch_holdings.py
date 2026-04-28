@@ -286,22 +286,19 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 
 # ══════════════════════════════════════════════════════════
 # 5+6. 同時抓取 ETF NAV 淨值 + 規模
-#    照 Grok 驗證的方式：
-#    - domcontentloaded（比 networkidle 快）
-#    - BeautifulSoup soup.get_text 解析（Grok 用此方式成功）
-#    - 抓到就立即 break，不等下一個 URL
-#    - wait_for_timeout 8000ms（Grok 驗證值）
+#    完全照 Grok colab 驗證版本（已確認28秒可抓完一檔）
 # ══════════════════════════════════════════════════════════
 async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
-    """
-    完全照 Grok colab 驗證版本
-    每檔開新 page，抓到市價+規模就視為成功
-    """
+    """完全照 Grok 的 get_etf_info 邏輯"""
     from bs4 import BeautifulSoup
 
     result = {
-        'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0,
-        'market_price': None, 'success': False, 'source': None
+        'market_price': None,
+        'nav':          None,
+        'premium_pct':  None,
+        'aum':          0.0,
+        'source':       None,
+        'success':      False,
     }
 
     urls = [
@@ -316,17 +313,17 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
             await page.goto(url, timeout=60000, wait_until="domcontentloaded")
             await page.wait_for_timeout(8000)
 
-            content = await page.content()
-            soup = BeautifulSoup(content, 'html.parser')
+            content_html = await page.content()
+            soup = BeautifulSoup(content_html, 'html.parser')
             text = soup.get_text(separator=" ", strip=True)
 
-            # 市價
+            # 市價（照 Grok）
             if not result['market_price']:
                 m = re.search(r'(\d{2}\.\d{1,3})\s*[▲▼]', text)
                 if m:
                     result['market_price'] = float(m.group(1))
 
-            # 規模
+            # 規模（照 Grok）
             if not result['aum']:
                 s = re.search(r'規模.*?([\d,\.]+)\s*億', text)
                 if not s:
@@ -334,13 +331,13 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
                 if s:
                     result['aum'] = float(s.group(1).replace(',', ''))
 
-            # 淨值
+            # 淨值（照 Grok，不加任何額外條件）
             if not result['nav']:
                 n = re.search(r'淨值\s*[:：]?\s*(\d{2}\.\d{1,3})', text)
                 if n:
                     result['nav'] = float(n.group(1))
 
-            # 折溢價
+            # 折溢價（照 Grok）
             if not result['premium_pct']:
                 pd_m = re.search(r'折溢價.*?([-\d\.]+)%', text)
                 if pd_m:
@@ -348,7 +345,7 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
                     if abs(pd_val) < 10:
                         result['premium_pct'] = pd_val
 
-            # 抓到市價+規模就成功，跳出
+            # 照 Grok：有市價+規模就算成功，break
             if result['market_price'] and result['aum']:
                 result['success'] = True
                 result['source']  = name
@@ -366,16 +363,13 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
 
 
 def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
-    """
-    用 Playwright + BeautifulSoup 從 Pocket.tw 抓取所有 ETF 的 NAV 和規模
-    照 Grok colab 驗證版本，一次開一個 browser 跑所有檔
-    """
     nav_map = {}
     aum_map = {}
+    prem_map = {}
 
     try:
         from playwright.async_api import async_playwright
-        from bs4 import BeautifulSoup  # noqa: F401 確認有安裝
+        from bs4 import BeautifulSoup  # noqa
     except ImportError as e:
         log.warning(f"缺少套件，跳過 NAV/規模抓取：{e}")
         return nav_map, aum_map
@@ -388,10 +382,12 @@ def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
             )
             for code in ALL_PRICE_ETFS:
                 r = await _fetch_one_etf_nav_aum(ctx, code)
-                if r['nav'] > 0:
+                if r['nav'] is not None and r['nav'] > 0:
                     nav_map[code] = r['nav']
                 if r['aum'] > 0:
                     aum_map[code] = r['aum']
+                if r['premium_pct'] is not None:
+                    prem_map[code] = r['premium_pct']
                 log.info(
                     f"  {code}: NAV={r['nav']}, AUM={r['aum']}億, "
                     f"折溢價={r['premium_pct']}%, 來源={r['source']}"
@@ -410,7 +406,9 @@ def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
         except Exception as e:
             log.error(f"Playwright 執行失敗: {e}")
 
-    log.info(f"✓ ETF NAV：{len(nav_map)} 檔，規模：{len(aum_map)} 檔")
+    # 把折溢價也存進去供 save_etf_prices_today 使用
+    # 直接附在 aum_map 裡傳回（save_etf_prices_today 只用 nav_map/aum_map）
+    log.info(f"✓ ETF NAV：{len(nav_map)} 檔，規模：{len(aum_map)} 檔，折溢價：{len(prem_map)} 檔")
     return nav_map, aum_map
 
 
