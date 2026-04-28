@@ -209,10 +209,19 @@ def fetch_pocket_holdings(etf_code: str, debug: bool = False) -> list[dict]:
             stock_name_raw = str(row[2]).strip() if len(row) > 2 else ''
 
             # ── 嘗試擷取現金部位 ─────────────────────────
+            # M722 現金欄位實測：
+            #   stock_code='C_NTD', stock_name='CASH', unit='元'
+            #   stock_code='C_USD', stock_name='CASH', unit='元' 等
+            # 判斷條件：unit 是「元」，或 stock_name=='CASH'，或 stock_code 非純數字
             cash_keywords = ('現金', '銀行', '存款', '活存', 'CASH', 'TWD', '新台幣')
             is_cash = (
-                unit != '股' and
-                any(kw in stock_name_raw for kw in cash_keywords)
+                unit != '股' and (
+                    stock_name_raw == 'CASH' or
+                    unit == '元' or
+                    any(kw in stock_name_raw for kw in cash_keywords) or
+                    (stock_code_raw and not stock_code_raw.isdigit() and
+                     stock_code_raw.startswith('C_'))
+                )
             )
             if is_cash:
                 try:
@@ -248,51 +257,78 @@ def fetch_pocket_holdings(etf_code: str, debug: bool = False) -> list[dict]:
 
 
 # ══════════════════════════════════════════════════════════
-# 3. 抓取個股收盤價（TWSE OpenAPI）
+# 3. 抓取個股收盤價（TWSE 上市 + TPEx 上櫃）
 # ══════════════════════════════════════════════════════════
 def fetch_stock_close_prices(stock_codes: set) -> dict[str, float]:
+    """
+    同時從 TWSE（上市）和 TPEx（上櫃）抓取收盤價，合併回傳。
+    - TWSE: openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL
+    - TPEx: openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL
+    兩個都抓，TPEx 補齊 TWSE 抓不到的上櫃股票（約佔成分股 20%~30%）
+    """
+    prices = {}
+
+    # ── TWSE 上市 ────────────────────────────────────────
     try:
         resp = requests.get(
             'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
             timeout=25
         )
-        if resp.status_code != 200:
-            return {}
-        prices = {}
-        for item in resp.json():
-            code = item.get('Code', '')
-            if code in stock_codes:
-                try:
-                    prices[code] = float(item['ClosingPrice'].replace(',', ''))
-                except (ValueError, KeyError):
-                    pass
-        return prices
+        if resp.status_code == 200:
+            for item in resp.json():
+                code = item.get('Code', '')
+                if code in stock_codes and code not in prices:
+                    try:
+                        prices[code] = float(item['ClosingPrice'].replace(',', ''))
+                    except (ValueError, KeyError):
+                        pass
+            log.info(f"  TWSE 上市：取得 {len(prices)} 支收盤價")
+        else:
+            log.warning(f"  TWSE STOCK_DAY_ALL 回傳 {resp.status_code}")
     except Exception as e:
-        log.error(f"個股收盤價抓取失敗: {e}")
-        return {}
+        log.error(f"  TWSE 收盤價抓取失敗: {e}")
+
+    # ── TPEx 上櫃 ────────────────────────────────────────
+    tpex_got = 0
+    try:
+        resp = requests.get(
+            'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
+            timeout=25
+        )
+        if resp.status_code == 200:
+            for item in resp.json():
+                code = item.get('Code', '')
+                if code in stock_codes and code not in prices:
+                    try:
+                        prices[code] = float(item['ClosingPrice'].replace(',', ''))
+                        tpex_got += 1
+                    except (ValueError, KeyError):
+                        pass
+            log.info(f"  TPEx 上櫃：補充 {tpex_got} 支收盤價")
+        else:
+            log.warning(f"  TPEx STOCK_DAY_ALL 回傳 {resp.status_code}")
+    except Exception as e:
+        log.warning(f"  TPEx 收盤價抓取失敗（不影響主流程）: {e}")
+
+    return prices
 
 
 # ══════════════════════════════════════════════════════════
 # 4. 抓取 ETF 今日收盤價
 #    來源：TWSE STOCK_DAY_ALL（ETF 也在上市股票清單內）
+#           TPEx STOCK_DAY_ALL 補充上櫃掛牌的 ETF
 # ══════════════════════════════════════════════════════════
 def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
     """
-    從 TWSE STOCK_DAY_ALL 抓取 ETF 今日收盤價
+    從 TWSE + TPEx STOCK_DAY_ALL 抓取 ETF 今日收盤價
     回傳 { etf_code: { close, open, high, low, volume, chg_amt, chg_pct } }
     """
     results = {}
-    try:
-        resp = requests.get(
-            'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
-            timeout=25
-        )
-        if resp.status_code != 200:
-            log.warning(f"STOCK_DAY_ALL 回傳 {resp.status_code}")
-            return results
 
-        all_data = {item.get('Code', ''): item for item in resp.json()}
+    def _parse_source(all_data):
         for code in ALL_PRICE_ETFS:
+            if code in results:
+                continue
             item = all_data.get(code)
             if not item:
                 continue
@@ -300,21 +336,18 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
                 def _f(key, fallback='0'):
                     v = item.get(key, fallback) or fallback
                     return float(str(v).replace(',', '').replace('+', '').strip() or '0')
-
                 close   = _f('ClosingPrice')
                 open_   = _f('OpeningPrice')
                 high    = _f('HighestPrice')
                 low     = _f('LowestPrice')
                 vol     = _f('TradeVolume')
                 chg_raw = str(item.get('Change', '0') or '0').replace(',', '').replace('+', '').strip()
-                # 過濾非數字值（除息、X、-- 等）
                 try:
                     chg_amt = float(chg_raw) if chg_raw and chg_raw not in ('--','X','除息','除權','除權息') else 0.0
                 except ValueError:
                     chg_amt = 0.0
                 prev    = close - chg_amt
                 chg_pct = round(chg_amt / prev * 100, 2) if prev > 0 else 0.0
-
                 if close > 0:
                     results[code] = {
                         'close': close, 'open': open_, 'high': high,
@@ -323,10 +356,33 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
                     }
             except (ValueError, TypeError) as e:
                 log.debug(f"ETF價格解析失敗 {code}: {e}")
-                continue
 
+    # TWSE 上市
+    try:
+        resp = requests.get(
+            'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
+            timeout=25
+        )
+        if resp.status_code == 200:
+            _parse_source({item.get('Code', ''): item for item in resp.json()})
+        else:
+            log.warning(f"TWSE STOCK_DAY_ALL 回傳 {resp.status_code}")
     except Exception as e:
-        log.error(f"ETF今日收盤價抓取失敗: {e}")
+        log.error(f"TWSE ETF收盤價抓取失敗: {e}")
+
+    # TPEx 上櫃補充
+    try:
+        resp = requests.get(
+            'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
+            timeout=25
+        )
+        if resp.status_code == 200:
+            before = len(results)
+            _parse_source({item.get('Code', ''): item for item in resp.json()})
+            if len(results) > before:
+                log.info(f"  TPEx 補充 {len(results)-before} 檔 ETF 收盤價")
+    except Exception as e:
+        log.warning(f"TPEx ETF收盤價抓取失敗（不影響主流程）: {e}")
 
     log.info(f"✓ 今日ETF收盤價：{len(results)} 檔")
     return results
