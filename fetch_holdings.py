@@ -290,78 +290,47 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 #    每檔等待3秒，16檔約需 50~80 秒
 # ══════════════════════════════════════════════════════════
 async def _fetch_one_etf_nav_aum(page, code: str) -> dict:
-    """抓取單一ETF的NAV和規模（async，供 fetch_etf_nav_and_aum 使用）"""
+    """
+    從 WantGoo 抓取單一 ETF 的 NAV、規模、折溢價
+    WantGoo 頁面包含：市價、淨值、折溢價、規模(億) — Grok 驗證可抓
+    """
     result = {'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0}
+    url = f"https://www.wantgoo.com/stock/etf/{code.lower()}"
 
-    # ── 第一步：從主頁抓規模 ─────────────────────────────
     try:
-        url_main = f"https://www.pocket.tw/etf/tw/{code}"
-        await page.goto(url_main, timeout=25000, wait_until='networkidle')
-        await page.wait_for_timeout(2000)
-        text_main = await page.inner_text('body')
+        await page.goto(url, timeout=30000, wait_until='networkidle')
+        await page.wait_for_timeout(5000)   # WantGoo 需要較長渲染時間
+        text = await page.inner_text('body')
 
-        # 規模（億）— 主頁有
-        m_aum = re.search(r'規模[（(]億[）)]?\s*[:：]?\s*([\d,]+\.?[\d]*)', text_main)
+        # ── 規模（億）── WantGoo格式：「規模(億) 755.16」
+        m_aum = re.search(r'規模[（(]億[）)]\s*([\d,]+\.?[\d]*)', text)
         if m_aum:
             result['aum'] = float(m_aum.group(1).replace(',',''))
 
-        # 折溢價 — 主頁有追蹤誤差表，裡面有折溢價
-        for pattern in [
-            r'折溢價\s*\n?\s*([-\d.]+)%',
-            r'折溢價\s*([-\d.]+)',
-        ]:
-            m_pd = re.search(pattern, text_main)
-            if m_pd:
-                pd_val = float(m_pd.group(1))
-                if abs(pd_val) < 20:
-                    result['premium_pct'] = pd_val
-                    break
+        # ── 淨值 NAV ── WantGoo格式：「淨值 24.88」
+        m_nav = re.search(r'淨值\s+([\d,]+\.[\d]{2,3})', text)
+        if m_nav:
+            nav = float(m_nav.group(1).replace(',',''))
+            if 1 < nav < 10000:
+                result['nav'] = nav
 
-    except Exception as e:
-        log.debug(f"  {code} 主頁抓取失敗: {e}")
+        # ── 折溢價 ── WantGoo格式：「折溢價 0.76%」
+        m_pd = re.search(r'折溢價\s+([-\d.]+)%', text)
+        if m_pd:
+            pd_val = float(m_pd.group(1))
+            if abs(pd_val) < 20:
+                result['premium_pct'] = pd_val
 
-    # ── 第二步：從折溢價頁抓 NAV ─────────────────────────
-    # Pocket.tw /discountpremium 頁面有淨值資料
-    try:
-        url_dp = f"https://www.pocket.tw/etf/tw/{code}/discountpremium"
-        await page.goto(url_dp, timeout=25000, wait_until='networkidle')
-        await page.wait_for_timeout(2500)
-        text_dp = await page.inner_text('body')
-
-        # 淨值模式（折溢價頁通常有「淨值 XX.XX」格式）
-        for pattern in [
-            r'淨值\s*([\d,]+\.[\d]{1,3})',
-            r'NAV\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
-            r'每單位淨資產價值\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
-            r'([\d]{2,3}\.[\d]{2,3})\s*元?.*?淨值',
-        ]:
-            m = re.search(pattern, text_dp)
-            if m:
-                nav = float(m.group(1).replace(',',''))
-                if 1 < nav < 10000:
-                    result['nav'] = nav
-                    break
-
-        # 若折溢價頁也有更精確的折溢價，更新
-        if result['premium_pct'] == 0:
-            for pattern in [r'折溢價\s*([-\d.]+)%', r'([-\d.]+)%\s*折溢價']:
-                m_pd = re.search(pattern, text_dp)
-                if m_pd:
-                    pd_val = float(m_pd.group(1))
-                    if abs(pd_val) < 20:
-                        result['premium_pct'] = pd_val
-                        break
-
-        # 若還是沒有 NAV，從折溢價反推（若有市價和折溢價）
+        # ── 若 WantGoo 沒有 NAV，從折溢價反推 ──
         if result['nav'] == 0 and result['premium_pct'] != 0:
-            # 找市價
-            m_price = re.search(r'(\d{2,3}\.\d{2})\s*[▲▼元]', text_dp)
+            # 找市價（格式：數字後面跟著 ▲▼ 或 漲跌）
+            m_price = re.search(r'(\d{1,4}\.\d{2})\s*[▲▼]', text)
             if m_price:
                 mkt = float(m_price.group(1))
                 result['nav'] = round(mkt / (1 + result['premium_pct']/100), 2)
 
     except Exception as e:
-        log.debug(f"  {code} 折溢價頁抓取失敗: {e}")
+        log.debug(f"  {code} WantGoo抓取失敗: {e}")
 
     return result
 
