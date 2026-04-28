@@ -706,6 +706,9 @@ def export_json(trade_date: str,
     # ── performance.json（近12個月每月報酬率，供績效圖）─
     _export_performance(trade_date)
 
+    # ── price_history.json（每日收盤價，供走勢圖使用）────
+    _export_price_history()
+
     if not df_changes.empty:
         buy = (df_changes[df_changes['amount_change'] > 0]
                .groupby(['stock_code','stock_name'])
@@ -787,6 +790,45 @@ def _export_performance(trade_date: str):
 
     _wj('data/performance.json', perf)
     log.info(f"✓ 績效資料匯出：{len(perf)} 檔")
+
+
+def _export_price_history():
+    """
+    匯出每檔 ETF 的每日收盤價歷史
+    供前端走勢圖計算任意時間區間的累積報酬率
+    格式：{ etf_code: [ {date:'2025-01-02', close:18.5}, ... ] }
+    只保留最近 400 天，控制 JSON 大小
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        df = pd.read_sql("""
+            SELECT etf_code, trade_date, close_price
+            FROM etf_prices
+            WHERE close_price > 0
+            ORDER BY etf_code, trade_date DESC
+        """, conn)
+    except Exception as e:
+        log.warning(f"price_history 匯出失敗: {e}")
+        conn.close()
+        _wj('data/price_history.json', {})
+        return
+    conn.close()
+
+    if df.empty:
+        _wj('data/price_history.json', {})
+        return
+
+    history = {}
+    for code, grp in df.groupby('etf_code'):
+        # 最近 400 天，倒序變正序
+        rows = grp.head(400).sort_values('trade_date')
+        history[code] = [
+            {'date': row['trade_date'], 'close': round(row['close_price'], 2)}
+            for _, row in rows.iterrows()
+        ]
+
+    _wj('data/price_history.json', history)
+    log.info(f"✓ 價格歷史匯出：{len(history)} 檔")
 
 
 def _wj(path: str, obj):
