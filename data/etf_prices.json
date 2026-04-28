@@ -23,8 +23,8 @@
     "chg_amt": -0.2,
     "chg_pct": -0.96,
     "nav": 20.69,
-    "premium_pct": -0.96,
-    "aum_billion": 388.55,
+    "premium_pct": 1.02,
+    "aum_billion": 386.41,
     "is_benchmark": false
   },
   "00991A": {
@@ -37,8 +37,8 @@
     "chg_amt": 0.41,
     "chg_pct": 2.52,
     "nav": 16.58,
-    "premium_pct": 2.52,
-    "aum_billion": 336.63,
+    "premium_pct": -0.24,
+    "aum_billion": 363.08,
     "is_benchmark": false
   },
   "00992A": {
@@ -51,8 +51,8 @@
     "chg_amt": -0.1,
     "chg_pct": -0.59,
     "nav": 16.88,
-    "premium_pct": -0.59,
-    "aum_billion": 485.5,
+    "premium_pct": 1.25,
+    "aum_billion": 491.6,
     "is_benchmark": false
   },
   "00993A": {
@@ -121,7 +121,7 @@
     "chg_amt": -0.06,
     "chg_pct": -0.43,
     "nav": 13.94,
-    "premium_pct": -0.43,
+    "premium_pct": 0.57,
     "aum_billion": 100.0,
     "is_benchmark": false
   },
@@ -149,8 +149,8 @@
     "chg_amt": 0.06,
     "chg_pct": 0.36,
     "nav": 16.42,
-    "premium_pct": 0.36,
-    "aum_billion": 38.07,
+    "premium_pct": -0.18,
+    "aum_billion": 41.5,
     "is_benchmark": false
   },
   "00996A": {
@@ -163,8 +163,8 @@
     "chg_amt": -0.05,
     "chg_pct": -0.39,
     "nav": 12.63,
-    "premium_pct": -0.39,
-    "aum_billion": 39.31,
+    "premium_pct": 0.47,
+    "aum_billion": 39.2,
     "is_benchmark": false
   },
   "00400A": {
@@ -191,8 +191,8 @@
     "chg_amt": 0.03,
     "chg_pct": 0.25,
     "nav": 11.75,
-    "premium_pct": 0.25,
-    "aum_billion": 30.65,
+    "premium_pct": 0.59,
+    "aum_billion": 31.55,
     "is_benchmark": false
   },
   "0050": {
@@ -205,8 +205,8 @@
     "chg_amt": 3.05,
     "chg_pct": 3.39,
     "nav": 92.37,
-    "premium_pct": 3.39,
-    "aum_billion": 16612.06,
+    "premium_pct": -1.08,
+    "aum_billion": 17019.09,
     "is_benchmark": true
   },
   "009816": {
@@ -219,7 +219,7 @@
     "chg_amt": 0.3,
     "chg_pct": 2.33,
     "nav": 13.11,
-    "premium_pct": 2.33,
+    "premium_pct": -0.15,
     "aum_billion": 100.0,
     "is_benchmark": true
   }
