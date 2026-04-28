@@ -42,7 +42,7 @@ jobs:
         run: python -m playwright install chromium
 
       - name: 安裝 Playwright Chromium 系統相依套件
-        run: sudo python -m playwright install-deps chromium
+        run: sudo $(which python) -m playwright install-deps chromium
 
       # ── 5. 驗證 Playwright 瀏覽器確實裝好（除錯用）─────
       - name: 驗證 Playwright 安裝
