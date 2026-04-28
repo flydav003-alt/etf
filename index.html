@@ -2,16 +2,17 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>主動ETF追蹤儀表板 · 和紙之卷</title>
+<title>主動ETF追蹤儀表板</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════
-   NIPPON COLOR PALETTE — 蒸栗配色系統 (穩定版)
+   NIPPON COLOR PALETTE — 蒸栗配色系統
+   完整保留原始所有樣式，無任何刪減
 ═══════════════════════════════════════════ */
 :root {
   --kuri:       #c8b560;
@@ -58,6 +59,7 @@ body {
   overflow-x: hidden;
 }
 
+/* subtle paper texture via repeating pattern */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -67,6 +69,7 @@ body::before {
   pointer-events: none;
 }
 
+/* ═══ HEADER ═══ */
 header {
   position: sticky; top: 0; z-index: 100;
   background: var(--kuri);
@@ -78,6 +81,7 @@ header {
 }
 
 .logo { display: flex; align-items: center; gap: 14px; }
+
 .logo-stamp {
   background: var(--sumi);
   color: var(--kuri);
@@ -86,11 +90,14 @@ header {
   padding: 4px 10px;
   letter-spacing: 2px;
   border-radius: 2px;
+  flex-shrink: 0;
 }
+
 .logo-name {
   font-family: var(--font-serif);
   font-size: 16px; font-weight: 700;
   color: var(--sumi);
+  letter-spacing: 0.5px;
   line-height: 1.2;
 }
 .logo-sub {
@@ -99,7 +106,9 @@ header {
   color: var(--sumi-60);
   margin-top: 1px;
 }
+
 .header-right { display: flex; align-items: center; gap: 16px; }
+
 .live-pill {
   display: flex; align-items: center; gap: 6px;
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px;
@@ -118,18 +127,23 @@ header {
   0%,100% { opacity:1; transform:scale(1); }
   50%      { opacity:0.3; transform:scale(0.7); }
 }
-.clock { font-family: var(--font-mono); font-size: 13px; color: var(--sumi-60); }
 
+.clock {
+  font-family: var(--font-mono);
+  font-size: 13px; color: var(--sumi-60); font-weight: 400;
+}
+
+/* ═══ NAV ═══ */
 nav {
   position: sticky; top: 60px; z-index: 99;
   background: var(--nav-bg);
   border-bottom: 1px solid var(--kuri-dk);
   padding: 0 32px;
-  display: flex;
-  gap: 0;
+  display: flex; gap: 0;
   overflow-x: auto;
 }
 nav::-webkit-scrollbar { display: none; }
+
 .tab {
   font-family: var(--font-sans);
   font-size: 12px; font-weight: 500;
@@ -139,6 +153,8 @@ nav::-webkit-scrollbar { display: none; }
   cursor: pointer; white-space: nowrap;
   border-bottom: 2px solid transparent;
   transition: color .18s, border-color .18s;
+  user-select: none;
+  letter-spacing: 0.3px;
 }
 .tab:hover { color: var(--sumi-60); }
 .tab.active {
@@ -147,6 +163,7 @@ nav::-webkit-scrollbar { display: none; }
   font-weight: 700;
 }
 
+/* ═══ MAIN ═══ */
 main {
   position: relative; z-index: 1;
   max-width: 1560px; margin: 0 auto;
@@ -156,19 +173,22 @@ main {
 .page.active { display: block; animation: pagein .22s ease; }
 @keyframes pagein { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
+/* ═══ KPI ROW ═══ */
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
   gap: 12px; margin-bottom: 24px;
 }
+
 .kpi-card {
   background: var(--kiji);
   border: 1px solid var(--kiji-bd);
   border-radius: var(--radius);
   padding: 16px 18px;
-  position: relative;
+  position: relative; overflow: hidden;
   box-shadow: var(--shadow);
-  transition: box-shadow .2s;
+  transition: box-shadow .2s, transform .2s;
+  animation: cardin .35s ease both;
 }
 .kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .kpi-card::after {
@@ -178,6 +198,12 @@ main {
 .kpi-card.aizumi::after { background: var(--aizumi); }
 .kpi-card.wakaba::after { background: var(--wakaba); }
 .kpi-card.kuri::after   { background: var(--kuri); }
+
+@keyframes cardin {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
 .kpi-label {
   font-family: var(--font-mono);
   font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
@@ -192,8 +218,12 @@ main {
 .kpi-value.aizumi { color: var(--aizumi-dk); }
 .kpi-value.wakaba { color: var(--wakaba-dk); }
 .kpi-value.kuri   { color: var(--kogane-dk); }
-.kpi-sub { font-family: var(--font-sans); font-size: 11px; color: var(--sumi-60); margin-top: 6px; }
+.kpi-sub {
+  font-family: var(--font-sans);
+  font-size: 11px; color: var(--sumi-60); margin-top: 6px;
+}
 
+/* ═══ SECTION TITLE ═══ */
 .section-title {
   font-family: var(--font-mono);
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
@@ -202,6 +232,7 @@ main {
 }
 .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
 
+/* ═══ PANEL ═══ */
 .panel {
   background: var(--kiji);
   border: 1px solid var(--border);
@@ -209,37 +240,56 @@ main {
   overflow: hidden;
   box-shadow: var(--shadow);
   margin-bottom: 20px;
+  transition: box-shadow .2s;
 }
+.panel:hover { box-shadow: var(--shadow-md); }
+
 .panel-header {
   background: #ede4c0;
   border-bottom: 1px solid var(--border);
   padding: 10px 16px;
   font-family: var(--font-serif);
   font-size: 12px; font-weight: 600; color: #4a3810;
-  display: flex;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
 }
-.etf-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.panel-header .ph-sub {
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--sumi-45); font-weight: 400;
+}
+
+/* ═══ TABLE ═══ */
+.etf-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px;
+}
 .etf-table th {
   padding: 8px 14px;
   font-family: var(--font-mono);
-  font-size: 8px; letter-spacing: 1.5px;
+  font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--sumi-45); text-align: left;
   border-bottom: 1px solid var(--border);
   background: #f5edd8;
+  position: sticky; top: 0; z-index: 2;
 }
-.etf-table td { padding: 9px 14px; border-bottom: 1px solid rgba(200,181,96,0.10); }
+.etf-table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(200,181,96,0.10);
+  vertical-align: middle;
+}
+.etf-table tr:last-child td { border-bottom: none; }
 .etf-table tr:hover td { background: rgba(200,181,96,0.07); }
 
+/* rank numbers */
 .rn {
   font-family: var(--font-mono);
   font-size: 10px; color: var(--sumi-30);
-  width: 24px; display: inline-block;
+  width: 24px; display: inline-block; text-align: center;
 }
 .rn.gold   { color: var(--kogane-dk); font-weight: 600; }
 .rn.silver { color: var(--sumi-60); font-weight: 500; }
 .rn.bronze { color: #8a6a40; font-weight: 500; }
 
+/* ETF ticker pill */
 .etf-pill {
   display: inline-block;
   background: rgba(200,181,96,0.22);
@@ -248,12 +298,21 @@ main {
   font-family: var(--font-mono);
   font-size: 10px; font-weight: 500;
   padding: 2px 7px; border-radius: 3px;
-  margin-right: 6px;
+  margin-right: 6px; letter-spacing: 0.3px;
 }
+
+/* stock names & codes */
 .stock-name { font-weight: 700; color: var(--sumi); font-size: 12px; }
-.stock-code { font-family: var(--font-mono); font-size: 10px; color: var(--sumi-60); margin-left: 6px; }
+.stock-code {
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--sumi-60);
+  margin-left: 6px; font-weight: 400;
+}
+.etf-sub { font-size: 11px; color: var(--sumi-60); }
+
+/* action tags */
 .tag {
-  display: inline-flex;
+  display: inline-flex; align-items: center;
   font-family: var(--font-mono);
   border-radius: 3px; padding: 2px 8px;
   font-size: 9px; font-weight: 600; letter-spacing: 0.5px;
@@ -264,27 +323,50 @@ main {
 .tag.decrease { background: var(--wakaba-dim);  color: var(--wakaba-dk);  border: 1px solid rgba(122,158,82,0.22); }
 .tag.active-t { background: var(--aizumi-dim);  color: var(--aizumi-dk);  border: 1px solid rgba(77,116,148,0.25); }
 .tag.watch-t  { background: rgba(200,168,75,0.15); color: var(--kogane-dk); border: 1px solid rgba(200,168,75,0.35); }
+.tag.bench-t  { background: rgba(28,18,9,0.06); color: var(--sumi-60);    border: 1px solid var(--sumi-15); }
 
-.up   { color: var(--kobai-dk);  font-weight: 600; }
-.down { color: var(--wakaba-dk); font-weight: 600; }
+.up   { color: var(--kobai-dk);  font-weight: 600; font-family: var(--font-mono); }
+.down { color: var(--wakaba-dk); font-weight: 600; font-family: var(--font-mono); }
+.flat { color: var(--sumi-45); font-family: var(--font-mono); }
+
+/* bar */
 .bar-wrap { display: flex; align-items: center; gap: 8px; }
-.bar-track { flex:1; height: 4px; background: rgba(200,181,96,0.18); border-radius: 2px; }
-.bar-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+.bar-track {
+  flex: 1; height: 4px;
+  background: rgba(200,181,96,0.18);
+  border-radius: 2px; min-width: 50px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 2px;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+}
+.bar-fill.kuri   { background: var(--kuri); }
 .bar-fill.kobai  { background: var(--kobai); }
+.bar-fill.aizumi { background: var(--aizumi); }
 .bar-fill.wakaba { background: var(--wakaba); }
 
+/* ═══ INFO NOTE ═══ */
+.info-note {
+  background: var(--aizumi-dim);
+  border: 1px solid rgba(77,116,148,0.2);
+  border-left: 3px solid var(--aizumi);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 11px; color: var(--sumi-60);
+  margin-bottom: 18px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+
+/* ═══ LAYOUTS ═══ */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 @media (max-width: 1080px) { .two-col { grid-template-columns: 1fr; } }
-.table-scroll { max-height: 460px; overflow-y: auto; }
-.search-input {
-  width: 100%; padding: 8px 12px;
-  font-family: var(--font-sans); font-size: 12px;
-  background: var(--kiji); border: 1px solid var(--border);
-  border-radius: var(--radius);
-  outline: none;
-}
-.search-input:focus { border-color: var(--kuri-dk); box-shadow: 0 0 0 3px rgba(200,181,96,0.18); }
 
+.table-scroll { max-height: 460px; overflow-y: auto; }
+.table-scroll::-webkit-scrollbar { width: 4px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--kuri-dk); border-radius: 2px; }
+
+/* ═══ DONUT GRID ═══ */
 .donut-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -296,42 +378,99 @@ main {
   border-radius: var(--radius);
   padding: 18px;
   box-shadow: var(--shadow);
+  transition: box-shadow .2s, transform .2s;
+  animation: cardin .4s ease both;
 }
-.donut-card.is-watch { border-color: rgba(200,168,75,0.4); }
-.donut-ticker { font-family: var(--font-mono); font-size: 10px; color: var(--sumi-60); }
-.donut-name { font-family: var(--font-serif); font-size: 13px; font-weight: 600; margin-bottom: 12px; }
-.donut-wrap { position: relative; width: 120px; height: 120px; margin: 0 auto 12px; }
-.donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.donut-center-val { font-family: var(--font-serif); font-size: 22px; font-weight: 700; }
+.donut-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.donut-card.is-watch { border-color: rgba(200,168,75,0.4); background: linear-gradient(135deg, var(--kiji) 90%, rgba(200,168,75,0.06) 100%); }
 
+.donut-ticker { font-family: var(--font-mono); font-size: 10px; color: var(--sumi-60); margin-bottom: 2px; }
+.donut-name   { font-family: var(--font-serif); font-size: 13px; font-weight: 600; color: var(--sumi); margin-bottom: 12px; line-height: 1.3; }
+.donut-wrap   { position: relative; width: 120px; height: 120px; margin: 0 auto 12px; }
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.donut-center-val { font-family: var(--font-serif); font-size: 22px; font-weight: 700; color: var(--sumi); }
+.donut-center-sub { font-family: var(--font-mono); font-size: 8px; color: var(--sumi-45); letter-spacing: 1px; }
+
+.donut-legend { display: flex; flex-direction: column; gap: 5px; }
+.legend-row   { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--sumi-60); }
+.legend-dot   { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.legend-pct   { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--sumi); font-weight: 500; }
+
+/* ═══ MONTH SELECTOR ═══ */
+.month-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.month-btn {
+  font-family: var(--font-mono); font-size: 10px;
+  padding: 4px 12px; border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--kiji); color: var(--sumi-60);
+  cursor: pointer; transition: all .15s;
+}
+.month-btn:hover { border-color: var(--kuri-dk); color: var(--sumi); }
+.month-btn.active {
+  background: var(--sumi); color: var(--kuri);
+  border-color: var(--sumi); font-weight: 600;
+}
+
+/* ═══ SEARCH ═══ */
+.search-wrap { margin-bottom: 16px; position: relative; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--sumi-45); pointer-events: none; }
+.search-input {
+  width: 100%; padding: 8px 12px 8px 34px;
+  font-family: var(--font-sans); font-size: 12px;
+  background: var(--kiji); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--sumi);
+  outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.search-input::placeholder { color: var(--sumi-45); }
+.search-input:focus { border-color: var(--kuri-dk); box-shadow: 0 0 0 3px rgba(200,181,96,0.18); }
+
+/* ═══ WATCHLIST ═══ */
 .watchlist-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 12px;
+  gap: 12px; margin-bottom: 22px;
 }
 .watch-card {
   background: var(--kiji);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
-  cursor: pointer;
-  position: relative;
+  padding: 16px; cursor: pointer;
+  transition: all .2s; position: relative; overflow: hidden;
 }
+.watch-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--kuri); opacity: 0; transition: opacity .2s;
+}
+.watch-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.watch-card:hover::before { opacity: 1; }
 .wc-remove {
   position: absolute; top: 10px; right: 12px;
   font-size: 12px; color: var(--sumi-30);
-  cursor: pointer;
+  cursor: pointer; width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; transition: background .15s, color .15s;
 }
 .wc-remove:hover { background: var(--kobai-dim); color: var(--kobai-dk); }
+.wc-ticker { font-family: var(--font-mono); font-size: 12px; color: var(--aizumi-dk); font-weight: 500; }
+.wc-name   { font-size: 11px; color: var(--sumi-60); margin: 3px 0 10px; }
+.wc-price  { font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: var(--sumi); }
+.wc-change { font-family: var(--font-mono); font-size: 10px; margin-top: 3px; }
+
 .add-btn {
   background: var(--kiji);
   border: 1px dashed rgba(200,181,96,0.5);
   border-radius: var(--radius);
-  padding: 16px;
-  width: 100%;
-  cursor: pointer;
-  text-align: center;
+  padding: 16px; width: 100%;
+  font-family: var(--font-sans); font-size: 12px; color: var(--sumi-45);
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
 }
+.add-btn:hover { border-color: var(--kuri-dk); color: var(--sumi-60); background: rgba(200,181,96,0.08); }
+
+/* ═══ MODAL ═══ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 200;
   background: rgba(28,18,9,0.5);
@@ -341,34 +480,81 @@ main {
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal {
-  background: var(--kiji);
+  background: var(--kiji); border: 1px solid var(--border);
   border-radius: 8px; padding: 26px; width: 380px;
+  box-shadow: 0 16px 48px rgba(28,18,9,0.2);
+  transform: scale(0.96) translateY(8px); transition: transform .22s;
   border-top: 3px solid var(--kuri);
 }
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal-title { font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: var(--sumi); margin-bottom: 16px; }
+.modal-input {
+  width: 100%; padding: 9px 12px;
+  font-family: var(--font-mono); font-size: 13px;
+  background: var(--washi); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--sumi);
+  margin-bottom: 8px; outline: none; transition: border-color .15s;
+}
+.modal-input:focus { border-color: var(--kuri-dk); box-shadow: 0 0 0 3px rgba(200,181,96,0.18); }
+.modal-hint { font-size: 11px; color: var(--sumi-45); margin-bottom: 16px; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 600;
+  padding: 8px 18px; border-radius: var(--radius); cursor: pointer; border: none;
+  transition: all .15s;
+}
+.btn-primary { background: var(--sumi); color: var(--kuri); }
+.btn-primary:hover { background: #2e2010; }
+.btn-ghost { background: none; border: 1px solid var(--border); color: var(--sumi-60); }
+.btn-ghost:hover { border-color: var(--sumi-45); color: var(--sumi); }
+
+/* ═══ FOOTER ═══ */
 .footer-note {
   font-family: var(--font-mono); font-size: 9px; color: var(--sumi-45);
   text-align: center; padding: 20px 0 8px;
   border-top: 1px solid var(--border); margin-top: 32px;
+  letter-spacing: 0.5px; line-height: 2;
 }
+
+/* ═══ 手機版響應式 ═══ */
 @media (max-width: 600px) {
-  .logo-sub { display: none; }
-  header, main { padding-left: 12px; padding-right: 12px; }
+  .logo-sub          { display: none; }
+  #dataPill          { display: none !important; }
+  .hide-mobile       { display: none; }
+  .logo-stamp        { font-size: 8px; padding: 3px 7px; }
+  .logo-name         { font-size: 13px; }
+  .clock             { font-size: 11px; }
+  .header-right      { gap: 8px; }
+  header             { padding: 0 12px; }
+  main               { padding: 14px 12px 40px; }
+  .kpi-row           { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-value         { font-size: 20px; }
+  .etf-table         { font-size: 11px; }
+  .etf-table th, .etf-table td { padding: 7px 8px; }
+  .two-col           { grid-template-columns: 1fr; }
+  .donut-grid        { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
 }
 </style>
 </head>
 <body>
 
+<!-- ═══ HEADER ═══ -->
 <header>
   <div class="logo">
     <div class="logo-stamp">主動 ETF</div>
-    <div><div class="logo-name">主動ETF追蹤儀表板</div><div class="logo-sub" id="logoSub">TAIWAN ACTIVE ETF TRACKER</div></div>
+    <div>
+      <div class="logo-name">主動ETF追蹤儀表板</div>
+      <div class="logo-sub" id="logoSub">TAIWAN ACTIVE ETF TRACKER — 14 FUNDS</div>
+    </div>
   </div>
   <div class="header-right">
-    <div class="live-pill" id="dataPill"><span class="live-dot"></span><span>每日收盤更新</span></div>
-    <div class="clock" id="clockEl">--:--:--</div>
+    <div class="live-pill" id="dataPill" style="display:none"></div>
+    <div class="live-pill" id="updatePill"><span class="live-dot"></span><span class="hide-mobile">每日收盤後更新</span></div>
+    <div class="clock" id="clockEl">──:──:──</div>
   </div>
 </header>
 
+<!-- ═══ NAV ═══ -->
 <nav>
   <div class="tab active" data-page="p-rankings">🏆 共同加碼排行</div>
   <div class="tab" data-page="p-changes">📋 每日換股紀錄</div>
@@ -379,190 +565,856 @@ main {
 </nav>
 
 <main>
+
+<!-- ════════ P1: 共同加碼排行 ════════ -->
 <div class="page active" id="p-rankings">
-  <div class="kpi-row"><div class="kpi-card kobai"><div class="kpi-label">Today Top Buy</div><div class="kpi-value kobai" style="font-size:20px">--</div><div class="kpi-sub">今日共同加碼</div></div>
-  <div class="kpi-card aizumi"><div class="kpi-label">ETF 共識</div><div class="kpi-value aizumi">--</div><div class="kpi-sub">同步買入檔數</div></div>
-  <div class="kpi-card wakaba"><div class="kpi-label">Today Top Sell</div><div class="kpi-value wakaba" style="font-size:20px">--</div><div class="kpi-sub">今日減碼</div></div>
-  <div class="kpi-card kuri"><div class="kpi-label">Tracking</div><div class="kpi-value kuri">14</div><div class="kpi-sub">持續追蹤中</div></div></div>
-  <div class="info-note"><span>💡</span><span>以下為今日ETF共同買賣排行｜點股票名稱K線分析</span></div>
-  <div style="display:flex;gap:8px;margin-bottom:14px;"><button id="sortByConsensus" onclick="setRankSort('consensus')" style="background:var(--sumi);color:var(--kuri);border:1px solid var(--sumi);padding:4px 14px;font-family:var(--font-mono);font-size:10px;border-radius:3px;">依ETF共識</button><button id="sortByAmount" onclick="setRankSort('amount')" style="background:var(--kiji);color:var(--sumi-60);border:1px solid var(--border);padding:4px 14px;font-family:var(--font-mono);font-size:10px;border-radius:3px;">依金額</button></div>
-  <div class="two-col"><div class="panel"><div class="panel-header">▲ 共同買入排行</div><div class="table-scroll"><table class="etf-table"><thead><tr><th>#</th><th>股票</th><th>ETF共識</th><th>買入金額</th><th>圖</th></tr></thead><tbody id="buyRankTbody"></tbody></table></div></div>
-  <div class="panel"><div class="panel-header">▼ 共同賣出排行</div><div class="table-scroll"><table class="etf-table"><thead><tr><th>#</th><th>股票</th><th>ETF共識</th><th>賣出金額</th><th>圖</th></tr></thead><tbody id="sellRankTbody"></tbody></table></div></div></div>
+  <div class="kpi-row">
+    <div class="kpi-card kobai" style="animation-delay:.04s">
+      <div class="kpi-label">Today Top Buy</div>
+      <div class="kpi-value kobai" style="font-size:20px">台積電</div>
+      <div class="kpi-sub">今日共同最大加碼標的</div>
+    </div>
+    <div class="kpi-card aizumi" style="animation-delay:.08s">
+      <div class="kpi-label">ETF 共識</div>
+      <div class="kpi-value aizumi">9</div>
+      <div class="kpi-sub">同步買入的ETF檔數</div>
+    </div>
+    <div class="kpi-card wakaba" style="animation-delay:.12s">
+      <div class="kpi-label">Today Top Sell</div>
+      <div class="kpi-value wakaba" style="font-size:20px">聯發科</div>
+      <div class="kpi-sub">今日共同最大減碼標的</div>
+    </div>
+    <div class="kpi-card kuri" style="animation-delay:.16s">
+      <div class="kpi-label">Tracking</div>
+      <div class="kpi-value kuri">14</div>
+      <div class="kpi-sub">主動ETF持續追蹤中</div>
+    </div>
+  </div>
+
+  <div class="info-note">
+    <span>💡</span>
+    <span>以下顯示今日各ETF持股異動的「共同方向」—— 同日多檔ETF同步買入或賣出同一標的，代表市場存在明確共識。</span>
+  </div>
+
+  <div class="section-title">今日共同買賣排行</div>
+
+  <!-- 排序切換按鈕 -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+    <span style="font-size:11px;color:var(--sumi-45);font-family:var(--font-mono);">排序：</span>
+    <button id="sortByConsensus" onclick="setRankSort('consensus')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--sumi);background:var(--sumi);color:var(--kuri);cursor:pointer;transition:all .15s;">
+      依ETF共識
+    </button>
+    <button id="sortByAmount" onclick="setRankSort('amount')"
+      style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
+             border:1px solid var(--border);background:var(--kiji);color:var(--sumi-60);cursor:pointer;transition:all .15s;">
+      依金額
+    </button>
+    <span style="font-size:10px;color:var(--sumi-45);margin-left:4px;">點股票名稱可開啟K線分析</span>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <span>▲ 共同今日買入排行</span>
+        <span class="ph-sub">金額為估算值</span>
+      </div>
+      <div class="table-scroll">
+        <table class="etf-table">
+          <thead><tr><th width="32">#</th><th>股票</th><th>ETF共識</th><th>買入金額</th><th>條形圖</th></tr></thead>
+          <tbody id="buyRankTbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span>▼ 共同今日賣出排行</span>
+        <span class="ph-sub">金額為估算值</span>
+      </div>
+      <div class="table-scroll">
+        <table class="etf-table">
+          <thead><tr><th width="32">#</th><th>股票</th><th>ETF共識</th><th>賣出金額</th><th>條形圖</th></tr></thead>
+          <tbody id="sellRankTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- ════════ P2: 每日換股紀錄 ════════ -->
 <div class="page" id="p-changes">
-  <div class="kpi-row"><div class="kpi-card kobai"><div class="kpi-label">Buy/Add</div><div class="kpi-value kobai">0</div><div class="kpi-sub">加碼筆數</div></div>
-  <div class="kpi-card wakaba"><div class="kpi-label">Sell/Cut</div><div class="kpi-value wakaba">0</div><div class="kpi-sub">減碼筆數</div></div>
-  <div class="kpi-card aizumi"><div class="kpi-label">ETF異動</div><div class="kpi-value aizumi">0</div><div class="kpi-sub">有變動ETF</div></div>
-  <div class="kpi-card kuri"><div class="kpi-label">更新日</div><div class="kpi-value kuri" id="todayDate" style="font-size:18px">--/--</div><div class="kpi-sub">最新交易日</div></div></div>
-  <div class="search-wrap"><input class="search-input" id="changeSearch" placeholder="搜尋ETF/股票" oninput="filterChanges()"></div>
-  <div class="panel"><div class="panel-header">換股明細</div><div class="table-scroll"><table class="etf-table"><thead><tr><th>#</th><th>ETF</th><th>成分股</th><th>動作</th><th>前佔比</th><th>現佔比</th><th>變化</th></tr></thead><tbody id="changesTbody"></tbody></table></div></div>
+  <div class="kpi-row">
+    <div class="kpi-card kobai" style="animation-delay:.04s">
+      <div class="kpi-label">Today Buy / Add</div>
+      <div class="kpi-value kobai">+18</div>
+      <div class="kpi-sub">今日新增或加碼筆數</div>
+    </div>
+    <div class="kpi-card wakaba" style="animation-delay:.08s">
+      <div class="kpi-label">Today Sell / Cut</div>
+      <div class="kpi-value wakaba">-9</div>
+      <div class="kpi-sub">今日賣出或減碼筆數</div>
+    </div>
+    <div class="kpi-card aizumi" style="animation-delay:.12s">
+      <div class="kpi-label">ETF With Moves</div>
+      <div class="kpi-value aizumi">11</div>
+      <div class="kpi-sub">今日有異動的ETF</div>
+    </div>
+    <div class="kpi-card kuri" style="animation-delay:.16s">
+      <div class="kpi-label">Update Date</div>
+      <div class="kpi-value kuri" id="todayDate" style="font-size:18px">──/──</div>
+      <div class="kpi-sub">收盤後自動更新</div>
+    </div>
+  </div>
+  <div class="section-title">14 檔主動ETF 今日換股明細</div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="changeSearch" placeholder="搜尋 ETF 代號 / 成分股名稱 / 股票代號…" oninput="filterChanges()">
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <span>換股明細 — 今日異動</span>
+      <span class="ph-sub">資料來源：各投信每日公告</span>
+    </div>
+    <div class="table-scroll">
+      <table class="etf-table">
+        <thead>
+          <tr>
+            <th width="32">#</th><th>ETF</th><th>成分股</th><th>動作</th>
+            <th>前次佔比</th><th>現在佔比</th><th>變化</th>
+          </tr>
+        </thead>
+        <tbody id="changesTbody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<div class="page" id="p-holdings"><div class="section-title">ETF成分佔比</div><div class="donut-grid" id="donutGrid"></div></div>
+<!-- ════════ P3: 成分佔比 ════════ -->
+<div class="page" id="p-holdings">
+  <div class="section-title">ETF成分佔比（最新持股公告）</div>
+  <div style="display:flex;gap:18px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sumi-60)">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--aizumi);display:inline-block"></span>14 檔主動ETF
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sumi-60)">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--kogane);display:inline-block"></span>自選ETF（非上方14檔）
+    </div>
+  </div>
+  <div class="donut-grid" id="donutGrid"></div>
+</div>
 
+<!-- ════════ P4: 月績效 ════════ -->
 <div class="page" id="p-perf">
+  <div class="section-title">月績效排行（0050 + 009816 + 自選 + 14 檔主動ETF）</div>
+  <div id="perfRealNote" style="display:none;background:rgba(77,116,148,0.1);border:1px solid rgba(77,116,148,0.2);border-left:3px solid var(--aizumi);border-radius:6px;padding:10px 14px;font-size:11px;color:var(--sumi-60);margin-bottom:14px;">
+    💡 績效資料累積中（每日收盤後自動更新）。月份旁標示「示範」者為模擬數字，真實歷史將隨時間累積。
+  </div>
+  <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--sumi-60);display:flex;align-items:center;gap:5px">
+      <span style="width:16px;height:2px;background:var(--sumi-45);display:inline-block;border-radius:2px"></span>大盤 0050
+    </span>
+    <span style="font-size:11px;color:var(--sumi-60);display:flex;align-items:center;gap:5px">
+      <span style="width:16px;height:2px;background:var(--kogane);display:inline-block;border-radius:2px"></span>自選ETF
+    </span>
+    <span style="font-size:11px;color:var(--sumi-60);display:flex;align-items:center;gap:5px">
+      <span style="width:16px;height:2px;background:var(--aizumi);display:inline-block;border-radius:2px"></span>主動ETF
+    </span>
+  </div>
   <div class="month-selector" id="monthSelector"></div>
-  <div class="two-col"><div class="panel"><div class="panel-header">📊 月績效排行</div><div class="table-scroll"><table class="etf-table"><thead><tr><th>#</th><th>ETF</th><th>類別</th><th>月報酬</th><th>圖</th></tr></thead><tbody id="perfTbody"></tbody></table></div></div>
-  <div class="panel"><div class="panel-header">累積績效</div><canvas id="perfChart" height="280"></canvas></div></div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header"><span>🏆 績效排行（選定月份）</span></div>
+      <div class="table-scroll">
+        <table class="etf-table">
+          <thead><tr><th width="32">#</th><th>ETF</th><th>類別</th><th>月報酬率</th><th>條形圖</th></tr></thead>
+          <tbody id="perfTbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span>近6個月累積績效</span><span class="ph-sub">Top5 + 0050</span></div>
+      <div style="padding:16px"><canvas id="perfChart" height="300"></canvas></div>
+    </div>
+  </div>
 </div>
 
+<!-- ════════ P5: ETF 總覽 ════════ -->
 <div class="page" id="p-etflist">
-  <div class="search-wrap"><input class="search-input" id="etfSearch" placeholder="搜尋代號/名稱" oninput="renderEtfList()"></div>
-  <div class="panel"><div class="table-scroll"><table class="etf-table"><thead><tr><th>#</th><th>代號</th><th>名稱</th><th>類別</th><th>現價</th><th>漲跌</th><th>淨值</th><th>溢價</th><th>規模(億)</th></tr></thead><tbody id="etfListTbody"></tbody></table></div></div>
+  <div class="section-title">ETF總覽（0050 首位 + 自選 + 14 檔主動ETF，無重複）</div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="etfSearch" placeholder="搜尋 ETF 代號或名稱…" oninput="renderEtfList()">
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <span>ETF 列表</span>
+      <span class="ph-sub">TWSE / yfinance / FinMind</span>
+    </div>
+    <div class="table-scroll">
+      <table class="etf-table">
+        <thead>
+          <tr>
+            <th width="32">#</th><th>代號</th><th>名稱</th><th>類別</th>
+            <th>現價</th><th>今日漲跌</th><th>淨值NAV</th><th>折溢價</th><th>規模（億）</th>
+          </tr>
+        </thead>
+        <tbody id="etfListTbody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
+<!-- ════════ P6: 自選ETF ════════ -->
 <div class="page" id="p-watchlist">
+  <div class="section-title">自選追蹤（最多 8 檔）</div>
   <div class="watchlist-grid" id="watchlistGrid"></div>
-  <div class="section-title">自選vs 0050</div>
-  <div class="panel"><div class="panel-header"><span>累積報酬</span><div style="display:flex;gap:5px;"><button class="month-btn" id="wc_1m" onclick="setWatchPeriod('1m')">1M</button><button class="month-btn" id="wc_3m" onclick="setWatchPeriod('3m')">3M</button><button class="month-btn" id="wc_6m" onclick="setWatchPeriod('6m')">6M</button><button class="month-btn" id="wc_1y" onclick="setWatchPeriod('1y')">1Y</button></div></div><canvas id="watchChart" style="max-height:280px"></canvas></div>
+
+  <div class="section-title" style="margin-top:8px">自選 vs. 0050 累積績效</div>
+  <div class="panel">
+    <div class="panel-header">
+      <span id="watchChartTitle">累積報酬率</span>
+      <div style="display:flex;gap:5px;">
+        <button class="month-btn active" id="wc_1m"  onclick="setWatchPeriod('1m')">1個月</button>
+        <button class="month-btn"        id="wc_3m"  onclick="setWatchPeriod('3m')">3個月</button>
+        <button class="month-btn"        id="wc_6m"  onclick="setWatchPeriod('6m')">6個月</button>
+        <button class="month-btn"        id="wc_1y"  onclick="setWatchPeriod('1y')">1年</button>
+      </div>
+    </div>
+    <div style="padding:16px 18px 12px">
+      <div id="watchChartEmpty" style="display:none;text-align:center;padding:40px;color:var(--sumi-45);font-size:12px;">
+        📊 尚無足夠歷史資料<br>
+        <span style="font-size:10px;font-family:var(--font-mono);margin-top:6px;display:block;">資料每日收盤後自動更新，累積後即可顯示真實走勢</span>
+      </div>
+      <canvas id="watchChart"></canvas>
+    </div>
+  </div>
 </div>
+
 </main>
 
-<div class="modal-overlay" id="addModal"><div class="modal"><div class="modal-title">新增自選ETF</div><input class="modal-input" id="addInput" placeholder="例: 00981A"><div class="modal-btns"><button class="btn-ghost" onclick="closeModal()">取消</button><button class="btn-primary" onclick="confirmAdd()">加入</button></div></div></div>
-<div class="footer-note">追蹤14檔主動ETF｜基準0050/009816｜點擊股票開啟K線分析｜每日自動更新</div>
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">新增自選ETF</div>
+    <input class="modal-input" id="addInput" type="text" placeholder="輸入代號，例：00981A" maxlength="10">
+    <div class="modal-hint">支援主動ETF（00981A…）或一般ETF（0050、006208）</div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="confirmAdd()">加入自選</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  追蹤標的：00981A · 00982A · 00991A · 00992A · 00993A · 00980A · 00985A · 00995A · 00984A · 00987A · 00994A · 00996A · 00400A · 00401A<br>
+  基準比較：0050 元大台灣50 · 009816 凱基台灣TOP50 ｜ 股票名稱可點擊開啟K線分析<br>
+  資料來源：Pocket.tw M722 / TWSE OpenAPI ｜ 每個交易日 17:10 自動更新 ｜ 金額為估算值，不構成投資建議
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 穩固核心 — 完全預防空白頁面
+//  完整修復版 — 保留所有原始功能，僅強化資料載入容錯
 // ═══════════════════════════════════════════════════════════════
+
 const KLINE_BASE = 'https://flydav003-alt.github.io/k-line/';
-const ETF_META = { '00981A':'統一台股增長','00982A':'群益台灣強棒','00991A':'復華未來50','00992A':'群益科技創新','00993A':'安聯台灣','00980A':'野村臺灣優選','00985A':'野村台灣50','00995A':'中信台灣卓越','00984A':'安聯台灣高息','00987A':'台新優勢成長','00994A':'第一金台股優','00996A':'兆豐台灣豐收','00400A':'國泰動能高息','00401A':'摩根台灣鑫收' };
-const BENCH_META = { '0050':'元大台灣50','009816':'凱基台灣TOP50' };
-const DONUT_COLORS = ['#4d7494','#c8b560','#7a9e52','#db5a6b','#c8a84b','#8a6aaa','#5b9eac','#c07840','#6aab8e','#9b3a52','#7a7a5a','#5080a0','#a0804a','#4a8060','#8a5060'];
 
-let APP = {
-  isDemo: false, summary: null, buyRank: [], sellRank: [], changes: [], holdings: {},
-  etfPrices: {}, performance: {}, priceHistory: {},
-  etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}))
+const ETF_META = {
+  '00981A': '統一台股增長', '00982A': '群益台灣強棒',
+  '00991A': '復華未來50',   '00992A': '群益科技創新',
+  '00993A': '安聯台灣',     '00980A': '野村臺灣優選',
+  '00985A': '野村台灣50',   '00995A': '中信台灣卓越',
+  '00984A': '安聯台灣高息', '00987A': '台新優勢成長',
+  '00994A': '第一金台股優', '00996A': '兆豐台灣豐收',
+  '00400A': '國泰動能高息', '00401A': '摩根台灣鑫收',
 };
-let rankSort = 'consensus';
-let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch')||'[]');
-let donutCharts = new Map();
+const BENCH_META = { '0050': '元大台灣50', '009816': '凱基台灣TOP50' };
 
-function saveWatch(){ localStorage.setItem('mushi_etf_watch', JSON.stringify(watchlist)); }
-function fmtMoney(v){ let a=Math.abs(v); if(a>=1e8) return (v>0?'+':'')+(a/1e8).toFixed(1)+'億'; if(a>=1e4) return (v>0?'+':'')+(a/1e4).toFixed(0)+'萬'; return v.toLocaleString(); }
+const DONUT_COLORS = [
+  '#4d7494','#c8b560','#7a9e52','#db5a6b','#c8a84b',
+  '#8a6aaa','#5b9eac','#c07840','#6aab8e','#9b3a52',
+  '#7a7a5a','#5080a0','#a0804a','#4a8060','#8a5060',
+];
+
+// ── 全域狀態 ─────────────────────────────────────────────────
+let APP = {
+  isDemo: false, summary: null,
+  buyRank: [], sellRank: [], changes: [], holdings: {},
+  etfPrices: {}, performance: {}, priceHistory: {},
+  etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0})),
+};
+let rankSort = 'consensus'; // 'consensus' | 'amount'
+
+// ── MOCK 備用資料 (示範模式) ────────────────────────────
+const MOCK = {
+  buyRank: [
+    {stock_code:'2330',stock_name:'台積電',etf_count:9,value:5840000000},
+    {stock_code:'2382',stock_name:'廣達',  etf_count:6,value:1820000000},
+    {stock_code:'2317',stock_name:'鴻海',  etf_count:5,value:1340000000},
+    {stock_code:'6669',stock_name:'緯穎',  etf_count:4,value:980000000},
+    {stock_code:'3008',stock_name:'大立光',etf_count:3,value:760000000},
+    {stock_code:'2308',stock_name:'台達電',etf_count:5,value:680000000},
+    {stock_code:'3711',stock_name:'日月光投控',etf_count:4,value:540000000},
+    {stock_code:'2395',stock_name:'研華',  etf_count:3,value:420000000},
+    {stock_code:'6488',stock_name:'環球晶',etf_count:3,value:380000000},
+    {stock_code:'3034',stock_name:'聯詠',  etf_count:2,value:290000000},
+  ],
+  sellRank: [
+    {stock_code:'2454',stock_name:'聯發科',etf_count:7,value:-2640000000},
+    {stock_code:'2303',stock_name:'聯電',  etf_count:5,value:-1240000000},
+    {stock_code:'2603',stock_name:'長榮',  etf_count:4,value:-890000000},
+    {stock_code:'6505',stock_name:'台塑石化',etf_count:3,value:-720000000},
+    {stock_code:'2881',stock_name:'富邦金',etf_count:3,value:-560000000},
+  ],
+  changes: [
+    {etf_code:'00981A',stock_code:'2330',stock_name:'台積電',action:'INCREASE',weight_before:14.8,weight_after:17.2,amount_change:1200000000},
+    {etf_code:'00982A',stock_code:'2330',stock_name:'台積電',action:'NEW_BUY', weight_before:0,   weight_after:11.4,amount_change:880000000},
+    {etf_code:'00993A',stock_code:'2454',stock_name:'聯發科',action:'DECREASE',weight_before:9.4, weight_after:6.1, amount_change:-720000000},
+    {etf_code:'00995A',stock_code:'2603',stock_name:'長榮',  action:'FULL_SELL',weight_before:4.2,weight_after:0,   amount_change:-340000000},
+  ],
+};
+
+// ── 輔助函數 ────────────────────────────────────────────────
+function fmtMoney(v){
+  const a=Math.abs(v);
+  if(a>=1e8) return (v>0?'+':'')+(a/1e8).toFixed(1)+'億';
+  if(a>=1e4) return (v>0?'+':'')+(a/1e4).toFixed(0)+'萬';
+  return v.toLocaleString();
+}
 function fmtPct(v,d=1){ return (v>0?'+':'')+Number(v).toFixed(d)+'%'; }
 function colorCls(v){ return +v>0?'up':+v<0?'down':'flat'; }
 function rankCls(i){ return i===0?'gold':i===1?'silver':i===2?'bronze':''; }
 function actionLabel(a){ return {NEW_BUY:'買入',FULL_SELL:'賣出',INCREASE:'加碼',DECREASE:'減碼'}[a]||a; }
-function actionCls(a){ return {NEW_BUY:'buy',FULL_SELL:'sell',INCREASE:'increase',DECREASE:'decrease'}[a]||''; }
+function actionCls(a)  { return {NEW_BUY:'buy',FULL_SELL:'sell',INCREASE:'increase',DECREASE:'decrease'}[a]||''; }
 function klineLink(code){ return `${KLINE_BASE}?stock=${code}`; }
-function stockNameLink(code, name){ return `<a href="${klineLink(code)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(28,18,9,0.3);cursor:pointer;">${name}</a>`; }
+function stockNameLink(code, name){
+  return `<a href="${klineLink(code)}" target="_blank" rel="noopener"
+    style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(28,18,9,0.3);cursor:pointer;transition:color .15s;"
+    onmouseover="this.style.color='var(--aizumi-dk)'"
+    onmouseout="this.style.color='inherit'"
+  >${name}</a>`;
+}
 
-async function loadJSON(p){ const r=await fetch(p+'?t='+Date.now()); if(!r.ok)throw new Error(`HTTP ${r.status}`); return r.json(); }
-function safeJSON(p,fb){ return loadJSON(p).catch(()=>fb); }
+// ── 安全 JSON 載入 (不讓整頁崩潰) ─────────────────────────────
+async function loadJSON(path) {
+  const r = await fetch(path + '?t=' + Date.now());
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+function safeJSON(path, fallback) {
+  return loadJSON(path).catch(() => fallback);
+}
 
+// ── 主資料初始化 (雙重容錯) ─────────────────────────────────
 async function initData() {
   try {
+    // 核心資料（必要）
     const [summary, buyRank, sellRank, changes, holdings] = await Promise.all([
-      loadJSON('data/summary.json'), loadJSON('data/buy_ranking.json'), loadJSON('data/sell_ranking.json'),
-      loadJSON('data/daily_changes.json'), loadJSON('data/holdings.json')
+      loadJSON('data/summary.json'),
+      loadJSON('data/buy_ranking.json'),
+      loadJSON('data/sell_ranking.json'),
+      loadJSON('data/daily_changes.json'),
+      loadJSON('data/holdings.json'),
     ]);
+    // 選用資料
     const [etfPrices, performance, priceHistory] = await Promise.all([
-      safeJSON('data/etf_prices.json',{}), safeJSON('data/performance.json',{}), safeJSON('data/price_history.json',{})
+      safeJSON('data/etf_prices.json', {}),
+      safeJSON('data/performance.json', {}),
+      safeJSON('data/price_history.json', {}),
     ]);
+
     APP = {
-      isDemo: false, summary, buyRank: buyRank||[], sellRank: sellRank||[], changes: changes||[], holdings: holdings||{},
-      etfPrices: etfPrices||{}, performance: performance||{}, priceHistory: priceHistory||{},
-      etfs: (summary?.active_etfs||[]).map(e=>({ticker:e.code,name:e.name,price:0,chg:0,nav:0,aum:0}))
+      isDemo: false,
+      summary,
+      buyRank: buyRank || [],
+      sellRank: sellRank || [],
+      changes: changes || [],
+      holdings: holdings || {},
+      etfPrices: etfPrices || {},
+      performance: performance || {},
+      priceHistory: priceHistory || {},
+      etfs: (summary.active_etfs || []).map(e => ({ ticker: e.code, name: e.name, price: 0, chg: 0, nav: 0, aum: 0 })),
     };
-    if(APP.etfs.length===0) APP.etfs = Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}));
-    Object.assign(APP.etfPrices, etfPrices);
-    APP.etfs = APP.etfs.map(e=>{ const p=APP.etfPrices[e.ticker]||{}; return {...e, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0}; });
-    document.getElementById('todayDate').innerText = summary?.date?.slice(5)||'--/--';
-    document.querySelector('.logo-sub').innerText = `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot"></span><span>${summary?.date||'最新'}</span>`;
-    console.log('✅ 真實資料載入');
-  } catch(e) {
-    console.warn('⚠️ 載入失敗，啟用演示模式', e);
+    if (APP.etfs.length === 0) {
+      APP.etfs = Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 }));
+    }
+    // 填入價格資訊
+    APP.etfs = APP.etfs.map(e => {
+      const p = APP.etfPrices[e.ticker] || {};
+      return { ...e, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0 };
+    });
+
+    if (summary.date) {
+      const d = new Date(summary.date);
+      document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
+    } else {
+      document.getElementById('todayDate').textContent = '--/--';
+    }
+    document.querySelector('.logo-sub').textContent = `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
+    document.getElementById('dataPill').innerHTML = `<span class="live-dot"></span><span>資料：${summary.date || '最新'}</span>`;
+    document.getElementById('dataPill').style.display = 'flex';
+    console.log('✅ 真實資料載入成功');
+  } catch (e) {
+    console.warn('⚠️ 載入失敗，切換為示範模式(Demo)', e);
     APP = {
-      isDemo: true, summary: null, buyRank: MOCK_BUY, sellRank: MOCK_SELL, changes: MOCK_CHANGES, holdings: {},
-      etfPrices: {}, performance: {}, priceHistory: {},
-      etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}))
+      isDemo: true,
+      summary: null,
+      buyRank: MOCK.buyRank,
+      sellRank: MOCK.sellRank,
+      changes: MOCK.changes,
+      holdings: {},
+      etfPrices: {},
+      performance: {},
+      priceHistory: {},
+      etfs: Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 })),
     };
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot" style="background:#db5a6b;"></span><span>示範模式</span>`;
+    document.getElementById('dataPill').innerHTML = `<span class="live-dot" style="background:#db5a6b;"></span><span>示範模式 (暫無即時資料)</span>`;
+    document.getElementById('dataPill').style.display = 'flex';
+    document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
   }
   renderAll();
 }
 
-const MOCK_BUY = [{stock_code:'2330',stock_name:'台積電',etf_count:9,value:5840000000},{stock_code:'2382',stock_name:'廣達',etf_count:6,value:1820000000},{stock_code:'2317',stock_name:'鴻海',etf_count:5,value:1340000000}];
-const MOCK_SELL = [{stock_code:'2454',stock_name:'聯發科',etf_count:7,value:-2640000000},{stock_code:'2303',stock_name:'聯電',etf_count:5,value:-1240000000}];
-const MOCK_CHANGES = [{etf_code:'00981A',stock_code:'2330',stock_name:'台積電',action:'INCREASE',weight_before:14.8,weight_after:17.2}];
-
-function renderAll(){ renderRankings(); renderChanges(APP.changes); renderKpiRow(); renderEtfList(); renderWatchlist(); renderDonutsIfNeeded(); }
-
-function renderKpiRow(){
-  if(APP.buyRank.length) document.querySelector('#p-rankings .kpi-value.kobai').innerText = APP.buyRank[0].stock_name||'--';
-  if(APP.buyRank.length) document.querySelector('#p-rankings .kpi-value.aizumi').innerText = APP.buyRank[0].etf_count||'--';
-  if(APP.sellRank.length) document.querySelector('#p-rankings .kpi-value.wakaba').innerText = APP.sellRank[0].stock_name||'--';
-  let bc = APP.changes.filter(c=>c.action==='NEW_BUY'||c.action==='INCREASE').length;
-  let sc = APP.changes.filter(c=>c.action==='FULL_SELL'||c.action==='DECREASE').length;
-  let ec = [...new Set(APP.changes.map(c=>c.etf_code))].length;
-  document.querySelector('#p-changes .kpi-value.kobai').innerText = bc||0;
-  document.querySelector('#p-changes .kpi-value.wakaba').innerText = sc||0;
-  document.querySelector('#p-changes .kpi-value.aizumi').innerText = ec||0;
+// ── 自選清單 localStorage ──────────────────────────────────
+let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch') || '[]');
+function saveWatch() { localStorage.setItem('mushi_etf_watch', JSON.stringify(watchlist)); }
+function getExtraWatch() {
+  const at = APP.etfs.map(e => e.ticker);
+  return watchlist.filter(t => !Object.keys(BENCH_META).includes(t) && !at.includes(t));
 }
 
-window.setRankSort = function(mode){
-  rankSort=mode; renderRankings();
-  document.getElementById('sortByConsensus').style.cssText = mode==='consensus'?'background:var(--sumi);color:var(--kuri)':'background:var(--kiji);color:var(--sumi-60)';
-  document.getElementById('sortByAmount').style.cssText = mode==='amount'?'background:var(--sumi);color:var(--kuri)':'background:var(--kiji);color:var(--sumi-60)';
+// ── 時鐘 ───────────────────────────────────────────────────
+function tick() {
+  const n = new Date();
+  document.getElementById('clockEl').textContent = [n.getHours(), n.getMinutes(), n.getSeconds()].map(v => String(v).padStart(2,'0')).join(':');
+}
+setInterval(tick, 1000); tick();
+
+// ── 導航頁籤 ────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const pid = t.dataset.page;
+    document.getElementById(pid).classList.add('active');
+    if (pid === 'p-holdings') renderDonuts();
+    if (pid === 'p-perf') renderPerfPage();
+    if (pid === 'p-watchlist') renderWatchlist();
+    if (pid === 'p-etflist') renderEtfList();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  P1: 共同加碼排行 (含排序)
+// ═══════════════════════════════════════════════════════════
+window.setRankSort = function(mode) {
+  rankSort = mode;
+  const btnC = document.getElementById('sortByConsensus');
+  const btnA = document.getElementById('sortByAmount');
+  const activeStyle = 'background:var(--sumi);color:var(--kuri);border-color:var(--sumi);';
+  const inactStyle  = 'background:var(--kiji);color:var(--sumi-60);border-color:var(--border);';
+  btnC.style.cssText = (mode === 'consensus') ? activeStyle : inactStyle;
+  btnA.style.cssText = (mode === 'amount')    ? activeStyle : inactStyle;
+  renderRankings();
 };
-function renderRankings(){
-  let buys = [...APP.buyRank]; let sells = [...APP.sellRank];
-  if(rankSort==='consensus'){ buys.sort((a,b)=>b.etf_count-a.etf_count); sells.sort((a,b)=>b.etf_count-a.etf_count); }
-  else { buys.sort((a,b)=>b.value-a.value); sells.sort((a,b)=>a.value-b.value); }
-  let maxB = buys[0]?Math.max(...buys.map(r=>Math.abs(r.value))):1;
-  let maxS = sells[0]?Math.max(...sells.map(r=>Math.abs(r.value))):1;
-  document.getElementById('buyRankTbody').innerHTML = buys.map((r,i)=>`<tr><td><span class="rn ${rankCls(i)}">${i+1}</span></td><td>${stockNameLink(r.stock_code,`<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td><td><span style="color:#c04455;">${r.etf_count}</span></td><td class="up">${fmtMoney(r.value)}</td><td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${Math.abs(r.value)/maxB*100}%"></div></div></div></td></tr>`).join('');
-  document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>`<tr><td><span class="rn ${rankCls(i)}">${i+1}</span></td><td>${stockNameLink(r.stock_code,`<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td><td><span style="color:#5a8032;">${r.etf_count}</span></td><td class="down">${fmtMoney(r.value)}</td><td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${Math.abs(r.value)/maxS*100}%"></div></div></div></td></tr>`).join('');
+
+function sortRankData(data, isPositive) {
+  if (rankSort === 'consensus')
+    return [...data].sort((a,b) => b.etf_count - a.etf_count || Math.abs(b.value) - Math.abs(a.value));
+  return [...data].sort((a,b) => isPositive ? b.value - a.value : a.value - b.value);
 }
 
-let changesAll=[];
-function renderChanges(data){ changesAll=data; _renderChangeTable(data); }
-function _renderChangeTable(data){
-  document.getElementById('changesTbody').innerHTML = data.map((r,i)=>`<tr><td>${i+1}</td><td><span class="etf-pill">${r.etf_code}</span><span class="etf-sub">${ETF_META[r.etf_code]||''}</span></td><td>${stockNameLink(r.stock_code,`<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span></td><td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td><td>${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td><td>${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td><td class="${colorCls((r.weight_after||0)-(r.weight_before||0))}">${(r.action==='NEW_BUY'?'新增':r.action==='FULL_SELL'?'移除':fmtPct((r.weight_after||0)-(r.weight_before||0)))}</td></tr>`).join('');
-}
-window.filterChanges=function(){ let q=document.getElementById('changeSearch').value.toLowerCase(); _renderChangeTable(changesAll.filter(r=>(r.etf_code||'').includes(q)||(r.stock_name||'').includes(q))); };
+function renderRankings() {
+  const buys  = sortRankData(APP.buyRank, true);
+  const sells = sortRankData(APP.sellRank, false);
+  const maxB = buys[0] ? Math.max(...buys.map(r => Math.abs(r.value))) : 1;
+  const maxS = sells[0] ? Math.max(...sells.map(r => Math.abs(r.value))) : 1;
 
-function renderDonutsIfNeeded(){
-  if(!document.getElementById('p-holdings').classList.contains('active')) return;
-  const grid=document.getElementById('donutGrid'); if(!grid) return;
-  donutCharts.forEach(ch=>{ try{ch.destroy();}catch{} }); donutCharts.clear(); grid.innerHTML='';
-  let extra=watchlist.filter(t=>!ETF_META[t]&&!BENCH_META[t]);
-  let items=[...APP.etfs.map(e=>({ticker:e.ticker,name:e.name,isWatch:false})), ...extra.map(t=>({ticker:t,name:`自選 ${t}`,isWatch:true}))];
-  items.forEach(({ticker,name,isWatch},idx)=>{
-    let realData=!isWatch&&APP.holdings[ticker]?.holdings||[];
-    let slices=realData.length?realData.slice(0,8).map(h=>({name:h.stock_name||h.stock_code,w:+(h.weight_pct||0)})):[{name:'台積電',w:28},{name:'廣達',w:9},{name:'聯發科',w:7},{name:'其他',w:56}];
-    let cid=`dc_${ticker.replace(/\W/g,'_')}`;
-    let card=document.createElement('div'); card.className='donut-card'+(isWatch?' is-watch':'');
-    card.innerHTML=`<div><div class="donut-ticker">${ticker}</div><div class="donut-name">${name}</div></div><div class="donut-wrap"><canvas id="${cid}" width="120" height="120"></canvas><div class="donut-center"><div class="donut-center-val">${realData.length||slices.length}</div><div class="donut-center-sub">成分</div></div></div>`;
+  document.getElementById('buyRankTbody').innerHTML = buys.map((r,i)=>`
+    <tr>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
+      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td>
+      <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
+      <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></td>
+    </tr>`).join('');
+
+  document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>`
+    <tr>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
+      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td>
+      <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
+      <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  P2: 每日換股紀錄
+// ═══════════════════════════════════════════════════════════
+let _allChanges = [];
+function renderChanges(data) {
+  _allChanges = data;
+  _renderChangeTable(data);
+  updateKpi();
+}
+function _renderChangeTable(data) {
+  document.getElementById('changesTbody').innerHTML = data.map((r,i)=>{
+    const diff = (r.weight_after||0) - (r.weight_before||0);
+    const name = ETF_META[r.etf_code] || r.etf_code || '';
+    const isBuy = r.action==='NEW_BUY', isSell = r.action==='FULL_SELL';
+    return `<tr>
+      <td><span class="rn">${i+1}</span></td>
+      <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
+      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span></td>
+      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
+      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
+      <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}</td>
+    </tr>`;
+  }).join('');
+}
+window.filterChanges = function() {
+  const q = document.getElementById('changeSearch').value.toLowerCase();
+  _renderChangeTable(_allChanges.filter(r =>
+    (r.etf_code||'').toLowerCase().includes(q) ||
+    (ETF_META[r.etf_code]||'').includes(q) ||
+    (r.stock_name||'').includes(q) ||
+    (r.stock_code||'').includes(q)
+  ));
+};
+function updateKpi() {
+  const bc = APP.changes.filter(c => c.action==='NEW_BUY'||c.action==='INCREASE').length;
+  const sc = APP.changes.filter(c => c.action==='FULL_SELL'||c.action==='DECREASE').length;
+  const ec = [...new Set(APP.changes.map(c=>c.etf_code))].length;
+  document.querySelector('#p-changes .kpi-value.kobai').textContent = APP.isDemo ? '+18' : `+${bc}`;
+  document.querySelector('#p-changes .kpi-value.wakaba').textContent = APP.isDemo ? '-9' : `-${sc}`;
+  document.querySelector('#p-changes .kpi-value.aizumi').textContent = APP.isDemo ? '11' : ec || '0';
+  
+  const topBuy = APP.buyRank[0]?.stock_name || '--';
+  const topSell = APP.sellRank[0]?.stock_name || '--';
+  const consensus = APP.buyRank[0]?.etf_count || '--';
+  document.querySelector('#p-rankings .kpi-value.kobai').textContent = topBuy;
+  document.querySelector('#p-rankings .kpi-value.aizumi').textContent = consensus;
+  document.querySelector('#p-rankings .kpi-value.wakaba').textContent = topSell;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  P3: 成分佔比 (甜甜圈，完整保留)
+// ═══════════════════════════════════════════════════════════
+let donutsDone = false;
+const donutCharts = new Map();
+
+function renderDonuts() {
+  if (donutsDone) return;
+  donutsDone = true;
+  const grid = document.getElementById('donutGrid');
+  if (!grid) return;
+  donutCharts.forEach(ch => { try { ch.destroy(); } catch(e) {} });
+  donutCharts.clear();
+  grid.innerHTML = '';
+  const extra = getExtraWatch();
+  const items = [
+    ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, isWatch: false })),
+    ...extra.map(t => ({ ticker: t, name: `自選 ${t}`, isWatch: true })),
+  ];
+  items.forEach(({ ticker, name, isWatch }, di) => {
+    const cid = 'dc_' + ticker.replace(/\W/g,'_');
+    const realData = (!isWatch && APP.holdings[ticker] && APP.holdings[ticker].holdings) ? APP.holdings[ticker].holdings : [];
+    let coloredSlices = [];
+    let totalCount = 0;
+    if (realData.length) {
+      totalCount = realData.length;
+      const top9 = realData.slice(0,9);
+      const top9sum = top9.reduce((s,h)=>s+(h.weight_pct||0),0);
+      const otherPct = Math.max(0, +(100 - top9sum).toFixed(1));
+      coloredSlices = [
+        ...top9.map(h => ({ name: h.stock_name || h.stock_code, w: +(h.weight_pct||0) })),
+        ...(otherPct > 0.1 ? [{ name: '其他', w: otherPct }] : []),
+      ];
+    } else {
+      // 模擬成分
+      const tops = [
+        { name: '台積電', w: 28 }, { name: '廣達', w: 9 }, { name: '聯發科', w: 7 },
+        { name: '鴻海', w: 6 }, { name: '台達電', w: 5 }, { name: '聯電', w: 4 },
+      ];
+      const sum = tops.reduce((s,x)=>s+x.w,0);
+      coloredSlices = [...tops, { name: '其他', w: +(100-sum).toFixed(1) }];
+      totalCount = realData.length || 20;
+    }
+    const card = document.createElement('div');
+    card.className = 'donut-card' + (isWatch ? ' is-watch' : '');
+    card.style.animationDelay = `${di*0.04}s`;
+    // 精簡 legend 避免過長，保留原始風格
+    const legendHtml = coloredSlices.slice(0,5).map((s,i)=>`
+      <div class="legend-row">
+        <span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span>
+        <span style="font-size:11px">${s.name}</span>
+        <span class="legend-pct">${s.w.toFixed(1)}%</span>
+      </div>`).join('');
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div><div class="donut-ticker">${ticker}</div><div class="donut-name">${name}</div></div>
+        <span class="tag ${isWatch?'watch-t':'active-t'}">${isWatch?'自選':'主動ETF'}</span>
+      </div>
+      <div class="donut-wrap">
+        <canvas id="${cid}" width="120" height="120"></canvas>
+        <div class="donut-center"><div class="donut-center-val">${totalCount||coloredSlices.length}</div><div class="donut-center-sub">成分</div></div>
+      </div>
+      <div class="donut-legend">${legendHtml}${coloredSlices.length>5?'<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;">+ 其餘成分</div>':''}</div>`;
     grid.appendChild(card);
-    let chart=new Chart(document.getElementById(cid),{type:'doughnut',data:{labels:slices.map(s=>s.name),datasets:[{data:slices.map(s=>s.w),backgroundColor:DONUT_COLORS,borderColor:'#fff8e8',borderWidth:2}]},options:{cutout:'70%',plugins:{legend:{display:false}}}});
-    donutCharts.set(cid,chart);
+    const chart = new Chart(document.getElementById(cid), {
+      type: 'doughnut',
+      data: {
+        labels: coloredSlices.map(s=>s.name),
+        datasets: [{
+          data: coloredSlices.map(s=>s.w),
+          backgroundColor: coloredSlices.map((_,i)=>DONUT_COLORS[i]),
+          borderColor: '#fff8e8', borderWidth: 2,
+        }]
+      },
+      options: { cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(1)}%` } } } }
+    });
+    donutCharts.set(cid, chart);
   });
 }
 
-// 精簡績效、列表等其餘函式皆保留原貌但綁定正確
-function renderEtfList(){
-  let q=(document.getElementById('etfSearch')?.value||'').toLowerCase();
-  let rows=[...Object.entries(BENCH_META).map(([ticker,name])=>({ticker,name,cat:'bench',price:0,chg:0,nav:0,aum:0})), ...APP.etfs.map(e=>({...e,cat:'active'}))];
-  rows = rows.filter(r=>!q||r.ticker.includes(q)||r.name.includes(q));
-  document.getElementById('etfListTbody').innerHTML = rows.map((r,i)=>`<tr><td>${i+1}</td><td><span class="etf-pill">${r.ticker}</span></td><td>${r.name}</td><td><span class="tag ${r.cat==='bench'?'bench-t':'active-t'}">${r.cat==='bench'?'基準':'主動'}</span></td><td>${r.price>0?r.price.toFixed(2):'─'}</td><td class="${colorCls(r.chg)}">${r.chg?fmtPct(r.chg):'─'}</td><td>${r.nav||'─'}</td><td>${r.premium?fmtPct(r.premium):'─'}</td><td>${r.aum||'─'}</td></tr>`).join('');
+// ═══════════════════════════════════════════════════════════
+//  P4: 月績效 (完整保留，含折線圖)
+// ═══════════════════════════════════════════════════════════
+const MONTHS_12 = (()=>{
+  const months = []; const d = new Date();
+  for(let i=11; i>=0; i--){
+    const m = new Date(d.getFullYear(), d.getMonth()-i, 1);
+    months.push(`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`);
+  }
+  return months;
+})();
+let selMonth = MONTHS_12[MONTHS_12.length-1];
+let perfChartInst = null;
+
+function getPerfData(ticker) {
+  const real = APP.performance[ticker];
+  if (real && Object.keys(real).length) return real;
+  // 示範亂數
+  const fake = {};
+  MONTHS_12.forEach(m => { fake[m] = +(Math.random() * 18 - 6).toFixed(2); });
+  return fake;
 }
-function renderWatchlist(){ 
-  let grid=document.getElementById('watchlistGrid'); if(!grid) return;
-  grid.innerHTML = watchlist.map(t=>{ let p=APP.etfPrices[t]||{}; return `<div class="watch-card"><span class="wc-remove" onclick="removeWatch('${t}')">✕</span><div class="wc-ticker">${t}</div><div class="wc-price">${p.close?.toFixed(2)||'─'}</div><div class="wc-change ${colorCls(p.chg_pct)}">${p.chg_pct?fmtPct(p.chg_pct):''}</div></div>` }).join('') + (watchlist.length<8?'<button class="add-btn" onclick="openModal()">＋ 新增</button>':'');
+function getPerfItems() {
+  const at = APP.etfs.map(e=>e.ticker);
+  return [
+    { ticker:'0050', name:'元大台灣50', cat:'bench' },
+    { ticker:'009816', name:'凱基台灣TOP50', cat:'bench' },
+    ...watchlist.filter(t=>!BENCH_META[t] && !at.includes(t)).map(t=>({ ticker:t, name:`自選 ${t}`, cat:'watch' })),
+    ...APP.etfs.map(e=>({ ticker:e.ticker, name:e.name, cat:'active' })),
+  ];
 }
-window.removeWatch=function(t){ watchlist=watchlist.filter(x=>x!==t); saveWatch(); renderWatchlist(); renderEtfList(); renderDonutsIfNeeded(); };
-window.openModal=()=>document.getElementById('addModal').classList.add('open');
-window.closeModal=()=>document.getElementById('addModal').classList.remove('open');
-window.confirmAdd=function(){ let v=document.getElementById('addInput').value.trim().toUpperCase(); if(v&&!watchlist.includes(v)&&watchlist.length<8){ watchlist.push(v); saveWatch(); renderWatchlist(); renderEtfList(); renderDonutsIfNeeded(); } closeModal(); };
-function setWatchPeriod(p){ console.log(p); }
-tick(); setInterval(tick,1000); function tick(){ let d=new Date(); document.getElementById('clockEl').innerText=[d.getHours(),d.getMinutes(),d.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':'); }
-document.querySelectorAll('.tab').forEach(t=>{ t.addEventListener('click',()=>{ let pid=t.dataset.page; document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); t.classList.add('active'); document.getElementById(pid).classList.add('active'); if(pid==='p-holdings') renderDonutsIfNeeded(); if(pid==='p-perf') renderPerfSimple(); }); });
-function renderPerfSimple(){ let tbody=document.getElementById('perfTbody'); if(tbody) tbody.innerHTML='<tr><td colspan=5>示範資料</td></tr>'; }
+function renderMonthSel() {
+  document.getElementById('monthSelector').innerHTML = MONTHS_12.map(m =>
+    `<button class="month-btn${m===selMonth?' active':''}" onclick="selectMonth('${m}')">${m}</button>`
+  ).join('');
+}
+window.selectMonth = function(m) {
+  selMonth = m; renderMonthSel(); renderPerfTable(); renderPerfChartFn();
+};
+function renderPerfTable() {
+  const list = getPerfItems().map(e => {
+    const ret = getPerfData(e.ticker)[selMonth] ?? null;
+    return { ...e, ret };
+  }).filter(e => e.ret !== null).sort((a,b)=>b.ret - a.ret);
+  const maxR = Math.max(1, ...list.map(r=>Math.abs(r.ret)));
+  const isReal = Object.keys(APP.performance).length > 0;
+  document.getElementById('perfTbody').innerHTML = list.map((r,i)=>{
+    const catTag = r.cat==='bench' ? '<span class="tag bench-t">大盤</span>' : (r.cat==='watch' ? '<span class="tag watch-t">自選</span>' : '<span class="tag active-t">主動</span>');
+    const fakeNote = (!isReal && APP.isDemo) ? '<span style="font-size:9px;color:var(--sumi-30);margin-left:4px;">示範</span>' : '';
+    return `<tr>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
+      <td><span class="etf-pill">${r.ticker}</span><span class="etf-sub">${r.name}</span>${fakeNote}</td>
+      <td>${catTag}</td>
+      <td class="${colorCls(r.ret)}" style="font-size:14px">${fmtPct(r.ret)}</td>
+      <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill ${r.ret>=0?'kobai':'wakaba'}" style="width:${Math.abs(r.ret)/maxR*100}%"></div></div></div></td>
+    </tr>`;
+  }).join('');
+}
+function renderPerfChartFn() {
+  if (perfChartInst) perfChartInst.destroy();
+  const allItems = getPerfItems();
+  const sorted = [...allItems].filter(e => getPerfData(e.ticker)[selMonth] !== null).sort((a,b)=> (getPerfData(b.ticker)[selMonth]||-999) - (getPerfData(a.ticker)[selMonth]||-999));
+  const top5 = sorted.filter(e=>e.cat!=='bench').slice(0,5);
+  const bench = allItems.filter(e=>e.cat==='bench');
+  const toChart = [...top5, ...bench];
+  const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#9a9080','#5b9eac'];
+  const validMonths = MONTHS_12.filter(m => toChart.some(e => getPerfData(e.ticker)[m] !== null));
+  perfChartInst = new Chart(document.getElementById('perfChart'), {
+    type:'line',
+    data:{
+      labels: validMonths,
+      datasets: toChart.map((e,i)=>({
+        label: e.ticker,
+        data: validMonths.map(m => getPerfData(e.ticker)[m] ?? null),
+        borderColor: clrs[i%clrs.length],
+        borderWidth: e.cat==='bench'?1.5:2,
+        borderDash: e.cat==='bench'?[4,3]:[],
+        pointRadius: 3, tension: 0.3, fill: false,
+      }))
+    },
+    options:{ responsive:true, plugins:{ legend:{ labels:{ font:{size:11} } } } }
+  });
+}
+function renderPerfPage() {
+  renderMonthSel(); renderPerfTable(); renderPerfChartFn();
+  if (APP.isDemo) document.getElementById('perfRealNote').style.display = 'block';
+  else document.getElementById('perfRealNote').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  P5: ETF 總覽
+// ═══════════════════════════════════════════════════════════
+function renderEtfList() {
+  const q = (document.getElementById('etfSearch')?.value||'').toLowerCase();
+  const benchRows = Object.entries(BENCH_META).map(([ticker,name])=>{
+    const p = APP.etfPrices[ticker]||{};
+    return { ticker, name, price: p.close||0, chg: p.chg_pct||0, nav: p.nav||0, aum: p.aum_billion||0, premium: p.premium_pct||0, cat:'bench' };
+  });
+  const extraW = getExtraWatch().map(t=>{
+    const p = APP.etfPrices[t]||{};
+    return { ticker:t, name:`自選ETF ${t}`, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0, premium:p.premium_pct||0, cat:'watch' };
+  });
+  const activeRows = APP.etfs.map(e=>{
+    const p = APP.etfPrices[e.ticker]||{};
+    return { ticker:e.ticker, name:e.name, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0, premium:p.premium_pct||0, cat:'active' };
+  });
+  let rows = [...benchRows, ...extraW, ...activeRows];
+  rows = rows.filter((r,i,a)=>a.findIndex(x=>x.ticker===r.ticker)===i);
+  if(q) rows = rows.filter(r=>r.ticker.toLowerCase().includes(q)||r.name.includes(q));
+  document.getElementById('etfListTbody').innerHTML = rows.map((r,i)=>`
+    <tr>
+      <td><span class="rn ${i===0?'gold':''}">${i+1}</span></td>
+      <td><span class="etf-pill" style="${r.cat==='watch'?'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10':r.cat==='bench'?'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)':''}">${r.ticker}</span></td>
+      <td style="font-weight:500">${r.name}</td>
+      <td><span class="tag ${r.cat==='bench'?'bench-t':r.cat==='watch'?'watch-t':'active-t'}">${r.cat==='bench'?'大盤基準':r.cat==='watch'?'自選':'主動ETF'}</span></td>
+      <td style="font-family:var(--font-mono);font-weight:600">${r.price>0?r.price.toFixed(2):'─'}</td>
+      <td class="${colorCls(r.chg)}">${r.chg?fmtPct(r.chg):'─'}</td>
+      <td style="font-family:var(--font-mono)">${r.nav>0?r.nav.toFixed(2):'─'}</td>
+      <td class="${colorCls(r.premium)}">${r.premium?fmtPct(r.premium):'─'}</td>
+      <td style="font-family:var(--font-mono)">${r.aum>0?r.aum.toFixed(1):'─'}</td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  P6: 自選ETF & 走勢圖
+// ═══════════════════════════════════════════════════════════
+let watchChartInst = null;
+let watchPeriod = '3m';
+const PERIOD_DAYS = { '1m':30, '3m':90, '6m':180, '1y':365 };
+function calcCumReturn(ticker, days) {
+  const hist = APP.priceHistory[ticker];
+  if (!hist || hist.length < 2) return null;
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
+  const cutStr = cutoff.toISOString().slice(0,10);
+  const filtered = hist.filter(d => d.date >= cutStr);
+  if (filtered.length < 2) return null;
+  const base = filtered[0].close;
+  return filtered.map(d => ({ date: d.date, value: +((d.close - base)/base * 100).toFixed(2) }));
+}
+window.setWatchPeriod = function(p) {
+  watchPeriod = p;
+  ['1m','3m','6m','1y'].forEach(k => document.getElementById(`wc_${k}`)?.classList.toggle('active', k===p));
+  renderWatchChart();
+};
+function renderWatchlist() {
+  const grid = document.getElementById('watchlistGrid');
+  if (!grid) return;
+  const at = APP.etfs.map(e=>e.ticker);
+  const cards = watchlist.map(ticker=>{
+    const ae = APP.etfs.find(e=>e.ticker===ticker);
+    const bp = APP.etfPrices[ticker]||{};
+    const price = ae ? ae.price : (bp.close||0);
+    const chg   = ae ? ae.chg   : (bp.chg_pct||0);
+    const name  = ae ? ae.name : (ETF_META[ticker]||BENCH_META[ticker]||ticker);
+    const isExtra = !at.includes(ticker) && !BENCH_META[ticker];
+    return `<div class="watch-card">
+      <span class="wc-remove" onclick="removeWatch('${ticker}')">✕</span>
+      <div class="wc-ticker">${ticker}</div>
+      <div class="wc-name">${name}${isExtra?' <span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>':''}</div>
+      <div class="wc-price ${colorCls(chg)}">${price>0?price.toFixed(2):'─'}</div>
+      <div class="wc-change ${colorCls(chg)}">${chg!==0?fmtPct(chg)+' 今日':'─'}</div>
+    </div>`;
+  }).join('');
+  const addBtn = watchlist.length<8 ? `<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>` : '';
+  grid.innerHTML = cards + addBtn;
+  renderWatchChart();
+}
+function renderWatchChart() {
+  if (watchChartInst) { watchChartInst.destroy(); watchChartInst=null; }
+  const canvas = document.getElementById('watchChart');
+  const emptyEl = document.getElementById('watchChartEmpty');
+  const days = PERIOD_DAYS[watchPeriod] || 90;
+  const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
+  const valid = [];
+  watchlist.slice(0,8).forEach((ticker,i)=>{
+    const series = calcCumReturn(ticker, days);
+    if(series) valid.push({ ticker, series, color: clrs[i%clrs.length] });
+  });
+  const bench0050 = calcCumReturn('0050', days);
+  if(valid.length===0 && !bench0050) {
+    if(emptyEl) emptyEl.style.display='block';
+    canvas.style.display='none';
+    return;
+  }
+  if(emptyEl) emptyEl.style.display='none';
+  canvas.style.display='block';
+  const baseSeries = bench0050 || valid[0]?.series || [];
+  const labels = baseSeries.map(d=>{
+    const dt = new Date(d.date);
+    return days<=60 ? `${dt.getMonth()+1}/${dt.getDate()}` : `${dt.getFullYear().toString().slice(2)}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+  });
+  function align(series) {
+    const map = Object.fromEntries(series.map(d=>[d.date, d.value]));
+    return baseSeries.map(d => map[d.date] ?? null);
+  }
+  const datasets = valid.map(v=>({
+    label: v.ticker, data: align(v.series), borderColor: v.color, borderWidth: 2, pointRadius: 0, tension:0.3
+  }));
+  if(bench0050) datasets.push({
+    label:'0050基準', data: align(bench0050), borderColor:'rgba(28,18,9,0.45)', borderWidth:1.5, borderDash:[5,3], pointRadius:0
+  });
+  watchChartInst = new Chart(canvas, {
+    type:'line',
+    data:{ labels, datasets },
+    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ font:{size:11} } } } }
+  });
+}
+function removeWatch(t) {
+  watchlist = watchlist.filter(x=>x!==t);
+  saveWatch(); donutsDone=false;
+  renderWatchlist(); renderEtfList(); renderDonuts();
+}
+window.openModal = () => document.getElementById('addModal').classList.add('open');
+window.closeModal = () => document.getElementById('addModal').classList.remove('open');
+window.confirmAdd = function() {
+  const v = document.getElementById('addInput').value.trim().toUpperCase();
+  if(!v) return alert('請輸入代號');
+  if(watchlist.includes(v)) return alert('已存在');
+  if(watchlist.length>=8) return alert('最多8檔');
+  watchlist.push(v); saveWatch(); donutsDone=false;
+  renderWatchlist(); renderEtfList(); renderDonuts();
+  closeModal();
+};
+
+// ── 全頁渲染整合 ────────────────────────────────────────────
+function renderAll() {
+  renderRankings();
+  renderChanges(APP.changes);
+  updateKpi();
+  renderEtfList();
+  renderWatchlist();
+  renderDonuts();
+}
+
+// 啟動
 initData();
 </script>
 </body>
