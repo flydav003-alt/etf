@@ -30,27 +30,33 @@ jobs:
           python-version: '3.11'
 
       # ── 3. 安裝 Python 套件 ───────────────────────────────
-      #   nest_asyncio：fetch_holdings.py 在某些執行環境需要
-      #   beautifulsoup4：NAV/規模網頁解析用
-      #   playwright：Playwright 瀏覽器控制（抓 NAV/規模/折溢價）
       - name: 安裝 Python 套件
         run: |
-          pip install --upgrade pip --quiet
-          pip install requests pandas beautifulsoup4 nest_asyncio playwright --quiet
+          python -m pip install --upgrade pip
+          pip install requests pandas beautifulsoup4 nest_asyncio playwright
 
-      # ── 4. 安裝 Playwright 瀏覽器 ────────────────────────
-      #   --with-deps 會同時裝 Chromium 本體 + Linux 系統相依套件
-      #   等同於舊寫法的 install chromium + install-deps chromium
-      - name: 安裝 Playwright Chromium
-        run: python -m playwright install --with-deps chromium
+      # ── 4. 安裝 Playwright Chromium 瀏覽器（拆兩步,最穩）
+      #   --with-deps 在某些 ubuntu-latest 跑不出瀏覽器路徑
+      #   分兩步：先裝瀏覽器,再 sudo 裝系統相依套件
+      - name: 安裝 Playwright Chromium 瀏覽器
+        run: python -m playwright install chromium
 
-      # ── 5. 執行抓取 ───────────────────────────────────────
-      #   PLAYWRIGHT_BROWSERS_PATH：確保 chromium 路徑正確
-      #   PYTHONUNBUFFERED：讓 log 即時輸出，方便 Actions 頁面即時查看
+      - name: 安裝 Playwright Chromium 系統相依套件
+        run: sudo python -m playwright install-deps chromium
+
+      # ── 5. 驗證 Playwright 瀏覽器確實裝好（除錯用）─────
+      - name: 驗證 Playwright 安裝
+        run: |
+          echo "=== Playwright 版本 ==="
+          python -m playwright --version
+          echo ""
+          echo "=== 瀏覽器目錄內容 ==="
+          ls -la ~/.cache/ms-playwright/ || echo "(目錄不存在)"
+
+      # ── 6. 執行抓取 ───────────────────────────────────────
       - name: 執行抓取程式
         env:
           PYTHONUNBUFFERED: "1"
-          PLAYWRIGHT_BROWSERS_PATH: "0"
         run: |
           if [ -n "${{ github.event.inputs.target_date }}" ]; then
             python fetch_holdings.py "${{ github.event.inputs.target_date }}"
@@ -58,8 +64,7 @@ jobs:
             python fetch_holdings.py
           fi
 
-      # ── 6. Commit 更新資料回 repo ─────────────────────────
-      #   git diff --staged --quiet：若沒有任何變化（例如非交易日）就不 commit
+      # ── 7. Commit 更新資料 ────────────────────────────────
       - name: Commit 更新資料
         run: |
           git config user.name  "github-actions[bot]"
