@@ -1,12 +1,8 @@
 name: 每日ETF持股抓取
 
 on:
-  # 每天台灣時間 17:10 自動執行（UTC+8，所以 UTC 是 09:10）
-  # GitHub Actions 免費版可能會延遲 5~15 分鐘，正常現象
   schedule:
-    - cron: '10 9 * * 1-5'   # 週一到週五
-
-  # 允許手動在 GitHub 網頁上點按鈕執行（測試用）
+    - cron: '10 9 * * 1-5'   # 台灣時間 17:10（UTC 09:10）週一到週五
   workflow_dispatch:
     inputs:
       target_date:
@@ -18,28 +14,28 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # 需要 write 才能 commit 回 repo
+      contents: write
 
     steps:
-      # 1. 下載 repo 程式碼
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # 完整 git history（讓 commit 有正確訊息）
+          fetch-depth: 0
 
-      # 2. 安裝 Python
       - name: 設定 Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # 3. 安裝依賴套件
-      - name: 安裝套件
-        run: |
-          pip install requests pandas --quiet
+      - name: 安裝 Python 套件
+        run: pip install requests pandas playwright beautifulsoup4 --quiet
 
-      # 4. 執行抓取程式
-      - name: 執行 fetch_holdings.py
+      - name: 安裝 Playwright Chromium（NAV/規模抓取用）
+        run: |
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
+
+      - name: 執行抓取程式
         run: |
           if [ -n "${{ github.event.inputs.target_date }}" ]; then
             python fetch_holdings.py "${{ github.event.inputs.target_date }}"
@@ -47,12 +43,10 @@ jobs:
             python fetch_holdings.py
           fi
 
-      # 5. 把更新後的 db 和 data/ commit 回 repo
       - name: Commit 更新資料
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add etf_tracker.db data/ etf_tracker.log
-          # 若沒有任何變更（例如假日），不做 commit（避免空 commit 錯誤）
           git diff --staged --quiet || git commit -m "📊 自動更新 ETF 持股 $(date +'%Y-%m-%d')"
           git push
