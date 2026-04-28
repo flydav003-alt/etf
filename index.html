@@ -1153,19 +1153,16 @@ function renderDonuts() {
         <span style="font-size:11px">${s.name}</span>
         <span class="legend-pct">${s.w.toFixed(1)}%</span>
       </div>`).join('');
-   card.innerHTML = `
-     <div ...>...</div>
-     ... 
-     <div class="donut-legend">${legendHtml}${coloredSlices.length>5?'<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;">+ 其餘成分</div>':''}</div>`;
-       grid.appendChild(card);
-       const chart = new Chart(document.getElementById(cid), {
-         type: 'doughnut',
-         data: { ... },
-         options: { cutout: '70%', ... }
-    });
-    donutCharts.set(cid, chart);
-  });
-} 
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div><div class="donut-ticker">${ticker}</div><div class="donut-name">${name}</div></div>
+        <span class="tag ${isWatch?'watch-t':'active-t'}">${isWatch?'自選':'主動ETF'}</span>
+      </div>
+      <div class="donut-wrap">
+        <canvas id="${cid}" width="120" height="120"></canvas>
+        <div class="donut-center"><div class="donut-center-val">${totalCount||coloredSlices.length}</div><div class="donut-center-sub">成分</div></div>
+      </div>
+      <div class="donut-legend">${legendHtml}${coloredSlices.length>5?'<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;">+ 其餘成分</div>':''}</div>`;
     grid.appendChild(card);
     const chart = new Chart(document.getElementById(cid), {
       type: 'doughnut',
@@ -1406,14 +1403,7 @@ window.confirmAdd = function() {
   renderWatchlist(); renderEtfList(); renderDonuts();
   closeModal();
 };
-window.toggleRestHoldings = function(restId, btn) {
-  const el = document.getElementById(restId);
-  if (!el) return;
-  const isOpen = el.style.display !== 'none';
-  el.style.display = isOpen ? 'none' : 'flex';
-  const labelSpan = btn.querySelector('.toggle-label');
-  if (labelSpan) labelSpan.textContent = isOpen ? '＋ 展開' : '－ 收合';
-};
+
 // ── 全頁渲染整合 ────────────────────────────────────────────
 function renderAll() {
   renderRankings();
