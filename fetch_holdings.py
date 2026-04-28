@@ -286,22 +286,25 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 
 # ══════════════════════════════════════════════════════════
 # 5+6. 同時抓取 ETF NAV 淨值 + 規模
-#    完全照 Grok colab 驗證版本（已確認28秒可抓完一檔）
+#    完全照 Grok colab 驗證版本 + 加強 NAV 正規表達式
 # ══════════════════════════════════════════════════════════
 async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
-    """完全照 Grok 的 get_etf_info 邏輯"""
+    """完全照 Grok get_etf_info，NAV正規表達式加強版"""
     from bs4 import BeautifulSoup
 
     result = {
-        'market_price': None,
-        'nav':          None,
-        'premium_pct':  None,
-        'aum':          0.0,
-        'source':       None,
-        'success':      False,
+        "etf_code":             code,
+        "market_price":         None,
+        "nav":                  None,
+        "premium_discount_pct": None,
+        "scale_billion":        None,
+        "source":               None,
+        "success":              False,
     }
 
+    base_code = code.lower()
     urls = [
+        ("MoneyDJ",         f"https://www.moneydj.com/etf/x/basic/basic0004.xdjhtm?etfid={base_code}.tw"),
         ("Pocket_Discount", f"https://www.pocket.tw/etf/tw/{code}/discountpremium/"),
         ("Pocket_Main",     f"https://www.pocket.tw/etf/tw/{code}"),
     ]
@@ -314,41 +317,56 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
             await page.wait_for_timeout(8000)
 
             content_html = await page.content()
-            soup = BeautifulSoup(content_html, 'html.parser')
+            soup = BeautifulSoup(content_html, "html.parser")
             text = soup.get_text(separator=" ", strip=True)
 
+            # ── 偵錯：印出含「淨值」的上下文 ──
+            nav_idx = text.find("淨值")
+            if nav_idx >= 0:
+                log.debug(f"  [{name}] {code} 淨值上下文: ...{text[max(0,nav_idx-5):nav_idx+30]}...")
+
             # 市價（照 Grok）
-            if not result['market_price']:
+            if not result["market_price"]:
                 m = re.search(r'(\d{2}\.\d{1,3})\s*[▲▼]', text)
                 if m:
-                    result['market_price'] = float(m.group(1))
+                    result["market_price"] = float(m.group(1))
 
             # 規模（照 Grok）
-            if not result['aum']:
-                s = re.search(r'規模.*?([\d,\.]+)\s*億', text)
-                if not s:
-                    s = re.search(r'資產規模.*?([\d,\.]+)', text)
+            if not result["scale_billion"]:
+                s = re.search(r'規模.*?([\d,\.]+)\s*億', text) or \
+                    re.search(r'資產規模.*?([\d,\.]+)', text)
                 if s:
-                    result['aum'] = float(s.group(1).replace(',', ''))
+                    result["scale_billion"] = float(s.group(1).replace(",", ""))
 
-            # 淨值（照 Grok，不加任何額外條件）
-            if not result['nav']:
-                n = re.search(r'淨值\s*[:：]?\s*(\d{2}\.\d{1,3})', text)
-                if n:
-                    result['nav'] = float(n.group(1))
+            # 淨值 — 多種正規表達式，放寬位數限制
+            if not result["nav"]:
+                nav_patterns = [
+                    r'淨值\s*[:：]?\s*([\d]+\.[\d]{1,4})',
+                    r'NAV\s*[:：]?\s*([\d]+\.[\d]{1,4})',
+                    r'每單位淨資產\s*[:：]?\s*([\d]+\.[\d]{1,4})',
+                    r'昨日淨值\s*[:：]?\s*([\d]+\.[\d]{1,4})',
+                    r'基金淨值\s*[:：]?\s*([\d]+\.[\d]{1,4})',
+                ]
+                for pat in nav_patterns:
+                    n = re.search(pat, text)
+                    if n:
+                        val = float(n.group(1))
+                        if 1 < val < 10000:
+                            result["nav"] = val
+                            break
 
             # 折溢價（照 Grok）
-            if not result['premium_pct']:
+            if not result["premium_discount_pct"]:
                 pd_m = re.search(r'折溢價.*?([-\d\.]+)%', text)
                 if pd_m:
                     pd_val = float(pd_m.group(1))
                     if abs(pd_val) < 10:
-                        result['premium_pct'] = pd_val
+                        result["premium_discount_pct"] = pd_val
 
-            # 照 Grok：有市價+規模就算成功，break
-            if result['market_price'] and result['aum']:
-                result['success'] = True
-                result['source']  = name
+            # 照 Grok：有市價+規模就成功
+            if result["market_price"] and result["scale_billion"]:
+                result["success"] = True
+                result["source"]  = name
                 await page.close()
                 break
 
@@ -363,8 +381,8 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
 
 
 def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
-    nav_map = {}
-    aum_map = {}
+    nav_map  = {}
+    aum_map  = {}
     prem_map = {}
 
     try:
@@ -378,19 +396,19 @@ def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
         async with async_playwright() as pw:
             browser = await pw.chromium.launch(headless=True)
             ctx = await browser.new_context(
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
             )
             for code in ALL_PRICE_ETFS:
                 r = await _fetch_one_etf_nav_aum(ctx, code)
-                if r['nav'] is not None and r['nav'] > 0:
-                    nav_map[code] = r['nav']
-                if r['aum'] > 0:
-                    aum_map[code] = r['aum']
-                if r['premium_pct'] is not None:
-                    prem_map[code] = r['premium_pct']
+                if r["nav"] is not None:
+                    nav_map[code] = r["nav"]
+                if r["scale_billion"] is not None:
+                    aum_map[code] = r["scale_billion"]
+                if r["premium_discount_pct"] is not None:
+                    prem_map[code] = r["premium_discount_pct"]
                 log.info(
-                    f"  {code}: NAV={r['nav']}, AUM={r['aum']}億, "
-                    f"折溢價={r['premium_pct']}%, 來源={r['source']}"
+                    f"  {code}: NAV={r['nav']}, AUM={r['scale_billion']}億, "
+                    f"折溢價={r['premium_discount_pct']}%, 來源={r['source']}"
                 )
                 await asyncio.sleep(1)
             await browser.close()
@@ -406,9 +424,8 @@ def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
         except Exception as e:
             log.error(f"Playwright 執行失敗: {e}")
 
-    # 把折溢價也存進去供 save_etf_prices_today 使用
-    # 直接附在 aum_map 裡傳回（save_etf_prices_today 只用 nav_map/aum_map）
     log.info(f"✓ ETF NAV：{len(nav_map)} 檔，規模：{len(aum_map)} 檔，折溢價：{len(prem_map)} 檔")
+    nav_map["_prem_map"] = prem_map
     return nav_map, aum_map
 
 
@@ -571,12 +588,21 @@ def save_holdings(etf_code: str, trade_date: str,
 def save_etf_prices_today(trade_date: str,
                           prices: dict[str, dict],
                           nav_map: dict[str, float],
-                          aum_map: dict[str, float]):
+                          aum_map: dict[str, float],
+                          prem_map: dict[str, float] | None = None):
+    if prem_map is None:
+        prem_map = {}
     conn = sqlite3.connect(DB_PATH)
     for code, p in prices.items():
-        nav         = nav_map.get(code, 0)
-        aum         = aum_map.get(code, 0)
-        premium_pct = round((p['close'] - nav) / nav * 100, 2) if nav > 0 else 0
+        nav = nav_map.get(code, 0) or 0
+        aum = aum_map.get(code, 0) or 0
+        # 優先用 Playwright 抓到的折溢價，沒有才用計算值
+        if code in prem_map and prem_map[code] is not None:
+            premium_pct = prem_map[code]
+        elif nav > 0:
+            premium_pct = round((p['close'] - nav) / nav * 100, 2)
+        else:
+            premium_pct = 0
         try:
             conn.execute("""
                 INSERT OR REPLACE INTO etf_prices
@@ -732,25 +758,34 @@ def export_json(trade_date: str,
         holdings_dict[etf_code] = {'name': etf_name, 'holdings': sub}
     _wj('data/holdings.json', holdings_dict)
 
-    # ── etf_prices.json（ETF價格、NAV、規模）────────────
+    # ── etf_prices.json（ETF價格、NAV、規模、折溢價）──────
+    # 從 DB 讀取今日已存的 etf_prices（包含 Playwright 抓到的 NAV/折溢價）
+    conn_ep = sqlite3.connect(DB_PATH)
+    df_ep = pd.read_sql(
+        "SELECT * FROM etf_prices WHERE trade_date=?",
+        conn_ep, params=[trade_date]
+    )
+    conn_ep.close()
+
     prices_out = {}
     for code, name in ALL_PRICE_ETFS.items():
-        p = etf_prices_today.get(code, {})
-        nav = nav_map.get(code, 0)
-        aum = aum_map.get(code, 0)
-        premium = round((p.get('close', 0) - nav) / nav * 100, 2) if nav > 0 else 0
+        p     = etf_prices_today.get(code, {})
+        ep_row = df_ep[df_ep['etf_code']==code].iloc[0].to_dict() if not df_ep[df_ep['etf_code']==code].empty else {}
+        nav          = ep_row.get('nav', 0) or 0
+        premium_pct  = ep_row.get('premium_pct', 0) or 0
+        aum          = ep_row.get('aum_billion', 0) or 0
         prices_out[code] = {
-            'name':        name,
-            'close':       p.get('close',   0),
-            'open':        p.get('open',    0),
-            'high':        p.get('high',    0),
-            'low':         p.get('low',     0),
-            'volume':      p.get('volume',  0),
-            'chg_amt':     p.get('chg_amt', 0),
-            'chg_pct':     p.get('chg_pct', 0),
-            'nav':         nav,
-            'premium_pct': premium,
-            'aum_billion': aum,
+            'name':         name,
+            'close':        p.get('close',   0),
+            'open':         p.get('open',    0),
+            'high':         p.get('high',    0),
+            'low':          p.get('low',     0),
+            'volume':       p.get('volume',  0),
+            'chg_amt':      p.get('chg_amt', 0),
+            'chg_pct':      p.get('chg_pct', 0),
+            'nav':          nav,
+            'premium_pct':  premium_pct,
+            'aum_billion':  aum,
             'is_benchmark': code in BENCHMARK_ETFS,
         }
     _wj('data/etf_prices.json', prices_out)
@@ -943,11 +978,14 @@ def run(target_date: str | None = None):
     log.info(f"✓ 儲存 {total_saved} 筆持股")
 
     # 抓 ETF 今日收盤價、NAV、規模（NAV和AUM合併一次呼叫）
-    etf_prices_today      = fetch_etf_prices_today(today_str)
-    nav_map, aum_map      = fetch_etf_nav_and_aum()
+    etf_prices_today = fetch_etf_prices_today(today_str)
+    nav_map, aum_map = fetch_etf_nav_and_aum()
 
-    # 存入 etf_prices
-    save_etf_prices_today(today_str, etf_prices_today, nav_map, aum_map)
+    # 取出折溢價 map（夾帶在 nav_map["_prem_map"] 裡）
+    prem_map = nav_map.pop("_prem_map", {})
+
+    # 存入 etf_prices（傳入 prem_map 讓折溢價也寫進 DB）
+    save_etf_prices_today(today_str, etf_prices_today, nav_map, aum_map, prem_map)
 
     # 偵測持股變化
     conn = sqlite3.connect(DB_PATH)
