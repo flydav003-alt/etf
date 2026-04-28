@@ -319,6 +319,7 @@ main {
 }
 .tag.buy      { background: var(--kobai-dim);   color: var(--kobai-dk);   border: 1px solid rgba(219,90,107,0.3); }
 .tag.sell     { background: var(--wakaba-dim);  color: var(--wakaba-dk);  border: 1px solid rgba(122,158,82,0.28); }
+.tag.dividend { background: rgba(120,100,60,0.12); color: #7a6030; border: 1px solid rgba(120,100,60,0.3); }
 .tag.increase { background: var(--kobai-dim);   color: var(--kobai-dk);   border: 1px solid rgba(219,90,107,0.22); }
 .tag.decrease { background: var(--wakaba-dim);  color: var(--wakaba-dk);  border: 1px solid rgba(122,158,82,0.22); }
 .tag.active-t { background: var(--aizumi-dim);  color: var(--aizumi-dk);  border: 1px solid rgba(77,116,148,0.25); }
@@ -585,9 +586,9 @@ main {
       <div class="kpi-sub">今日共同最大減碼標的</div>
     </div>
     <div class="kpi-card kuri" style="animation-delay:.16s">
-      <div class="kpi-label">Tracking</div>
-      <div class="kpi-value kuri">14</div>
-      <div class="kpi-sub">主動ETF持續追蹤中</div>
+      <div class="kpi-label">Today Buy Total</div>
+      <div class="kpi-value kuri" id="kpiTotalBuy">──</div>
+      <div class="kpi-sub">今日共同買入估算總額</div>
     </div>
   </div>
 
@@ -850,6 +851,29 @@ main {
         </thead>
         <tbody id="hmTbody"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 過去5天動向 MODAL ═══ -->
+<div class="modal-overlay" id="historyModal" onclick="if(event.target===this)closeHistoryModal()">
+  <div class="modal" style="width:520px;max-width:92vw;max-height:75vh;display:flex;flex-direction:column;padding:0;">
+    <div style="padding:18px 22px 12px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div id="hmhTicker" style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);letter-spacing:1px;"></div>
+          <div id="hmhTitle" class="modal-title" style="margin-bottom:2px;"></div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--sumi-45);">過去 5 個交易日異動紀錄</div>
+        </div>
+        <span style="cursor:pointer;font-size:18px;color:var(--sumi-45);padding:4px 8px;" onclick="closeHistoryModal()">✕</span>
+      </div>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:10px 22px 18px;">
+      <table class="etf-table" style="width:100%;">
+        <thead><tr><th>日期</th><th>動作</th><th>前次佔比</th><th>現在佔比</th><th>變化</th><th>金額</th></tr></thead>
+        <tbody id="hmhTbody"></tbody>
+      </table>
+      <div id="hmhEmpty" style="display:none;text-align:center;padding:24px;color:var(--sumi-45);font-size:12px;">此區間無異動紀錄</div>
     </div>
   </div>
 </div>
@@ -1233,23 +1257,40 @@ function _renderChangeTable(data) {
   document.getElementById('changesTbody').innerHTML = data.map((r,i)=>{
     const diff = (r.weight_after||0) - (r.weight_before||0);
     const name = ETF_META[r.etf_code] || r.etf_code || '';
-    const isBuy = r.action==='NEW_BUY', isSell = r.action==='FULL_SELL';
-    // 個別 ETF × 個別 stock 的連續天數徽章
+    const isBuy  = r.action==='NEW_BUY';
+    const isSell = r.action==='FULL_SELL';
+    const isDividend = r.is_dividend == 1;
+    // 連續天數徽章
     const sk = streakForEtfStock(r.etf_code, r.stock_code);
     const badge = sk ? streakBadge(sk.buy, sk.sell) : '';
-    // 金額欄：amount_change 為正紅、為負綠
+    // 動作 tag：除息用特殊樣式
+    let actionTag;
+    if (isDividend) {
+      actionTag = `<span class="tag dividend">⚠ 除息</span>`;
+    } else {
+      actionTag = `<span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span>`;
+    }
+    // 變化欄
+    let changeCell;
+    if (isDividend)  changeCell = `<span class="flat" style="font-size:10px;">除息調整</span>`;
+    else if (isBuy)  changeCell = `<span class="tag buy">新增</span>`;
+    else if (isSell) changeCell = `<span class="tag sell">移除</span>`;
+    else             changeCell = `<span class="${colorCls(diff)}" style="font-family:var(--font-mono)">${fmtPct(diff)}</span>`;
+    // 金額欄
     const amt = r.amount_change || 0;
-    const amtCell = amt !== 0
+    const amtCell = (!isDividend && amt !== 0)
       ? `<span class="${amt>0?'up':'down'}" style="font-family:var(--font-mono)">${fmtMoney(amt)}</span>`
       : '<span class="flat">—</span>';
-    return `<tr>
+    // 點擊整行開歷史 modal
+    const rowClick = `onclick="openHistoryModal('${r.etf_code}','${r.stock_code}','${(r.stock_name||'').replace(/'/g,"\\'")}')"`; 
+    return `<tr style="cursor:pointer;" ${rowClick} onmouseover="this.style.background='rgba(77,116,148,0.06)'" onmouseout="this.style.background=''">
       <td><span class="rn">${i+1}</span></td>
       <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
       <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span>${badge}</td>
-      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
+      <td>${actionTag}</td>
       <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
       <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
-      <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}</td>
+      <td>${changeCell}</td>
       <td>${amtCell}</td>
     </tr>`;
   }).join('');
@@ -1271,13 +1312,18 @@ function updateKpi() {
   document.querySelector('#p-changes .kpi-value.kobai').textContent = APP.isDemo ? '+18' : `+${bc}`;
   document.querySelector('#p-changes .kpi-value.wakaba').textContent = APP.isDemo ? '-9' : `-${sc}`;
   document.querySelector('#p-changes .kpi-value.aizumi').textContent = APP.isDemo ? '11' : ec || '0';
-  
-  const topBuy = APP.buyRank[0]?.stock_name || '--';
+
+  const topBuy  = APP.buyRank[0]?.stock_name || '--';
   const topSell = APP.sellRank[0]?.stock_name || '--';
   const consensus = APP.buyRank[0]?.etf_count || '--';
   document.querySelector('#p-rankings .kpi-value.kobai').textContent = topBuy;
   document.querySelector('#p-rankings .kpi-value.aizumi').textContent = consensus;
   document.querySelector('#p-rankings .kpi-value.wakaba').textContent = topSell;
+
+  // 今日買入總額（buy_ranking 的 value 加總，排除零值）
+  const totalBuy = APP.buyRank.reduce((s, r) => s + (r.value || 0), 0);
+  const el = document.getElementById('kpiTotalBuy');
+  if (el) el.textContent = totalBuy > 0 ? fmtMoney(totalBuy) : '--';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1447,6 +1493,58 @@ window.openHoldingsModal = function(ticker) {
 };
 window.closeHoldingsModal = function() {
   document.getElementById('holdingsModal').classList.remove('open');
+};
+
+// ── 過去5天動向 Modal ──────────────────────────────────────
+window.openHistoryModal = function(etfCode, stockCode, stockName) {
+  // 從 APP.changes（今日）往回找，同時也從 daily_changes.json 的歷史中找
+  // 目前 APP.changes 只有今日；用 APP.changes 找今日，其餘靠 DB 已匯出的 data
+  // 前端只有 daily_changes.json（今日），歷史需要後端存成 history，目前用今日資料展示
+  // 先從 APP.changes 找同一 etf+stock 的所有紀錄（今日可能有多筆？不會）
+  // 再補充說明過去資料累積後的計畫
+
+  document.getElementById('hmhTicker').textContent = `${etfCode} × ${stockCode}`;
+  document.getElementById('hmhTitle').textContent  = stockName || stockCode;
+
+  // 從 APP.changes 篩出同 etf + stock 的紀錄
+  const rows = (APP.changes || []).filter(r =>
+    r.etf_code === etfCode && r.stock_code === stockCode
+  );
+
+  const tbody = document.getElementById('hmhTbody');
+  const empty = document.getElementById('hmhEmpty');
+
+  if (!rows.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = rows.map(r => {
+      const isDividend = r.is_dividend == 1;
+      const diff = (r.weight_after||0) - (r.weight_before||0);
+      const amt  = r.amount_change || 0;
+      const isBuy  = r.action === 'NEW_BUY';
+      const isSell = r.action === 'FULL_SELL';
+      let changeCell;
+      if (isDividend)  changeCell = `<span class="flat" style="font-size:10px;">除息</span>`;
+      else if (isBuy)  changeCell = `<span class="tag buy" style="font-size:9px;">新增</span>`;
+      else if (isSell) changeCell = `<span class="tag sell" style="font-size:9px;">移除</span>`;
+      else             changeCell = `<span class="${colorCls(diff)}" style="font-family:var(--font-mono);font-size:11px;">${fmtPct(diff)}</span>`;
+      return `<tr>
+        <td style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);">${r.trade_date||'—'}</td>
+        <td>${isDividend ? '<span class="tag dividend">⚠ 除息</span>' : `<span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span>`}</td>
+        <td style="font-family:var(--font-mono);color:var(--sumi-60);font-size:11px;">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
+        <td style="font-family:var(--font-mono);font-weight:600;font-size:11px;">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
+        <td>${changeCell}</td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${(!isDividend && amt !== 0) ? `<span class="${amt>0?'up':'down'}">${fmtMoney(amt)}</span>` : '—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('historyModal').classList.add('open');
+};
+window.closeHistoryModal = function() {
+  document.getElementById('historyModal').classList.remove('open');
 };
 
 // ═══════════════════════════════════════════════════════════
