@@ -1259,38 +1259,21 @@ function _renderChangeTable(data) {
     const name = ETF_META[r.etf_code] || r.etf_code || '';
     const isBuy  = r.action==='NEW_BUY';
     const isSell = r.action==='FULL_SELL';
-    const isDividend = r.is_dividend == 1;
-    // 連續天數徽章
     const sk = streakForEtfStock(r.etf_code, r.stock_code);
     const badge = sk ? streakBadge(sk.buy, sk.sell) : '';
-    // 動作 tag：除息用特殊樣式
-    let actionTag;
-    if (isDividend) {
-      actionTag = `<span class="tag dividend">⚠ 除息</span>`;
-    } else {
-      actionTag = `<span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span>`;
-    }
-    // 變化欄
-    let changeCell;
-    if (isDividend)  changeCell = `<span class="flat" style="font-size:10px;">除息調整</span>`;
-    else if (isBuy)  changeCell = `<span class="tag buy">新增</span>`;
-    else if (isSell) changeCell = `<span class="tag sell">移除</span>`;
-    else             changeCell = `<span class="${colorCls(diff)}" style="font-family:var(--font-mono)">${fmtPct(diff)}</span>`;
-    // 金額欄
     const amt = r.amount_change || 0;
-    const amtCell = (!isDividend && amt !== 0)
+    const amtCell = amt !== 0
       ? `<span class="${amt>0?'up':'down'}" style="font-family:var(--font-mono)">${fmtMoney(amt)}</span>`
       : '<span class="flat">—</span>';
-    // 點擊整行開歷史 modal
     const rowClick = `onclick="openHistoryModal('${r.etf_code}','${r.stock_code}','${(r.stock_name||'').replace(/'/g,"\\'")}')"`; 
     return `<tr style="cursor:pointer;" ${rowClick} onmouseover="this.style.background='rgba(77,116,148,0.06)'" onmouseout="this.style.background=''">
       <td><span class="rn">${i+1}</span></td>
       <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
       <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span>${badge}</td>
-      <td>${actionTag}</td>
+      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
       <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
       <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
-      <td>${changeCell}</td>
+      <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}</td>
       <td>${amtCell}</td>
     </tr>`;
   }).join('');
@@ -1520,23 +1503,21 @@ window.openHistoryModal = function(etfCode, stockCode, stockName) {
   } else {
     empty.style.display = 'none';
     tbody.innerHTML = rows.map(r => {
-      const isDividend = r.is_dividend == 1;
       const diff = (r.weight_after||0) - (r.weight_before||0);
       const amt  = r.amount_change || 0;
       const isBuy  = r.action === 'NEW_BUY';
       const isSell = r.action === 'FULL_SELL';
       let changeCell;
-      if (isDividend)  changeCell = `<span class="flat" style="font-size:10px;">除息</span>`;
-      else if (isBuy)  changeCell = `<span class="tag buy" style="font-size:9px;">新增</span>`;
+      if (isBuy)       changeCell = `<span class="tag buy" style="font-size:9px;">新增</span>`;
       else if (isSell) changeCell = `<span class="tag sell" style="font-size:9px;">移除</span>`;
       else             changeCell = `<span class="${colorCls(diff)}" style="font-family:var(--font-mono);font-size:11px;">${fmtPct(diff)}</span>`;
       return `<tr>
         <td style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);">${r.trade_date||'—'}</td>
-        <td>${isDividend ? '<span class="tag dividend">⚠ 除息</span>' : `<span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span>`}</td>
+        <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
         <td style="font-family:var(--font-mono);color:var(--sumi-60);font-size:11px;">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
         <td style="font-family:var(--font-mono);font-weight:600;font-size:11px;">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
         <td>${changeCell}</td>
-        <td style="font-family:var(--font-mono);font-size:11px;">${(!isDividend && amt !== 0) ? `<span class="${amt>0?'up':'down'}">${fmtMoney(amt)}</span>` : '—'}</td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${amt !== 0 ? `<span class="${amt>0?'up':'down'}">${fmtMoney(amt)}</span>` : '—'}</td>
       </tr>`;
     }).join('');
   }
