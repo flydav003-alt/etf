@@ -12,7 +12,14 @@
 <style>
 /* ═══════════════════════════════════════════
    NIPPON COLOR PALETTE — 蒸栗配色系統
-   完整保留原始所有樣式，無任何刪減
+   蒸栗 Mushikuri  #c8b560
+   和紙 Washi      #f0ead2
+   生成り Kiji     #fff8e8
+   煤墨 Suiboku    #1c1209
+   紅梅 Kobai      #db5a6b  → up/buy
+   藍鼠 Aizumi     #4d7494  → info/count
+   若葉 Wakaba     #7a9e52  → down/sell (green)
+   黄金 Kogane     #c8a84b  → accent
 ═══════════════════════════════════════════ */
 :root {
   --kuri:       #c8b560;
@@ -518,20 +525,39 @@ main {
 
 /* ═══ 手機版響應式 ═══ */
 @media (max-width: 600px) {
+  /* Header 手機版：隱藏副標題和日期pill */
   .logo-sub          { display: none; }
   #dataPill          { display: none !important; }
   .hide-mobile       { display: none; }
+
+  /* Logo 縮小 */
   .logo-stamp        { font-size: 8px; padding: 3px 7px; }
   .logo-name         { font-size: 13px; }
+
+  /* 時鐘縮小 */
   .clock             { font-size: 11px; }
+  #updatePill        { padding: 3px 7px; }
+
+  /* Header 右側間距縮小 */
   .header-right      { gap: 8px; }
   header             { padding: 0 12px; }
+
+  /* 主要內容縮小 padding */
   main               { padding: 14px 12px 40px; }
+
+  /* KPI 卡片單欄 */
   .kpi-row           { grid-template-columns: 1fr 1fr; gap: 8px; }
   .kpi-value         { font-size: 20px; }
+
+  /* 表格縮小字體 */
   .etf-table         { font-size: 11px; }
-  .etf-table th, .etf-table td { padding: 7px 8px; }
+  .etf-table th,
+  .etf-table td      { padding: 7px 8px; }
+
+  /* 兩欄變單欄 */
   .two-col           { grid-template-columns: 1fr; }
+
+  /* 甜甜圈縮小 */
   .donut-grid        { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
 }
 </style>
@@ -814,7 +840,7 @@ main {
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  完整修復版 — 保留所有原始功能，僅強化資料載入容錯
+//  資料載入系統 + K線連結 + 全功能修正版（容錯 + 保留所有功能）
 // ═══════════════════════════════════════════════════════════════
 
 const KLINE_BASE = 'https://flydav003-alt.github.io/k-line/';
@@ -840,12 +866,12 @@ const DONUT_COLORS = [
 let APP = {
   isDemo: false, summary: null,
   buyRank: [], sellRank: [], changes: [], holdings: {},
-  etfPrices: {}, performance: {}, priceHistory: {},
+  etfPrices: {}, performance: {},
   etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0})),
 };
 let rankSort = 'consensus'; // 'consensus' | 'amount'
 
-// ── MOCK 備用資料 (示範模式) ────────────────────────────
+// ── MOCK 備用資料 ────────────────────────────────────────────
 const MOCK = {
   buyRank: [
     {stock_code:'2330',stock_name:'台積電',etf_count:9,value:5840000000},
@@ -874,11 +900,95 @@ const MOCK = {
   ],
 };
 
-// ── 輔助函數 ────────────────────────────────────────────────
+// ── JSON載入 (安全版) ─────────────────────────────────────────
+async function loadJSON(path) {
+  const r = await fetch(path + '?t=' + Date.now());
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+function safeJSON(path, fallback) {
+  return loadJSON(path).catch(() => fallback);
+}
+
+async function initData() {
+  try {
+    // ★ 核心必要檔案：失敗才切Demo
+    const [summary, buyRank, sellRank, changes, holdings, etfPrices, performance, priceHistory] = await Promise.all([
+      loadJSON('data/summary.json'),
+      loadJSON('data/buy_ranking.json'),
+      loadJSON('data/sell_ranking.json'),
+      loadJSON('data/daily_changes.json'),
+      loadJSON('data/holdings.json'),
+      safeJSON('data/etf_prices.json', {}),
+      safeJSON('data/performance.json', {}),
+      safeJSON('data/price_history.json', {}),
+    ]);
+
+    APP.isDemo = false;
+    APP.summary = summary;
+    APP.buyRank = buyRank||[];
+    APP.sellRank = sellRank||[];
+    APP.changes = changes||[];
+    APP.holdings = holdings||{};
+    APP.etfPrices = etfPrices||{};
+    APP.performance = performance||{};
+    APP.priceHistory = priceHistory||{};
+
+    if (summary.active_etfs) {
+      APP.etfs = summary.active_etfs.map(e=>({ticker:e.code,name:e.name,price:0,chg:0,nav:0,aum:0}));
+    } else {
+      APP.etfs = Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}));
+    }
+
+    // 從 etf_prices.json 填入ETF價格（若有）
+    APP.etfs = APP.etfs.map(e => {
+      const p = APP.etfPrices[e.ticker] || {};
+      return {...e, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0};
+    });
+
+    if (summary.date) {
+      const d = new Date(summary.date);
+      document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
+    }
+    document.querySelector('.logo-sub').textContent =
+      `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
+    document.getElementById('dataPill').innerHTML = `<span class="live-dot"></span><span>資料：${summary.date||''}</span>`;
+    document.getElementById('dataPill').style.display = 'flex';
+    console.log('✓ 資料載入成功');
+
+  } catch(e) {
+    // 核心檔案失敗 -> Demo模式
+    APP.isDemo = true;
+    APP.buyRank = MOCK.buyRank;
+    APP.sellRank = MOCK.sellRank;
+    APP.changes = MOCK.changes;
+    APP.holdings = {};
+    APP.etfPrices = {};
+    APP.performance = {};
+    APP.priceHistory = {};
+    APP.etfs = Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}));
+    document.getElementById('dataPill').innerHTML = '<span class="live-dot" style="background:#db5a6b;"></span><span>⚠ Demo模式（尚無真實資料）</span>';
+    document.getElementById('dataPill').style.display = 'flex';
+    document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
+    console.warn('切換Demo模式:', e.message);
+  }
+  renderAll();
+}
+
+// ── WATCHLIST ────────────────────────────────────────────────
+let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch')||'[]');
+function saveWatch(){ localStorage.setItem('mushi_etf_watch', JSON.stringify(watchlist)); }
+function getExtraWatch(){
+  const at = APP.etfs.map(e=>e.ticker);
+  return watchlist.filter(t=>!Object.keys(BENCH_META).includes(t)&&!at.includes(t));
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
 function fmtMoney(v){
   const a=Math.abs(v);
-  if(a>=1e8) return (v>0?'+':'')+(a/1e8).toFixed(1)+'億';
-  if(a>=1e4) return (v>0?'+':'')+(a/1e4).toFixed(0)+'萬';
+  if(a>=1e8) return (v>0?'+':'')+Math.abs(v/1e8).toFixed(1)+'億';
+  if(a>=1e4) return (v>0?'+':'')+Math.abs(v/1e4).toFixed(0)+'萬';
   return v.toLocaleString();
 }
 function fmtPct(v,d=1){ return (v>0?'+':'')+Number(v).toFixed(d)+'%'; }
@@ -886,229 +996,174 @@ function colorCls(v){ return +v>0?'up':+v<0?'down':'flat'; }
 function rankCls(i){ return i===0?'gold':i===1?'silver':i===2?'bronze':''; }
 function actionLabel(a){ return {NEW_BUY:'買入',FULL_SELL:'賣出',INCREASE:'加碼',DECREASE:'減碼'}[a]||a; }
 function actionCls(a)  { return {NEW_BUY:'buy',FULL_SELL:'sell',INCREASE:'increase',DECREASE:'decrease'}[a]||''; }
-function klineLink(code){ return `${KLINE_BASE}?stock=${code}`; }
+
+// K線連結
+function klineLink(stockCode){
+  return `${KLINE_BASE}?stock=${stockCode}`;
+}
 function stockNameLink(code, name){
   return `<a href="${klineLink(code)}" target="_blank" rel="noopener"
+    title="在K線分析開啟 ${code}"
     style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(28,18,9,0.3);cursor:pointer;transition:color .15s;"
     onmouseover="this.style.color='var(--aizumi-dk)'"
     onmouseout="this.style.color='inherit'"
   >${name}</a>`;
 }
 
-// ── 安全 JSON 載入 (不讓整頁崩潰) ─────────────────────────────
-async function loadJSON(path) {
-  const r = await fetch(path + '?t=' + Date.now());
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return r.json();
+// ── CLOCK ────────────────────────────────────────────────────
+function tick(){
+  const n=new Date();
+  document.getElementById('clockEl').textContent=
+    [n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
 }
-function safeJSON(path, fallback) {
-  return loadJSON(path).catch(() => fallback);
-}
+setInterval(tick,1000); tick();
+const _td=new Date();
+document.getElementById('todayDate').textContent=`${_td.getMonth()+1}/${_td.getDate()}`;
 
-// ── 主資料初始化 (雙重容錯) ─────────────────────────────────
-async function initData() {
-  try {
-    // 核心資料（必要）
-    const [summary, buyRank, sellRank, changes, holdings] = await Promise.all([
-      loadJSON('data/summary.json'),
-      loadJSON('data/buy_ranking.json'),
-      loadJSON('data/sell_ranking.json'),
-      loadJSON('data/daily_changes.json'),
-      loadJSON('data/holdings.json'),
-    ]);
-    // 選用資料
-    const [etfPrices, performance, priceHistory] = await Promise.all([
-      safeJSON('data/etf_prices.json', {}),
-      safeJSON('data/performance.json', {}),
-      safeJSON('data/price_history.json', {}),
-    ]);
-
-    APP = {
-      isDemo: false,
-      summary,
-      buyRank: buyRank || [],
-      sellRank: sellRank || [],
-      changes: changes || [],
-      holdings: holdings || {},
-      etfPrices: etfPrices || {},
-      performance: performance || {},
-      priceHistory: priceHistory || {},
-      etfs: (summary.active_etfs || []).map(e => ({ ticker: e.code, name: e.name, price: 0, chg: 0, nav: 0, aum: 0 })),
-    };
-    if (APP.etfs.length === 0) {
-      APP.etfs = Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 }));
-    }
-    // 填入價格資訊
-    APP.etfs = APP.etfs.map(e => {
-      const p = APP.etfPrices[e.ticker] || {};
-      return { ...e, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0 };
-    });
-
-    if (summary.date) {
-      const d = new Date(summary.date);
-      document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
-    } else {
-      document.getElementById('todayDate').textContent = '--/--';
-    }
-    document.querySelector('.logo-sub').textContent = `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot"></span><span>資料：${summary.date || '最新'}</span>`;
-    document.getElementById('dataPill').style.display = 'flex';
-    console.log('✅ 真實資料載入成功');
-  } catch (e) {
-    console.warn('⚠️ 載入失敗，切換為示範模式(Demo)', e);
-    APP = {
-      isDemo: true,
-      summary: null,
-      buyRank: MOCK.buyRank,
-      sellRank: MOCK.sellRank,
-      changes: MOCK.changes,
-      holdings: {},
-      etfPrices: {},
-      performance: {},
-      priceHistory: {},
-      etfs: Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 })),
-    };
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot" style="background:#db5a6b;"></span><span>示範模式 (暫無即時資料)</span>`;
-    document.getElementById('dataPill').style.display = 'flex';
-    document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
-  }
-  renderAll();
-}
-
-// ── 自選清單 localStorage ──────────────────────────────────
-let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch') || '[]');
-function saveWatch() { localStorage.setItem('mushi_etf_watch', JSON.stringify(watchlist)); }
-function getExtraWatch() {
-  const at = APP.etfs.map(e => e.ticker);
-  return watchlist.filter(t => !Object.keys(BENCH_META).includes(t) && !at.includes(t));
-}
-
-// ── 時鐘 ───────────────────────────────────────────────────
-function tick() {
-  const n = new Date();
-  document.getElementById('clockEl').textContent = [n.getHours(), n.getMinutes(), n.getSeconds()].map(v => String(v).padStart(2,'0')).join(':');
-}
-setInterval(tick, 1000); tick();
-
-// ── 導航頁籤 ────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+// ── TAB NAVIGATION ───────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
-    const pid = t.dataset.page;
-    document.getElementById(pid).classList.add('active');
-    if (pid === 'p-holdings') renderDonuts();
-    if (pid === 'p-perf') renderPerfPage();
-    if (pid === 'p-watchlist') renderWatchlist();
-    if (pid === 'p-etflist') renderEtfList();
+    document.getElementById(t.dataset.page).classList.add('active');
+    const p=t.dataset.page;
+    if(p==='p-perf')      renderPerfPage();
+    if(p==='p-holdings')  renderDonuts();
+    if(p==='p-watchlist') renderWatchlist();
+    if(p==='p-etflist')   renderEtfList();
   });
 });
 
-// ═══════════════════════════════════════════════════════════
-//  P1: 共同加碼排行 (含排序)
-// ═══════════════════════════════════════════════════════════
-window.setRankSort = function(mode) {
+// ── renderAll ────────────────────────────────────────────────
+function renderAll(){
+  renderRankings();
+  renderChanges(APP.changes);
+  renderKpiRow();
+  renderEtfList();
+  renderWatchlist();
+}
+
+function renderKpiRow(){
+  const buys=APP.buyRank, sells=APP.sellRank, chgs=APP.changes;
+  if(buys.length){
+    document.querySelector('#p-rankings .kpi-value.kobai').textContent=buys[0].stock_name||'─';
+    document.querySelectorAll('#p-rankings .kpi-value.aizumi')[0].textContent=buys[0].etf_count||'─';
+  }
+  if(sells.length)
+    document.querySelector('#p-rankings .kpi-value.wakaba').textContent=sells[0].stock_name||'─';
+  const bc=chgs.filter(c=>c.action==='NEW_BUY'||c.action==='INCREASE').length;
+  const sc=chgs.filter(c=>c.action==='FULL_SELL'||c.action==='DECREASE').length;
+  const ec=[...new Set(chgs.map(c=>c.etf_code))].length;
+  document.querySelector('#p-changes .kpi-value.kobai').textContent=APP.isDemo?'+18':`+${bc}`;
+  document.querySelector('#p-changes .kpi-value.wakaba').textContent=APP.isDemo?'-9':`-${sc}`;
+  document.querySelector('#p-changes .kpi-value.aizumi').textContent=APP.isDemo?'11':ec||'0';
+}
+
+// ═══════════════════════════════════════════
+//  P1: 共同加碼排行（含排序切換 + K線連結）
+// ═══════════════════════════════════════════
+window.setRankSort = function(mode){
   rankSort = mode;
   const btnC = document.getElementById('sortByConsensus');
   const btnA = document.getElementById('sortByAmount');
   const activeStyle = 'background:var(--sumi);color:var(--kuri);border-color:var(--sumi);';
   const inactStyle  = 'background:var(--kiji);color:var(--sumi-60);border-color:var(--border);';
-  btnC.style.cssText = (mode === 'consensus') ? activeStyle : inactStyle;
-  btnA.style.cssText = (mode === 'amount')    ? activeStyle : inactStyle;
+  btnC.style.cssText += mode==='consensus' ? activeStyle : inactStyle;
+  btnA.style.cssText += mode==='amount'    ? activeStyle : inactStyle;
   renderRankings();
 };
 
-function sortRankData(data, isPositive) {
-  if (rankSort === 'consensus')
-    return [...data].sort((a,b) => b.etf_count - a.etf_count || Math.abs(b.value) - Math.abs(a.value));
-  return [...data].sort((a,b) => isPositive ? b.value - a.value : a.value - b.value);
+function sortRankData(data, isPositive){
+  if(rankSort==='consensus')
+    return [...data].sort((a,b)=>b.etf_count-a.etf_count||Math.abs(b.value)-Math.abs(a.value));
+  return [...data].sort((a,b)=>isPositive ? b.value-a.value : a.value-b.value);
 }
 
-function renderRankings() {
-  const buys  = sortRankData(APP.buyRank, true);
+function renderRankings(){
+  const buys  = sortRankData(APP.buyRank,  true);
   const sells = sortRankData(APP.sellRank, false);
-  const maxB = buys[0] ? Math.max(...buys.map(r => Math.abs(r.value))) : 1;
-  const maxS = sells[0] ? Math.max(...sells.map(r => Math.abs(r.value))) : 1;
+  const maxB  = buys[0]  ? Math.max(...buys.map(r=>Math.abs(r.value)))  : 1;
+  const maxS  = sells[0] ? Math.max(...sells.map(r=>Math.abs(r.value))) : 1;
 
   document.getElementById('buyRankTbody').innerHTML = buys.map((r,i)=>`
     <tr>
       <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td>
-      <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
-      <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
-      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></td>
+      <td>
+        ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}
+        <span class="stock-code">${r.stock_code}</span>
+       </div>
+      <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></div>
+      <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</div>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></div>
     </tr>`).join('');
 
   document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>`
     <tr>
-      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td>
-      <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
-      <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
-      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></td>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></div>
+      <td>
+        ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}
+        <span class="stock-code">${r.stock_code}</span>
+       </div>
+      <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></div>
+      <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</div>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></div>
     </tr>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  P2: 每日換股紀錄
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 let _allChanges = [];
-function renderChanges(data) {
+function renderChanges(data){
   _allChanges = data;
   _renderChangeTable(data);
-  updateKpi();
 }
-function _renderChangeTable(data) {
+function _renderChangeTable(data){
   document.getElementById('changesTbody').innerHTML = data.map((r,i)=>{
-    const diff = (r.weight_after||0) - (r.weight_before||0);
-    const name = ETF_META[r.etf_code] || r.etf_code || '';
-    const isBuy = r.action==='NEW_BUY', isSell = r.action==='FULL_SELL';
+    const diff = (r.weight_after||0)-(r.weight_before||0);
+    const name = ETF_META[r.etf_code]||r.etf_code||'';
+    const isBuy=r.action==='NEW_BUY', isSell=r.action==='FULL_SELL';
     return `<tr>
-      <td><span class="rn">${i+1}</span></td>
-      <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
-      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span></td>
-      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
-      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
-      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
-      <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}</td>
+      <td><span class="rn">${i+1}</span></div>
+      <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></div>
+      <td>
+        ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}
+        <span class="stock-code">${r.stock_code||''}</span>
+       </div>
+      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></div>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</div>
+      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</div>
+      <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">
+        ${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}
+      </div>
     </tr>`;
   }).join('');
 }
-window.filterChanges = function() {
-  const q = document.getElementById('changeSearch').value.toLowerCase();
-  _renderChangeTable(_allChanges.filter(r =>
-    (r.etf_code||'').toLowerCase().includes(q) ||
-    (ETF_META[r.etf_code]||'').includes(q) ||
-    (r.stock_name||'').includes(q) ||
-    (r.stock_code||'').includes(q)
-  ));
+window.filterChanges=function(){
+  const q=document.getElementById('changeSearch').value.toLowerCase();
+  _renderChangeTable(_allChanges.filter(r=>
+    (r.etf_code||'').toLowerCase().includes(q)||
+    (ETF_META[r.etf_code]||'').includes(q)||
+    (r.stock_name||'').includes(q)||(r.stock_code||'').includes(q)));
 };
-function updateKpi() {
-  const bc = APP.changes.filter(c => c.action==='NEW_BUY'||c.action==='INCREASE').length;
-  const sc = APP.changes.filter(c => c.action==='FULL_SELL'||c.action==='DECREASE').length;
-  const ec = [...new Set(APP.changes.map(c=>c.etf_code))].length;
-  document.querySelector('#p-changes .kpi-value.kobai').textContent = APP.isDemo ? '+18' : `+${bc}`;
-  document.querySelector('#p-changes .kpi-value.wakaba').textContent = APP.isDemo ? '-9' : `-${sc}`;
-  document.querySelector('#p-changes .kpi-value.aizumi').textContent = APP.isDemo ? '11' : ec || '0';
-  
-  const topBuy = APP.buyRank[0]?.stock_name || '--';
-  const topSell = APP.sellRank[0]?.stock_name || '--';
-  const consensus = APP.buyRank[0]?.etf_count || '--';
-  document.querySelector('#p-rankings .kpi-value.kobai').textContent = topBuy;
-  document.querySelector('#p-rankings .kpi-value.aizumi').textContent = consensus;
-  document.querySelector('#p-rankings .kpi-value.wakaba').textContent = topSell;
-}
 
-// ═══════════════════════════════════════════════════════════
-//  P3: 成分佔比 (甜甜圈，完整保留)
-// ═══════════════════════════════════════════════════════════
-let donutsDone = false;
+// ═══════════════════════════════════════════
+//  P3: 成分佔比（完整保留展開功能）
+// ═══════════════════════════════════════════
+let donutsDone=false;
 const donutCharts = new Map();
 
+window.toggleRestHoldings = function(restId, btn){
+  const el = document.getElementById(restId);
+  if(!el) return;
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'flex';
+  const labelSpan = btn.querySelector('.toggle-label');
+  if(labelSpan) labelSpan.textContent = isOpen ? '＋ 展開' : '－ 收合';
+};
+
 function renderDonuts() {
-  if (donutsDone) return;
-  donutsDone = true;
   const grid = document.getElementById('donutGrid');
   if (!grid) return;
   donutCharts.forEach(ch => { try { ch.destroy(); } catch(e) {} });
@@ -1120,301 +1175,356 @@ function renderDonuts() {
     ...extra.map(t => ({ ticker: t, name: `自選 ${t}`, isWatch: true })),
   ];
   items.forEach(({ ticker, name, isWatch }, di) => {
-    const cid = 'dc_' + ticker.replace(/\W/g,'_');
-    const realData = (!isWatch && APP.holdings[ticker] && APP.holdings[ticker].holdings) ? APP.holdings[ticker].holdings : [];
-    let coloredSlices = [];
-    let totalCount = 0;
+    const cid = 'dc_' + ticker.replace(/\W/g, '_');
+    let realData = (!isWatch && APP.holdings[ticker] && APP.holdings[ticker].holdings) ? APP.holdings[ticker].holdings : [];
+    let coloredSlices = [], totalCount = 0;
     if (realData.length) {
       totalCount = realData.length;
-      const top9 = realData.slice(0,9);
-      const top9sum = top9.reduce((s,h)=>s+(h.weight_pct||0),0);
+      const top9 = realData.slice(0, 9);
+      const top9sum = top9.reduce((s, h) => s + (h.weight_pct || 0), 0);
       const otherPct = Math.max(0, +(100 - top9sum).toFixed(1));
       coloredSlices = [
-        ...top9.map(h => ({ name: h.stock_name || h.stock_code, w: +(h.weight_pct||0) })),
+        ...top9.map(h => ({ name: h.stock_name || h.stock_code, w: +(h.weight_pct || 0) })),
         ...(otherPct > 0.1 ? [{ name: '其他', w: otherPct }] : []),
       ];
     } else {
-      // 模擬成分
+      totalCount = 0;
       const tops = [
         { name: '台積電', w: 28 }, { name: '廣達', w: 9 }, { name: '聯發科', w: 7 },
         { name: '鴻海', w: 6 }, { name: '台達電', w: 5 }, { name: '聯電', w: 4 },
       ];
-      const sum = tops.reduce((s,x)=>s+x.w,0);
-      coloredSlices = [...tops, { name: '其他', w: +(100-sum).toFixed(1) }];
-      totalCount = realData.length || 20;
+      const sum = tops.reduce((s, x) => s + x.w, 0);
+      coloredSlices = [...tops, { name: '其他', w: +(100 - sum).toFixed(1) }];
     }
+    const show5 = coloredSlices.slice(0, 5);
+    const restSlices = coloredSlices.slice(5);
     const card = document.createElement('div');
     card.className = 'donut-card' + (isWatch ? ' is-watch' : '');
-    card.style.animationDelay = `${di*0.04}s`;
-    // 精簡 legend 避免過長，保留原始風格
-    const legendHtml = coloredSlices.slice(0,5).map((s,i)=>`
-      <div class="legend-row">
-        <span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span>
-        <span style="font-size:11px">${s.name}</span>
-        <span class="legend-pct">${s.w.toFixed(1)}%</span>
-      </div>`).join('');
+    card.style.animationDelay = `${di * 0.04}s`;
+    const restId = `${cid}_rest`;
     card.innerHTML = `
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
         <div><div class="donut-ticker">${ticker}</div><div class="donut-name">${name}</div></div>
-        <span class="tag ${isWatch?'watch-t':'active-t'}">${isWatch?'自選':'主動ETF'}</span>
+        <span class="tag ${isWatch ? 'watch-t' : 'active-t'}">${isWatch ? '自選' : '主動ETF'}</span>
       </div>
       <div class="donut-wrap">
         <canvas id="${cid}" width="120" height="120"></canvas>
-        <div class="donut-center"><div class="donut-center-val">${totalCount||coloredSlices.length}</div><div class="donut-center-sub">成分</div></div>
+        <div class="donut-center"><div class="donut-center-val">${totalCount || coloredSlices.length}</div><div class="donut-center-sub">成分</div></div>
       </div>
-      <div class="donut-legend">${legendHtml}${coloredSlices.length>5?'<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;">+ 其餘成分</div>':''}</div>`;
+      <div class="donut-legend">
+        ${show5.map((s, i) => `<div class="legend-row"><span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span><span style="font-size:11px">${s.name}</span><span class="legend-pct">${s.w.toFixed(1)}%</span></div>`).join('')}
+        ${restSlices.length ? `<div onclick="toggleRestHoldings('${restId}', this)" style="font-size:10px;color:var(--aizumi-dk);cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;font-family:var(--font-mono);"><span class="toggle-label">＋ 其餘成分 (${restSlices.length} 檔)</span></div>` : ''}
+        <div id="${restId}" style="display:none; flex-direction:column; gap:4px; margin-top:4px;">
+          ${restSlices.map((s, idx) => `<div class="legend-row"><span class="legend-dot" style="background:${DONUT_COLORS[(5 + idx) % DONUT_COLORS.length]}"></span><span style="font-size:11px">${s.name}</span><span class="legend-pct">${s.w.toFixed(1)}%</span></div>`).join('')}
+          ${coloredSlices.length > 20 ? `<div style="font-size:10px;color:var(--sumi-45);padding:4px 0;border-top:1px solid var(--border);margin-top:2px;">＋ 另有 ${coloredSlices.length - 20} 檔，完整清單請至投信官網</div>` : ''}
+        </div>
+      </div>
+    `;
     grid.appendChild(card);
     const chart = new Chart(document.getElementById(cid), {
       type: 'doughnut',
       data: {
-        labels: coloredSlices.map(s=>s.name),
+        labels: coloredSlices.map(s => s.name),
         datasets: [{
-          data: coloredSlices.map(s=>s.w),
-          backgroundColor: coloredSlices.map((_,i)=>DONUT_COLORS[i]),
+          data: coloredSlices.map(s => s.w),
+          backgroundColor: coloredSlices.map((_, i) => DONUT_COLORS[i % DONUT_COLORS.length]),
           borderColor: '#fff8e8', borderWidth: 2,
-        }]
+        }],
       },
-      options: { cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(1)}%` } } } }
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(1)}%`,
+            },
+          },
+        },
+        animation: { animateRotate: true, duration: 700 },
+      },
     });
     donutCharts.set(cid, chart);
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-//  P4: 月績效 (完整保留，含折線圖)
-// ═══════════════════════════════════════════════════════════
-const MONTHS_12 = (()=>{
+// ═══════════════════════════════════════════
+//  P4: 月績效（完整保留）
+// ═══════════════════════════════════════════
+const MONTHS_12 = (() => {
   const months = []; const d = new Date();
-  for(let i=11; i>=0; i--){
-    const m = new Date(d.getFullYear(), d.getMonth()-i, 1);
-    months.push(`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`);
+  for (let i = 11; i >= 0; i--) {
+    const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    months.push(`${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, '0')}`);
   }
   return months;
 })();
-let selMonth = MONTHS_12[MONTHS_12.length-1];
+let selMonth = MONTHS_12[MONTHS_12.length - 1];
 let perfChartInst = null;
 
 function getPerfData(ticker) {
   const real = APP.performance[ticker];
-  if (real && Object.keys(real).length) return real;
-  // 示範亂數
+  if (real && Object.keys(real).length > 0) return real;
   const fake = {};
   MONTHS_12.forEach(m => { fake[m] = +(Math.random() * 18 - 6).toFixed(2); });
   return fake;
 }
 function getPerfItems() {
-  const at = APP.etfs.map(e=>e.ticker);
+  const at = APP.etfs.map(e => e.ticker);
   return [
-    { ticker:'0050', name:'元大台灣50', cat:'bench' },
-    { ticker:'009816', name:'凱基台灣TOP50', cat:'bench' },
-    ...watchlist.filter(t=>!BENCH_META[t] && !at.includes(t)).map(t=>({ ticker:t, name:`自選 ${t}`, cat:'watch' })),
-    ...APP.etfs.map(e=>({ ticker:e.ticker, name:e.name, cat:'active' })),
+    { ticker: '0050', name: '元大台灣50', cat: 'bench' },
+    { ticker: '009816', name: '凱基台灣TOP50', cat: 'bench' },
+    ...watchlist.filter(t => !BENCH_META[t] && !at.includes(t)).map(t => ({ ticker: t, name: `自選 ${t}`, cat: 'watch' })),
+    ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, cat: 'active' })),
   ];
 }
 function renderMonthSel() {
   document.getElementById('monthSelector').innerHTML = MONTHS_12.map(m =>
-    `<button class="month-btn${m===selMonth?' active':''}" onclick="selectMonth('${m}')">${m}</button>`
+    `<button class="month-btn${m === selMonth ? ' active' : ''}" onclick="selectMonth('${m}')">${m}</button>`
   ).join('');
 }
-window.selectMonth = function(m) {
-  selMonth = m; renderMonthSel(); renderPerfTable(); renderPerfChartFn();
-};
+window.selectMonth = m => { selMonth = m; renderMonthSel(); renderPerfTable(); renderPerfChartFn(); };
+function hasRealPerf() { return APP.etfs.some(e => { const p = APP.performance[e.ticker]; return p && Object.keys(p).length > 0; }); }
 function renderPerfTable() {
   const list = getPerfItems().map(e => {
-    const ret = getPerfData(e.ticker)[selMonth] ?? null;
+    const pd = getPerfData(e.ticker);
+    const ret = pd[selMonth] ?? null;
     return { ...e, ret };
-  }).filter(e => e.ret !== null).sort((a,b)=>b.ret - a.ret);
-  const maxR = Math.max(1, ...list.map(r=>Math.abs(r.ret)));
-  const isReal = Object.keys(APP.performance).length > 0;
-  document.getElementById('perfTbody').innerHTML = list.map((r,i)=>{
-    const catTag = r.cat==='bench' ? '<span class="tag bench-t">大盤</span>' : (r.cat==='watch' ? '<span class="tag watch-t">自選</span>' : '<span class="tag active-t">主動</span>');
-    const fakeNote = (!isReal && APP.isDemo) ? '<span style="font-size:9px;color:var(--sumi-30);margin-left:4px;">示範</span>' : '';
+  }).filter(e => e.ret !== null).sort((a, b) => b.ret - a.ret);
+  const maxR = Math.max(1, ...list.map(r => Math.abs(r.ret)));
+  const isRealData = hasRealPerf();
+  document.getElementById('perfTbody').innerHTML = list.map((r, i) => {
+    const catTag = r.cat === 'bench' ? '<span class="tag bench-t">大盤</span>' : (r.cat === 'watch' ? '<span class="tag watch-t">自選</span>' : '<span class="tag active-t">主動</span>');
+    const fakeNote = !isRealData ? '<span style="font-size:9px;color:var(--sumi-30);margin-left:4px;">示範</span>' : '';
     return `<tr>
-      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td><span class="etf-pill">${r.ticker}</span><span class="etf-sub">${r.name}</span>${fakeNote}</td>
+      <td><span class="rn ${rankCls(i)}">${i + 1}</span></td>
+      <td><span class="etf-pill" style="${r.cat === 'watch' ? 'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10' : r.cat === 'bench' ? 'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)' : ''}">${r.ticker}</span><span class="etf-sub">${r.name}</span>${fakeNote}</td>
       <td>${catTag}</td>
-      <td class="${colorCls(r.ret)}" style="font-size:14px">${fmtPct(r.ret)}</td>
-      <td><div class="bar-wrap"><div class="bar-track"><div class="bar-fill ${r.ret>=0?'kobai':'wakaba'}" style="width:${Math.abs(r.ret)/maxR*100}%"></div></div></div></td>
+      <td class="${colorCls(r.ret)}" style="font-size:14px">${fmtPct(r.ret)}</div>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill ${r.ret >= 0 ? 'kobai' : 'wakaba'}" style="width:${(Math.abs(r.ret) / maxR * 100).toFixed(0)}%"></div></div></div></div>
     </tr>`;
   }).join('');
 }
 function renderPerfChartFn() {
   if (perfChartInst) perfChartInst.destroy();
   const allItems = getPerfItems();
-  const sorted = [...allItems].filter(e => getPerfData(e.ticker)[selMonth] !== null).sort((a,b)=> (getPerfData(b.ticker)[selMonth]||-999) - (getPerfData(a.ticker)[selMonth]||-999));
-  const top5 = sorted.filter(e=>e.cat!=='bench').slice(0,5);
-  const bench = allItems.filter(e=>e.cat==='bench');
-  const toChart = [...top5, ...bench];
-  const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#9a9080','#5b9eac'];
-  const validMonths = MONTHS_12.filter(m => toChart.some(e => getPerfData(e.ticker)[m] !== null));
+  const sortedBySelMonth = [...allItems].filter(e => { const pd = getPerfData(e.ticker); return pd[selMonth] != null; }).sort((a, b) => (getPerfData(b.ticker)[selMonth] || -999) - (getPerfData(a.ticker)[selMonth] || -999));
+  const top5 = sortedBySelMonth.filter(e => e.cat !== 'bench').slice(0, 5);
+  const benchItems = allItems.filter(e => e.cat === 'bench');
+  const toChart = [...top5, ...benchItems];
+  const clrs = ['#4d7494', '#7a9e52', '#c8a84b', '#db5a6b', '#8a6aaa', '#9a9080', '#5b9eac'];
+  const validMonths = MONTHS_12.filter(m => toChart.some(e => getPerfData(e.ticker)[m] != null));
   perfChartInst = new Chart(document.getElementById('perfChart'), {
-    type:'line',
-    data:{
+    type: 'line',
+    data: {
       labels: validMonths,
-      datasets: toChart.map((e,i)=>({
+      datasets: toChart.map((e, i) => ({
         label: e.ticker,
         data: validMonths.map(m => getPerfData(e.ticker)[m] ?? null),
-        borderColor: clrs[i%clrs.length],
-        borderWidth: e.cat==='bench'?1.5:2,
-        borderDash: e.cat==='bench'?[4,3]:[],
-        pointRadius: 3, tension: 0.3, fill: false,
-      }))
+        borderColor: clrs[i % clrs.length],
+        backgroundColor: clrs[i % clrs.length] + '18',
+        borderWidth: e.cat === 'bench' ? 1.5 : 2,
+        borderDash: e.cat === 'bench' ? [4, 3] : [],
+        pointRadius: 4, pointHoverRadius: 6, tension: 0.4, fill: false,
+        spanGaps: true,
+      })),
     },
-    options:{ responsive:true, plugins:{ legend:{ labels:{ font:{size:11} } } } }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: 'rgba(28,18,9,0.55)', font: { size: 11, family: 'DM Mono' }, boxWidth: 12, padding: 14 } },
+        tooltip: { backgroundColor: 'rgba(28,18,9,0.9)', titleColor: '#f0ead2', bodyColor: 'rgba(240,234,210,0.75)', borderColor: 'rgba(200,181,96,0.3)', borderWidth: 1, padding: 10 },
+      },
+      scales: {
+        x: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 } }, grid: { color: 'rgba(200,181,96,0.1)' } },
+        y: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, callback: v => v + '%' }, grid: { color: 'rgba(200,181,96,0.1)' } },
+      },
+    },
   });
 }
 function renderPerfPage() {
   renderMonthSel(); renderPerfTable(); renderPerfChartFn();
-  if (APP.isDemo) document.getElementById('perfRealNote').style.display = 'block';
-  else document.getElementById('perfRealNote').style.display = 'none';
+  if (!hasRealPerf()) { const note = document.getElementById('perfRealNote'); if (note) note.style.display = 'block'; }
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  P5: ETF 總覽
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function renderEtfList() {
-  const q = (document.getElementById('etfSearch')?.value||'').toLowerCase();
-  const benchRows = Object.entries(BENCH_META).map(([ticker,name])=>{
-    const p = APP.etfPrices[ticker]||{};
-    return { ticker, name, price: p.close||0, chg: p.chg_pct||0, nav: p.nav||0, aum: p.aum_billion||0, premium: p.premium_pct||0, cat:'bench' };
+  const q = (document.getElementById('etfSearch') || {}).value?.toLowerCase() || '';
+  const at = APP.etfs.map(e => e.ticker);
+  const benchRows = Object.entries(BENCH_META).map(([ticker, name]) => {
+    const p = APP.etfPrices[ticker] || {};
+    return { ticker, name, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0, premium: p.premium_pct || 0, cat: 'bench' };
   });
-  const extraW = getExtraWatch().map(t=>{
-    const p = APP.etfPrices[t]||{};
-    return { ticker:t, name:`自選ETF ${t}`, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0, premium:p.premium_pct||0, cat:'watch' };
+  const extraW = getExtraWatch().map(t => {
+    const p = APP.etfPrices[t] || {};
+    return { ticker: t, name: `自選ETF ${t}`, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0, premium: p.premium_pct || 0, cat: 'watch' };
   });
-  const activeRows = APP.etfs.map(e=>{
-    const p = APP.etfPrices[e.ticker]||{};
-    return { ticker:e.ticker, name:e.name, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0, premium:p.premium_pct||0, cat:'active' };
+  const activeRows = APP.etfs.map(e => {
+    const p = APP.etfPrices[e.ticker] || {};
+    return { ticker: e.ticker, name: e.name, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0, premium: p.premium_pct || 0, cat: 'active' };
   });
   let rows = [...benchRows, ...extraW, ...activeRows];
-  rows = rows.filter((r,i,a)=>a.findIndex(x=>x.ticker===r.ticker)===i);
-  if(q) rows = rows.filter(r=>r.ticker.toLowerCase().includes(q)||r.name.includes(q));
-  document.getElementById('etfListTbody').innerHTML = rows.map((r,i)=>`
-    <tr>
-      <td><span class="rn ${i===0?'gold':''}">${i+1}</span></td>
-      <td><span class="etf-pill" style="${r.cat==='watch'?'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10':r.cat==='bench'?'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)':''}">${r.ticker}</span></td>
-      <td style="font-weight:500">${r.name}</td>
-      <td><span class="tag ${r.cat==='bench'?'bench-t':r.cat==='watch'?'watch-t':'active-t'}">${r.cat==='bench'?'大盤基準':r.cat==='watch'?'自選':'主動ETF'}</span></td>
-      <td style="font-family:var(--font-mono);font-weight:600">${r.price>0?r.price.toFixed(2):'─'}</td>
-      <td class="${colorCls(r.chg)}">${r.chg?fmtPct(r.chg):'─'}</td>
-      <td style="font-family:var(--font-mono)">${r.nav>0?r.nav.toFixed(2):'─'}</td>
-      <td class="${colorCls(r.premium)}">${r.premium?fmtPct(r.premium):'─'}</td>
-      <td style="font-family:var(--font-mono)">${r.aum>0?r.aum.toFixed(1):'─'}</td>
-    </tr>`).join('');
+  rows = rows.filter((r, i, a) => a.findIndex(x => x.ticker === r.ticker) === i);
+  if (q) rows = rows.filter(r => r.ticker.toLowerCase().includes(q) || r.name.includes(q));
+  document.getElementById('etfListTbody').innerHTML = rows.map((r, i) => {
+    const catTag = r.cat === 'bench' ? '<span class="tag bench-t">大盤基準</span>' : (r.cat === 'watch' ? '<span class="tag watch-t">自選</span>' : '<span class="tag active-t">主動ETF</span>');
+    const pillStyle = r.cat === 'watch' ? 'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10' : (r.cat === 'bench' ? 'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)' : '');
+    const priceStr = r.price > 0 ? r.price.toFixed(2) : '─';
+    const chgStr = r.chg !== 0 ? fmtPct(r.chg) : '─';
+    const navStr = r.nav > 0 ? r.nav.toFixed(2) : '─';
+    const premStr = r.premium !== 0 ? (r.premium > 0 ? '+' : '') + r.premium.toFixed(2) + '%' : '─';
+    const aumStr = r.aum > 0 ? r.aum.toFixed(1) : '─';
+    return `<tr>
+      <td><span class="rn ${i === 0 ? 'gold' : ''}">${i + 1}</span></td>
+      <td><span class="etf-pill" style="${pillStyle}">${r.ticker}</span></td>
+      <td style="font-weight:500;color:var(--sumi)">${r.name}</div>
+      <td>${catTag}</div>
+      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${priceStr}</div>
+      <td class="${colorCls(r.chg)}">${chgStr}</div>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${navStr}</div>
+      <td class="${colorCls(r.premium)}" style="font-family:var(--font-mono)">${premStr}</div>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${aumStr}</div>
+    </tr>`;
+  }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  P6: 自選ETF & 走勢圖
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  P6: 自選ETF & 走勢圖（完整保留）
+// ═══════════════════════════════════════════
 let watchChartInst = null;
 let watchPeriod = '3m';
-const PERIOD_DAYS = { '1m':30, '3m':90, '6m':180, '1y':365 };
+const PERIOD_DAYS = { '1m': 30, '3m': 90, '6m': 180, '1y': 365 };
 function calcCumReturn(ticker, days) {
-  const hist = APP.priceHistory[ticker];
-  if (!hist || hist.length < 2) return null;
+  const history = APP.priceHistory[ticker];
+  if (!history || history.length < 2) return null;
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
-  const cutStr = cutoff.toISOString().slice(0,10);
-  const filtered = hist.filter(d => d.date >= cutStr);
+  const cutStr = cutoff.toISOString().slice(0, 10);
+  const filtered = history.filter(d => d.date >= cutStr);
   if (filtered.length < 2) return null;
   const base = filtered[0].close;
-  return filtered.map(d => ({ date: d.date, value: +((d.close - base)/base * 100).toFixed(2) }));
+  return filtered.map(d => ({ date: d.date, value: +((d.close - base) / base * 100).toFixed(2) }));
 }
 window.setWatchPeriod = function(p) {
   watchPeriod = p;
-  ['1m','3m','6m','1y'].forEach(k => document.getElementById(`wc_${k}`)?.classList.toggle('active', k===p));
+  ['1m', '3m', '6m', '1y'].forEach(k => { const btn = document.getElementById(`wc_${k}`); if (btn) btn.classList.toggle('active', k === p); });
   renderWatchChart();
 };
 function renderWatchlist() {
+  const at = APP.etfs.map(e => e.ticker);
   const grid = document.getElementById('watchlistGrid');
-  if (!grid) return;
-  const at = APP.etfs.map(e=>e.ticker);
-  const cards = watchlist.map(ticker=>{
-    const ae = APP.etfs.find(e=>e.ticker===ticker);
-    const bp = APP.etfPrices[ticker]||{};
-    const price = ae ? ae.price : (bp.close||0);
-    const chg   = ae ? ae.chg   : (bp.chg_pct||0);
-    const name  = ae ? ae.name : (ETF_META[ticker]||BENCH_META[ticker]||ticker);
+  const cards = watchlist.map(ticker => {
+    const ae = APP.etfs.find(e => e.ticker === ticker);
+    const bp = APP.etfPrices[ticker] || {};
+    const price = ae ? ae.price : (bp.close || 0);
+    const chg = ae ? ae.chg : (bp.chg_pct || 0);
+    const name = ae ? ae.name : (ETF_META[ticker] || BENCH_META[ticker] || ticker);
     const isExtra = !at.includes(ticker) && !BENCH_META[ticker];
     return `<div class="watch-card">
       <span class="wc-remove" onclick="removeWatch('${ticker}')">✕</span>
       <div class="wc-ticker">${ticker}</div>
-      <div class="wc-name">${name}${isExtra?' <span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>':''}</div>
-      <div class="wc-price ${colorCls(chg)}">${price>0?price.toFixed(2):'─'}</div>
-      <div class="wc-change ${colorCls(chg)}">${chg!==0?fmtPct(chg)+' 今日':'─'}</div>
+      <div class="wc-name">${name}${isExtra ? '&nbsp;<span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>' : ''}</div>
+      <div class="wc-price ${colorCls(chg)}">${price > 0 ? price.toFixed(2) : '─'}</div>
+      <div class="wc-change ${colorCls(chg)}">${chg !== 0 ? fmtPct(chg) + ' 今日' : '─'}</div>
     </div>`;
   }).join('');
-  const addBtn = watchlist.length<8 ? `<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>` : '';
+  const addBtn = watchlist.length < 8 ? `<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>` : '';
   grid.innerHTML = cards + addBtn;
   renderWatchChart();
 }
 function renderWatchChart() {
-  if (watchChartInst) { watchChartInst.destroy(); watchChartInst=null; }
+  if (watchChartInst) { watchChartInst.destroy(); watchChartInst = null; }
   const canvas = document.getElementById('watchChart');
   const emptyEl = document.getElementById('watchChartEmpty');
   const days = PERIOD_DAYS[watchPeriod] || 90;
-  const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
-  const valid = [];
-  watchlist.slice(0,8).forEach((ticker,i)=>{
+  const clrs = ['#4d7494', '#7a9e52', '#c8a84b', '#db5a6b', '#8a6aaa', '#5b9eac', '#c07840', '#6aab8e'];
+  const validDatasets = [];
+  watchlist.slice(0, 8).forEach((ticker, i) => {
     const series = calcCumReturn(ticker, days);
-    if(series) valid.push({ ticker, series, color: clrs[i%clrs.length] });
+    if (series) validDatasets.push({ ticker, series, color: clrs[i % clrs.length] });
   });
   const bench0050 = calcCumReturn('0050', days);
-  if(valid.length===0 && !bench0050) {
-    if(emptyEl) emptyEl.style.display='block';
-    canvas.style.display='none';
+  if (validDatasets.length === 0 && !bench0050) {
+    if (emptyEl) emptyEl.style.display = 'block';
+    canvas.style.display = 'none';
     return;
   }
-  if(emptyEl) emptyEl.style.display='none';
-  canvas.style.display='block';
-  const baseSeries = bench0050 || valid[0]?.series || [];
-  const labels = baseSeries.map(d=>{
+  if (emptyEl) emptyEl.style.display = 'none';
+  canvas.style.display = 'block';
+  const baseSeries = bench0050 || validDatasets[0]?.series || [];
+  const labels = baseSeries.map(d => {
     const dt = new Date(d.date);
-    return days<=60 ? `${dt.getMonth()+1}/${dt.getDate()}` : `${dt.getFullYear().toString().slice(2)}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+    return days <= 60 ? `${dt.getMonth() + 1}/${dt.getDate()}` : `${dt.getFullYear().toString().slice(2)}/${String(dt.getMonth() + 1).padStart(2, '0')}`;
   });
-  function align(series) {
-    const map = Object.fromEntries(series.map(d=>[d.date, d.value]));
-    return baseSeries.map(d => map[d.date] ?? null);
+  function alignToDates(series) {
+    const map = {};
+    series.forEach(d => map[d.date] = d.value);
+    return baseSeries.map(d => map[d.date] !== undefined ? map[d.date] : null);
   }
-  const datasets = valid.map(v=>({
-    label: v.ticker, data: align(v.series), borderColor: v.color, borderWidth: 2, pointRadius: 0, tension:0.3
-  }));
-  if(bench0050) datasets.push({
-    label:'0050基準', data: align(bench0050), borderColor:'rgba(28,18,9,0.45)', borderWidth:1.5, borderDash:[5,3], pointRadius:0
+  const datasets = [];
+  validDatasets.forEach(({ ticker, series, color }) => {
+    datasets.push({
+      label: ticker,
+      data: alignToDates(series),
+      borderColor: color,
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.3,
+      spanGaps: true,
+    });
   });
+  if (bench0050) {
+    datasets.push({
+      label: '0050基準',
+      data: alignToDates(bench0050),
+      borderColor: 'rgba(28,18,9,0.45)',
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderDash: [5, 3],
+      pointRadius: 0,
+      tension: 0.3,
+      spanGaps: true,
+    });
+  }
   watchChartInst = new Chart(canvas, {
-    type:'line',
-    data:{ labels, datasets },
-    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ font:{size:11} } } } }
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2.2,
+      plugins: {
+        legend: { labels: { color: 'rgba(28,18,9,0.55)', font: { size: 11, family: 'DM Mono' }, boxWidth: 12, padding: 14 } },
+        tooltip: { backgroundColor: 'rgba(28,18,9,0.9)', titleColor: '#f0ead2', bodyColor: 'rgba(240,234,210,0.75)', borderColor: 'rgba(200,181,96,0.3)', borderWidth: 1, padding: 10 },
+      },
+      scales: {
+        x: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, maxTicksLimit: 8 }, grid: { color: 'rgba(200,181,96,0.1)' } },
+        y: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, callback: v => (Number.isFinite(+v) ? (+v).toFixed(1) : v) + '%' }, grid: { color: 'rgba(200,181,96,0.1)' } },
+      },
+    },
   });
 }
 function removeWatch(t) {
-  watchlist = watchlist.filter(x=>x!==t);
-  saveWatch(); donutsDone=false;
+  watchlist = watchlist.filter(x => x !== t);
+  saveWatch(); donutsDone = false;
   renderWatchlist(); renderEtfList(); renderDonuts();
 }
-window.openModal = () => document.getElementById('addModal').classList.add('open');
-window.closeModal = () => document.getElementById('addModal').classList.remove('open');
+window.openModal = () => { document.getElementById('addModal').classList.add('open'); document.getElementById('addInput').focus(); };
+window.closeModal = () => { document.getElementById('addModal').classList.remove('open'); document.getElementById('addInput').value = ''; };
+document.getElementById('addModal').addEventListener('click', e => { if (e.target.id === 'addModal') closeModal(); });
+document.getElementById('addInput').addEventListener('keydown', e => { if (e.key === 'Enter') confirmAdd(); });
 window.confirmAdd = function() {
   const v = document.getElementById('addInput').value.trim().toUpperCase();
-  if(!v) return alert('請輸入代號');
-  if(watchlist.includes(v)) return alert('已存在');
-  if(watchlist.length>=8) return alert('最多8檔');
-  watchlist.push(v); saveWatch(); donutsDone=false;
-  renderWatchlist(); renderEtfList(); renderDonuts();
-  closeModal();
+  if (!v) { alert('請輸入ETF代號'); return; }
+  if (watchlist.includes(v)) { alert('已在自選清單中'); closeModal(); return; }
+  if (watchlist.length >= 8) { alert('最多8檔'); closeModal(); return; }
+  watchlist.push(v); saveWatch(); donutsDone = false;
+  renderWatchlist(); renderEtfList(); closeModal();
 };
 
-// ── 全頁渲染整合 ────────────────────────────────────────────
-function renderAll() {
-  renderRankings();
-  renderChanges(APP.changes);
-  updateKpi();
-  renderEtfList();
-  renderWatchlist();
-  renderDonuts();
-}
-
-// 啟動
+renderWatchlist();
 initData();
 </script>
 </body>
