@@ -161,13 +161,7 @@ def init_db():
 # ══════════════════════════════════════════════════════════
 # 2. 抓取持股（Pocket.tw M722）
 # ══════════════════════════════════════════════════════════
-def fetch_pocket_holdings(etf_code: str, debug: bool = False) -> list[dict]:
-    """
-    抓取 ETF 持股清單。
-    - debug=True：印出 raw response 的前 5 筆,以及所有被過濾掉的條目
-                  （用來確認 M722 是否包含現金部位、現金欄位長什麼樣）
-    - 回傳結構含股票持股 + 一筆特殊 stock_code='CASH' 的現金部位（若 API 有提供）
-    """
+def fetch_pocket_holdings(etf_code: str) -> list[dict]:
     param = (
         f"AssignID%3D{etf_code}%3B"
         "MTPeriod%3D0%3BDTMode%3D0%3BDTRange%3D1%3BDTOrder%3D1%3BMajorTable%3DM722%3B"
@@ -179,67 +173,21 @@ def fetch_pocket_holdings(etf_code: str, debug: bool = False) -> list[dict]:
     try:
         resp = requests.get(url, headers=HEADERS, timeout=20)
         resp.raise_for_status()
-        json_resp = resp.json()
-        raw = json_resp.get('Data', [])
-
-        # ── DEBUG：印出原始格式,協助確認現金欄位 ──────────
-        if debug:
-            log.info(f"  [DEBUG] {etf_code} 原始回傳 Title: {json_resp.get('Title')}")
-            log.info(f"  [DEBUG] {etf_code} 原始回傳前 5 筆:")
-            for i, row in enumerate(raw[:5]):
-                log.info(f"    [{i}] {row}")
-            # 統計所有單位
-            units = {}
-            for row in raw:
-                if len(row) > 5:
-                    u = row[5] if row[5] else '(空字串)'
-                    units[u] = units.get(u, 0) + 1
-            log.info(f"  [DEBUG] {etf_code} 單位種類統計: {units}")
-            # 印出所有非「股」的條目
-            non_stock = [r for r in raw if len(r) > 5 and r[5] != '股']
-            if non_stock:
-                log.info(f"  [DEBUG] {etf_code} 非股條目 ({len(non_stock)} 筆):")
-                for row in non_stock[:10]:
-                    log.info(f"    {row}")
-
+        raw = resp.json().get('Data', [])
         holdings = []
         for row in raw:
             if len(row) < 5:
                 continue
             unit = row[5] if len(row) > 5 else ''
-
-            # ── 嘗試擷取現金部位 ─────────────────────────
-            # 觀察重點：unit 不是「股」但 stock_name 含「現金」「銀行」「存款」等關鍵字
-            # 或 stock_code 為非數字代號（CASH/TWD 等）
-            stock_code_raw = str(row[1]).strip() if len(row) > 1 else ''
-            stock_name_raw = str(row[2]).strip() if len(row) > 2 else ''
-            cash_keywords  = ('現金', '銀行', '存款', '活存', 'CASH', 'TWD', '新台幣')
-            is_cash = (
-                unit != '股' and
-                any(kw in stock_name_raw for kw in cash_keywords)
-            )
-            if is_cash:
-                try:
-                    holdings.append({
-                        'stock_code': 'CASH',
-                        'stock_name': stock_name_raw or '現金部位',
-                        'weight_pct': float(row[3]) if row[3] not in (None, '') else 0,
-                        'shares':     0,  # 現金沒有「股數」概念
-                    })
-                    log.debug(f"  {etf_code} 偵測到現金部位: {stock_name_raw} = {row[3]}%")
-                except (ValueError, TypeError):
-                    pass
-                continue
-
-            # ── 一般股票持股 ──────────────────────────────
             if unit != '股':
                 continue
-            if not stock_code_raw.isdigit():
+            stock_code = str(row[1]).strip()
+            if not stock_code.isdigit():
                 continue
             try:
                 holdings.append({
-                    'stock_code': stock_code_raw,
-                    'stock_name': stock_name_raw,
+                    'stock_code': stock_code,
+                    'stock_name': str(row[2]).strip(),
                     'weight_pct': float(row[3]),
                     'shares':     float(str(row[4]).replace(',', '')),
                 })
@@ -740,6 +688,11 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
 
     if changes:
         df_c = pd.DataFrame(changes)
+        # 先刪今天舊紀錄，避免重跑時 UNIQUE constraint 衝突
+        conn.execute(
+            "DELETE FROM holdings_changes WHERE trade_date = ?", (trade_date,)
+        )
+        conn.commit()
         df_c.to_sql('holdings_changes', conn, if_exists='append', index=False, method='multi')
         conn.close()
         log.info(f"✓ 偵測到 {len(df_c)} 筆持股變化")
@@ -747,105 +700,6 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
 
     conn.close()
     return pd.DataFrame()
-
-
-# ══════════════════════════════════════════════════════════
-# 10b. 計算連續加碼/減碼天數（Streak）
-# ══════════════════════════════════════════════════════════
-def compute_streaks(today_str: str, lookback_days: int = 10) -> tuple[dict, dict]:
-    """
-    從 holdings_changes 表往回查 lookback_days 個交易日,
-    計算每個 (etf, stock) 的連續加碼/減碼天數。
-
-    規則：
-    - 「加碼」= action 為 NEW_BUY 或 INCREASE
-    - 「減碼」= action 為 FULL_SELL 或 DECREASE
-    - 「連續」從今天往回看,每個交易日都同方向才算
-    - 中間有跳天（沒出現）或反向動作 → streak 中斷
-    - 只回傳 streak >= 2 的條目（streak=1 沒意義）
-
-    回傳：
-    - by_etf_stock: { etf_code: { stock_code: {buy: int, sell: int} } }
-    - by_stock:     { stock_code: {max_buy, max_sell, etf_count_buy, etf_count_sell} }
-    """
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql("""
-        SELECT trade_date, etf_code, stock_code, action
-        FROM holdings_changes
-        WHERE trade_date <= ?
-        ORDER BY trade_date DESC
-    """, conn, params=[today_str])
-    conn.close()
-
-    if df.empty:
-        log.info("⚠ holdings_changes 為空,無 streak 可計算")
-        return {}, {}
-
-    # 該段期間內所有出現過的交易日,從今天往回排（降序）,限制 lookback
-    all_dates = sorted(df['trade_date'].unique(), reverse=True)[:lookback_days]
-
-    BUY_ACT  = {'NEW_BUY', 'INCREASE'}
-    SELL_ACT = {'FULL_SELL', 'DECREASE'}
-
-    by_etf_stock: dict = {}
-
-    for (etf, stock), grp in df.groupby(['etf_code', 'stock_code']):
-        action_by_date = dict(zip(grp['trade_date'], grp['action']))
-        buy_streak  = 0
-        sell_streak = 0
-
-        # 從今天往回連續檢查
-        for d in all_dates:
-            act = action_by_date.get(d)
-            if act in BUY_ACT:
-                if sell_streak > 0:
-                    break  # 之前在算 sell,遇到 buy → 結束
-                buy_streak += 1
-            elif act in SELL_ACT:
-                if buy_streak > 0:
-                    break
-                sell_streak += 1
-            else:
-                # 該交易日該股票沒任何動作 → 連續中斷
-                break
-
-        if buy_streak >= 2 or sell_streak >= 2:
-            by_etf_stock.setdefault(etf, {})[stock] = {
-                'buy':  buy_streak  if buy_streak  >= 2 else 0,
-                'sell': sell_streak if sell_streak >= 2 else 0,
-            }
-
-    # 彙總到 by_stock 層級
-    by_stock: dict = {}
-    for etf, stocks in by_etf_stock.items():
-        for stock, sk in stocks.items():
-            entry = by_stock.setdefault(stock, {
-                'max_buy': 0, 'max_sell': 0,
-                'etf_count_buy': 0, 'etf_count_sell': 0,
-            })
-            if sk['buy'] >= 2:
-                entry['max_buy']        = max(entry['max_buy'], sk['buy'])
-                entry['etf_count_buy'] += 1
-            if sk['sell'] >= 2:
-                entry['max_sell']        = max(entry['max_sell'], sk['sell'])
-                entry['etf_count_sell'] += 1
-
-    n_etf_stock = sum(len(s) for s in by_etf_stock.values())
-    log.info(f"✓ Streak 計算完成：{n_etf_stock} 筆 ETF×股票連續紀錄,"
-             f"{len(by_stock)} 支股票有彙總 streak")
-
-    return by_etf_stock, by_stock
-
-
-def export_streaks_json(by_etf_stock: dict, by_stock: dict, today_str: str):
-    """匯出 streak 結果到 data/streaks.json,供前端讀取"""
-    out = {
-        'date': today_str,
-        'by_etf_stock': by_etf_stock,
-        'by_stock':     by_stock,
-    }
-    _wj('data/streaks.json', out)
-    log.info(f"✓ streaks.json 已匯出")
 
 
 # ══════════════════════════════════════════════════════════
@@ -1101,22 +955,15 @@ def run(target_date: str | None = None):
     backfill_etf_prices()
 
     # 批次抓取 14 檔持股
-    # 第一檔（00981A）開 debug 模式,印出原始 raw response 與被過濾的條目
-    # 想看其他檔的話設環境變數 DEBUG_HOLDINGS_ETF=00982A
-    import os
-    debug_target = os.environ.get('DEBUG_HOLDINGS_ETF', '00981A')
     all_holdings, all_codes = [], set()
     for etf_code, etf_name in ACTIVE_ETFS.items():
-        is_debug = (etf_code == debug_target)
-        h = fetch_pocket_holdings(etf_code, debug=is_debug)
+        h = fetch_pocket_holdings(etf_code)
         if h:
             for item in h:
                 item['etf_code'] = etf_code
             all_holdings.extend(h)
-            all_codes.update(item['stock_code'] for item in h if item['stock_code'] != 'CASH')
-            cash_count = sum(1 for item in h if item['stock_code'] == 'CASH')
-            cash_note  = f"(含現金 {cash_count})" if cash_count else ""
-            log.info(f"  ✓ {etf_code} {etf_name}: {len(h)} 筆 {cash_note}")
+            all_codes.update(item['stock_code'] for item in h)
+            log.info(f"  ✓ {etf_code} {etf_name}: {len(h)} 筆")
         else:
             log.warning(f"  ✗ {etf_code} {etf_name}: 無資料")
         time.sleep(1.5)
@@ -1152,10 +999,6 @@ def run(target_date: str | None = None):
     conn.close()
 
     df_changes = detect_changes(today_str, yesterday_str)
-
-    # 計算連續加碼/減碼天數（streak）
-    by_etf_stock, by_stock = compute_streaks(today_str, lookback_days=10)
-    export_streaks_json(by_etf_stock, by_stock, today_str)
 
     # 排行榜
     print_rankings(df_changes, df_today)
