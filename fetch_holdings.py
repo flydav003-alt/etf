@@ -286,74 +286,90 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 
 # ══════════════════════════════════════════════════════════
 # 5+6. 同時抓取 ETF NAV 淨值 + 規模
-#    來源：Pocket.tw 網頁（JS渲染，需要 Playwright）
-#    每檔等待3秒，16檔約需 50~80 秒
+#    來源：Pocket.tw 折溢價頁（Grok 驗證可抓）
 # ══════════════════════════════════════════════════════════
 async def _fetch_one_etf_nav_aum(page, code: str) -> dict:
     """
-    從 WantGoo 抓取單一 ETF 的 NAV、規模、折溢價
-    WantGoo 頁面包含：市價、淨值、折溢價、規模(億) — Grok 驗證可抓
+    照 Grok 驗證的方式：
+    先試 Pocket.tw 折溢價頁，再試主頁
+    wait_for_timeout 8000ms 確保 JS 渲染完成
     """
     result = {'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0}
-    url = f"https://www.wantgoo.com/stock/etf/{code.lower()}"
 
-    try:
-        await page.goto(url, timeout=30000, wait_until='networkidle')
-        await page.wait_for_timeout(5000)   # WantGoo 需要較長渲染時間
-        text = await page.inner_text('body')
+    urls = [
+        ("Pocket_Discount", f"https://www.pocket.tw/etf/tw/{code}/discountpremium/"),
+        ("Pocket_Main",     f"https://www.pocket.tw/etf/tw/{code}"),
+    ]
 
-        # ── 規模（億）── WantGoo格式：「規模(億) 755.16」
-        m_aum = re.search(r'規模[（(]億[）)]\s*([\d,]+\.?[\d]*)', text)
-        if m_aum:
-            result['aum'] = float(m_aum.group(1).replace(',',''))
+    for name, url in urls:
+        try:
+            await page.goto(url, timeout=30000, wait_until='networkidle')
+            await page.wait_for_timeout(8000)
+            text = await page.inner_text('body')
 
-        # ── 淨值 NAV ── WantGoo格式：「淨值 24.88」
-        m_nav = re.search(r'淨值\s+([\d,]+\.[\d]{2,3})', text)
-        if m_nav:
-            nav = float(m_nav.group(1).replace(',',''))
-            if 1 < nav < 10000:
-                result['nav'] = nav
-
-        # ── 折溢價 ── WantGoo格式：「折溢價 0.76%」
-        m_pd = re.search(r'折溢價\s+([-\d.]+)%', text)
-        if m_pd:
-            pd_val = float(m_pd.group(1))
-            if abs(pd_val) < 20:
-                result['premium_pct'] = pd_val
-
-        # ── 若 WantGoo 沒有 NAV，從折溢價反推 ──
-        if result['nav'] == 0 and result['premium_pct'] != 0:
-            # 找市價（格式：數字後面跟著 ▲▼ 或 漲跌）
-            m_price = re.search(r'(\d{1,4}\.\d{2})\s*[▲▼]', text)
+            market_price = None
+            m_price = re.search(r'(\d{2,3}\.\d{2})\s*[▲▼]', text)
             if m_price:
-                mkt = float(m_price.group(1))
-                result['nav'] = round(mkt / (1 + result['premium_pct']/100), 2)
+                market_price = float(m_price.group(1))
 
-    except Exception as e:
-        log.debug(f"  {code} WantGoo抓取失敗: {e}")
+            # 規模（億）
+            m_aum = re.search(r'規模[（(]億[）)]?\s*[:：]?\s*([\d,\.]+)', text)
+            if m_aum:
+                result['aum'] = float(m_aum.group(1).replace(',', ''))
+
+            # 淨值
+            nav_patterns = [
+                r'淨值\s*[:：]?\s*(\d{2,3}\.\d{2,3})',
+                r'NAV\s*[:：]?\s*(\d{2,3}\.\d{2,3})',
+                r'昨日淨值.*?(\d{2,3}\.\d{2,3})',
+            ]
+            for pattern in nav_patterns:
+                m = re.search(pattern, text)
+                if m:
+                    nav_val = float(m.group(1))
+                    if market_price is None or abs(nav_val - market_price) < 5:
+                        result['nav'] = nav_val
+                        break
+
+            # 折溢價
+            pd_patterns = [
+                r'折溢價.*?([-\d\.]+)%',
+                r'折溢價[（(]%[）)]?\s*[:：]?\s*([-\d\.]+)',
+                r'([-\d\.]+)%\s*折溢價',
+            ]
+            for pattern in pd_patterns:
+                m = re.search(pattern, text)
+                if m:
+                    pd_val = float(m.group(1))
+                    if abs(pd_val) < 5:
+                        result['premium_pct'] = pd_val
+                        break
+
+            if market_price and result['nav'] > 0:
+                break
+
+        except Exception as e:
+            log.debug(f"  [{name}] {code} 失敗: {e}")
+            continue
 
     return result
 
 
 def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
-    """
-    用 Playwright 從 Pocket.tw 抓取所有 ETF 的 NAV 和規模
-    若 Playwright 未安裝，靜默跳過（回傳空dict，前端顯示「─」）
-    """
     nav_map = {}
     aum_map = {}
 
     try:
         from playwright.async_api import async_playwright
     except ImportError:
-        log.warning("Playwright 未安裝，跳過 NAV/規模抓取。請確認 requirements.txt 包含 playwright")
+        log.warning("Playwright 未安裝，跳過 NAV/規模抓取")
         return nav_map, aum_map
 
     async def _run():
         async with async_playwright() as pw:
             browser = await pw.chromium.launch(headless=True)
             ctx = await browser.new_context(
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0'
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             )
             page = await ctx.new_page()
             for code in ALL_PRICE_ETFS:
@@ -369,7 +385,6 @@ def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
     try:
         asyncio.run(_run())
     except RuntimeError:
-        # 若在已有 event loop 的環境（如 Jupyter），改用 nest_asyncio
         try:
             import nest_asyncio
             nest_asyncio.apply()
