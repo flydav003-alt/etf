@@ -1,7 +1,8 @@
 """
 fetch_holdings.py — 台股主動式ETF持股抓取系統
 資料來源：Pocket.tw M722 API（持股）
-         TWSE OpenAPI（個股收盤價、ETF價格、規模）
+         TWSE OpenAPI（個股收盤價、ETF收盤價）
+         Pocket.tw 網頁（NAV淨值、折溢價、規模 — Playwright渲染）
 """
 
 import requests
@@ -10,6 +11,8 @@ import pandas as pd
 import json
 import time
 import logging
+import asyncio
+import re
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -283,138 +286,107 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 
 # ══════════════════════════════════════════════════════════
 # 5+6. 同時抓取 ETF NAV 淨值 + 規模
-#    來源：Pocket.tw M031（ETF 基本資訊）
-#    一次抓一檔，NAV和規模都從同一個 API 取得
+#    來源：Pocket.tw 網頁（JS渲染，需要 Playwright）
+#    每檔等待3秒，16檔約需 50~80 秒
 # ══════════════════════════════════════════════════════════
+async def _fetch_one_etf_nav_aum(page, code: str) -> dict:
+    """抓取單一ETF的NAV和規模（async，供 fetch_etf_nav_and_aum 使用）"""
+    url = f"https://www.pocket.tw/etf/tw/{code}"
+    result = {'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0}
+    try:
+        await page.goto(url, timeout=25000, wait_until='networkidle')
+        await page.wait_for_timeout(3000)
+        text = await page.inner_text('body')
+
+        # ── NAV 淨值 ──
+        for pattern in [
+            r'淨值\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
+            r'NAV\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
+            r'昨日淨值.*?([\d,]+\.[\d]{1,3})',
+        ]:
+            m = re.search(pattern, text)
+            if m:
+                nav = float(m.group(1).replace(',',''))
+                if 1 < nav < 10000:
+                    result['nav'] = nav
+                    break
+
+        # ── 規模（億）──
+        m_aum = re.search(r'規模[（(]億[）)]?\s*[:：]?\s*([\d,]+\.?[\d]*)', text)
+        if m_aum:
+            result['aum'] = float(m_aum.group(1).replace(',',''))
+
+        # ── 折溢價 ──
+        for pattern in [
+            r'折溢價\s*[:：]?\s*([-\d.]+)%',
+            r'([-\d.]+)%\s*折溢價',
+        ]:
+            m_pd = re.search(pattern, text)
+            if m_pd:
+                pd_val = float(m_pd.group(1))
+                if abs(pd_val) < 10:
+                    result['premium_pct'] = pd_val
+                    break
+
+    except Exception as e:
+        log.debug(f"  {code} Playwright失敗: {e}")
+    return result
+
+
 def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
     """
-    從 Pocket.tw M031 同時抓取 ETF 淨值(NAV) 和規模(AUM)
-    回傳 (nav_map, aum_map)
-      nav_map: { etf_code: nav_price }
-      aum_map: { etf_code: aum_billion }
+    用 Playwright 從 Pocket.tw 抓取所有 ETF 的 NAV 和規模
+    若 Playwright 未安裝，靜默跳過（回傳空dict，前端顯示「─」）
     """
     nav_map = {}
     aum_map = {}
-    first_call = True  # 第一檔印出原始欄位，幫助確認格式
 
-    for code in list(ALL_PRICE_ETFS.keys())[:3]:  # 先只抓前3檔測試欄位
+    try:
+        from playwright.async_api import async_playwright
+    except ImportError:
+        log.warning("Playwright 未安裝，跳過 NAV/規模抓取。請確認 requirements.txt 包含 playwright")
+        return nav_map, aum_map
+
+    async def _run():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(headless=True)
+            ctx = await browser.new_context(
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0'
+            )
+            page = await ctx.new_page()
+            for code in ALL_PRICE_ETFS:
+                r = await _fetch_one_etf_nav_aum(page, code)
+                if r['nav'] > 0:
+                    nav_map[code] = r['nav']
+                if r['aum'] > 0:
+                    aum_map[code] = r['aum']
+                log.info(f"  {code}: NAV={r['nav']}, AUM={r['aum']}億, 折溢價={r['premium_pct']}%")
+                await asyncio.sleep(1)
+            await browser.close()
+
+    try:
+        asyncio.run(_run())
+    except RuntimeError:
+        # 若在已有 event loop 的環境（如 Jupyter），改用 nest_asyncio
         try:
-            param = (
-                f"AssignID%3D{code}%3B"
-                "MTPeriod%3D0%3BDTMode%3D0%3BDTRange%3D1%3BDTOrder%3D1%3BMajorTable%3DM031%3B"
-            )
-            url = (
-                "https://www.pocket.tw/api/cm/MobileService/ashx/GetDtnoData.ashx"
-                f"?action=getdtnodata&DtNo=59449513&ParamStr={param}&FilterNo=0"
-            )
-            resp = requests.get(url, headers=HEADERS, timeout=15)
-            if resp.status_code != 200:
-                log.warning(f"  M031 {code}: HTTP {resp.status_code}")
-                continue
-            j = resp.json()
-            title = j.get('Title', [])
-            data  = j.get('Data',  [])
-
-            # ── 第一次執行：印出完整欄位讓開發者確認 ──
-            if first_call:
-                log.info(f"  [M031偵錯] {code} Title={title}")
-                if data:
-                    log.info(f"  [M031偵錯] {code} Data[0]={data[0]}")
-                first_call = False
-
-            if not data:
-                continue
-
-            row = data[0]
-            # 找 NAV 欄位（Title裡找「淨值」關鍵字）
-            nav_idx = next(
-                (i for i, t in enumerate(title) if '淨值' in str(t) or 'NAV' in str(t).upper()),
-                None
-            )
-            # 找規模欄位（Title裡找「規模」「資產」關鍵字）
-            aum_idx = next(
-                (i for i, t in enumerate(title) if '規模' in str(t) or '資產' in str(t) or 'AUM' in str(t).upper()),
-                None
-            )
-
-            if nav_idx is not None and len(row) > nav_idx:
-                try:
-                    nav = float(str(row[nav_idx]).replace(',', '').strip())
-                    if nav > 0:
-                        nav_map[code] = nav
-                except (ValueError, TypeError):
-                    pass
-
-            if aum_idx is not None and len(row) > aum_idx:
-                try:
-                    raw_aum = float(str(row[aum_idx]).replace(',', '').strip())
-                    # 判斷單位：若數值很大（>5000）可能是億元*百萬，做轉換
-                    aum = raw_aum / 100000 if raw_aum > 5000 else raw_aum
-                    if aum > 0:
-                        aum_map[code] = round(aum, 2)
-                except (ValueError, TypeError):
-                    pass
-
+            import nest_asyncio
+            nest_asyncio.apply()
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(_run())
         except Exception as e:
-            log.debug(f"  {code} M031失敗: {e}")
-        time.sleep(0.5)
-
-    # 若前3檔有拿到資料，繼續抓剩餘的
-    if nav_map or aum_map:
-        for code in list(ALL_PRICE_ETFS.keys())[3:]:
-            try:
-                param = (
-                    f"AssignID%3D{code}%3B"
-                    "MTPeriod%3D0%3BDTMode%3D0%3BDTRange%3D1%3BDTOrder%3D1%3BMajorTable%3DM031%3B"
-                )
-                url = (
-                    "https://www.pocket.tw/api/cm/MobileService/ashx/GetDtnoData.ashx"
-                    f"?action=getdtnodata&DtNo=59449513&ParamStr={param}&FilterNo=0"
-                )
-                resp = requests.get(url, headers=HEADERS, timeout=15)
-                if resp.status_code != 200:
-                    continue
-                j    = resp.json()
-                title= j.get('Title', [])
-                data = j.get('Data',  [])
-                if not data:
-                    continue
-                row = data[0]
-                nav_idx = next((i for i, t in enumerate(title) if '淨值' in str(t)), None)
-                aum_idx = next((i for i, t in enumerate(title) if '規模' in str(t) or '資產' in str(t)), None)
-                if nav_idx is not None and len(row) > nav_idx:
-                    try:
-                        nav = float(str(row[nav_idx]).replace(',', '').strip())
-                        if nav > 0: nav_map[code] = nav
-                    except: pass
-                if aum_idx is not None and len(row) > aum_idx:
-                    try:
-                        raw_aum = float(str(row[aum_idx]).replace(',', '').strip())
-                        aum = raw_aum / 100000 if raw_aum > 5000 else raw_aum
-                        if aum > 0: aum_map[code] = round(aum, 2)
-                    except: pass
-            except Exception as e:
-                log.debug(f"  {code} M031失敗: {e}")
-            time.sleep(0.5)
-    else:
-        log.warning("  M031 前3檔均無資料，跳過剩餘檔。請查看 [M031偵錯] 日誌確認欄位格式")
+            log.error(f"Playwright 執行失敗: {e}")
 
     log.info(f"✓ ETF NAV：{len(nav_map)} 檔，規模：{len(aum_map)} 檔")
     return nav_map, aum_map
 
 
-# 保留舊名稱作為別名，相容舊呼叫
-def fetch_etf_nav(trade_date: str) -> dict[str, float]:
+# 相容舊呼叫名稱
+def fetch_etf_nav(trade_date: str = '') -> dict[str, float]:
     nav_map, _ = fetch_etf_nav_and_aum()
     return nav_map
 
 def fetch_etf_aum() -> dict[str, float]:
     _, aum_map = fetch_etf_nav_and_aum()
-    return aum_map
-
-    if not aum_map:
-        log.warning("ETF規模：Pocket.tw M031 無規模資料，前端顯示「─」")
-    log.info(f"✓ ETF規模：{len(aum_map)} 檔")
     return aum_map
 
 
