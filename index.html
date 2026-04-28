@@ -866,31 +866,44 @@ async function loadJSON(path) {
   return r.json();
 }
 
+// 安全載入：失敗回傳預設值，不中斷整體
+function safeJSON(path, fallback) {
+  return loadJSON(path).catch(() => fallback);
+}
+
 async function initData() {
   try {
-    const [summary, buyRank, sellRank, changes, holdings, etfPrices, performance, priceHistory] =
-      await Promise.all([
-        loadJSON('data/summary.json'),
-        loadJSON('data/buy_ranking.json'),
-        loadJSON('data/sell_ranking.json'),
-        loadJSON('data/daily_changes.json'),
-        loadJSON('data/holdings.json'),
-        loadJSON('data/etf_prices.json'),
-        loadJSON('data/performance.json'),
-        loadJSON('data/price_history.json').catch(()=>({})),  // 不存在時不中斷
-      ]);
+    // ★ 核心必要檔案：失敗才切Demo
+    const [summary, buyRank, sellRank, changes, holdings] = await Promise.all([
+      loadJSON('data/summary.json'),
+      loadJSON('data/buy_ranking.json'),
+      loadJSON('data/sell_ranking.json'),
+      loadJSON('data/daily_changes.json'),
+      loadJSON('data/holdings.json'),
+    ]);
+
+    // ★ 選用檔案：不存在不影響主功能
+    const [etfPrices, performance, priceHistory] = await Promise.all([
+      safeJSON('data/etf_prices.json',    {}),
+      safeJSON('data/performance.json',   {}),
+      safeJSON('data/price_history.json', {}),
+    ]);
 
     APP.isDemo = false;
-    APP.summary = summary; APP.buyRank = buyRank||[];
-    APP.sellRank = sellRank||[]; APP.changes = changes||[];
-    APP.holdings = holdings||{}; APP.etfPrices = etfPrices||{};
+    APP.summary = summary;
+    APP.buyRank = buyRank||[];
+    APP.sellRank = sellRank||[];
+    APP.changes = changes||[];
+    APP.holdings = holdings||{};
+    APP.etfPrices = etfPrices||{};
     APP.performance = performance||{};
-    APP.priceHistory = priceHistory||{};  // ← 每日收盤價歷史
+    APP.priceHistory = priceHistory||{};
 
     if (summary.active_etfs) {
       APP.etfs = summary.active_etfs.map(e=>({ticker:e.code,name:e.name,price:0,chg:0,nav:0,aum:0}));
     }
 
+    // 從 etf_prices.json 填入ETF價格（若有）
     APP.etfs = APP.etfs.map(e => {
       const p = APP.etfPrices[e.ticker] || {};
       return {...e, price:p.close||0, chg:p.chg_pct||0, nav:p.nav||0, aum:p.aum_billion||0};
@@ -904,10 +917,13 @@ async function initData() {
       `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
     document.getElementById('dataPill').textContent = '資料：' + (summary.date||'');
     document.getElementById('dataPill').style.display = 'flex';
-    console.log('✓ 真實資料載入成功，價格歷史:', Object.keys(APP.priceHistory).length, '檔');
+    console.log('✓ 資料載入成功');
+
   } catch(e) {
+    // 只有核心5個檔案失敗才切Demo
     APP.isDemo = true;
-    APP.buyRank = MOCK.buyRank; APP.sellRank = MOCK.sellRank;
+    APP.buyRank = MOCK.buyRank;
+    APP.sellRank = MOCK.sellRank;
     APP.changes = MOCK.changes;
     APP.priceHistory = {};
     document.getElementById('dataPill').textContent = '⚠ Demo模式（尚無真實資料）';
