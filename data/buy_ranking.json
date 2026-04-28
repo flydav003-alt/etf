@@ -94,6 +94,15 @@
     ]
   },
   {
+    "stock_code": "7751",
+    "stock_name": "竑騰",
+    "etf_count": 1,
+    "value": 407250000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
     "stock_code": "2383",
     "stock_name": "台光電子",
     "etf_count": 1,
@@ -127,6 +136,15 @@
     "value": 213500000.0,
     "etf_list": [
       "00991A"
+    ]
+  },
+  {
+    "stock_code": "6584",
+    "stock_name": "南俊國際",
+    "etf_count": 1,
+    "value": 192738000.0,
+    "etf_list": [
+      "00993A"
     ]
   },
   {
@@ -165,24 +183,6 @@
     "etf_list": [
       "00993A",
       "00994A"
-    ]
-  },
-  {
-    "stock_code": "8210",
-    "stock_name": "勤  誠",
-    "etf_count": 1,
-    "value": 75725000.0,
-    "etf_list": [
-      "00400A"
-    ]
-  },
-  {
-    "stock_code": "7769",
-    "stock_name": "鴻勁",
-    "etf_count": 1,
-    "value": 64610000.0,
-    "etf_list": [
-      "00993A"
     ]
   }
 ]

@@ -9,21 +9,12 @@
     ]
   },
   {
-    "stock_code": "3702",
-    "stock_name": "大聯大",
+    "stock_code": "7751",
+    "stock_name": "竑騰",
     "etf_count": 1,
-    "value": -138952500.0,
+    "value": -62445000.0,
     "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "2347",
-    "stock_name": "聯強",
-    "etf_count": 1,
-    "value": -66883500.0,
-    "etf_list": [
-      "00993A"
+      "00987A"
     ]
   },
   {
@@ -31,42 +22,6 @@
     "stock_name": "元大金",
     "etf_count": 1,
     "value": -59893200.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "2395",
-    "stock_name": "研華",
-    "etf_count": 1,
-    "value": -58443000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "4904",
-    "stock_name": "遠傳",
-    "etf_count": 1,
-    "value": -53472000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "2481",
-    "stock_name": "強茂",
-    "etf_count": 1,
-    "value": -52839000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "3023",
-    "stock_name": "信邦",
-    "etf_count": 1,
-    "value": -52630000.0,
     "etf_list": [
       "00993A"
     ]
@@ -126,12 +81,12 @@
     ]
   },
   {
-    "stock_code": "2404",
-    "stock_name": "漢唐集成",
+    "stock_code": "3264",
+    "stock_name": "欣銓",
     "etf_count": 1,
-    "value": -5814000.0,
+    "value": -8337000.0,
     "etf_list": [
-      "00995A"
+      "00993A"
     ]
   },
   {
