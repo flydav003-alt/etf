@@ -290,27 +290,31 @@ def fetch_stock_close_prices(stock_codes: set) -> dict[str, float]:
     except Exception as e:
         log.error(f"  TWSE 收盤價抓取失敗: {e}")
 
-    # ── TPEx 上櫃 ────────────────────────────────────────
+    # ── TPEx 上櫃（多個備用 URL，DNS 解析失敗時自動換）────
+    tpex_urls = [
+        'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
+        'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes',
+    ]
     tpex_got = 0
-    try:
-        resp = requests.get(
-            'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
-            timeout=25
-        )
-        if resp.status_code == 200:
-            for item in resp.json():
-                code = item.get('Code', '')
-                if code in stock_codes and code not in prices:
-                    try:
-                        prices[code] = float(item['ClosingPrice'].replace(',', ''))
-                        tpex_got += 1
-                    except (ValueError, KeyError):
-                        pass
-            log.info(f"  TPEx 上櫃：補充 {tpex_got} 支收盤價")
-        else:
-            log.warning(f"  TPEx STOCK_DAY_ALL 回傳 {resp.status_code}")
-    except Exception as e:
-        log.warning(f"  TPEx 收盤價抓取失敗（不影響主流程）: {e}")
+    for tpex_url in tpex_urls:
+        try:
+            resp = requests.get(tpex_url, timeout=25)
+            if resp.status_code == 200:
+                for item in resp.json():
+                    code = item.get('Code', '') or item.get('SecuritiesCompanyCode', '')
+                    if code in stock_codes and code not in prices:
+                        try:
+                            cp = item.get('ClosingPrice', '') or item.get('Close', '')
+                            prices[code] = float(str(cp).replace(',', ''))
+                            tpex_got += 1
+                        except (ValueError, KeyError):
+                            pass
+                log.info(f"  TPEx 上櫃：補充 {tpex_got} 支收盤價（來源：{tpex_url.split('/')[2]}）")
+                break  # 成功就不試備用
+            else:
+                log.warning(f"  TPEx {tpex_url.split('/')[2]} 回傳 {resp.status_code}，試備用...")
+        except Exception as e:
+            log.warning(f"  TPEx {tpex_url.split('/')[2]} 失敗（{e.__class__.__name__}），試備用...")
 
     return prices
 
@@ -372,19 +376,25 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
     except Exception as e:
         log.error(f"TWSE ETF收盤價抓取失敗: {e}")
 
-    # TPEx 上櫃補充
-    try:
-        resp = requests.get(
-            'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
-            timeout=25
-        )
-        if resp.status_code == 200:
-            before = len(results)
-            _parse_source({item.get('Code', ''): item for item in resp.json()})
-            if len(results) > before:
-                log.info(f"  TPEx 補充 {len(results)-before} 檔 ETF 收盤價")
-    except Exception as e:
-        log.warning(f"TPEx ETF收盤價抓取失敗（不影響主流程）: {e}")
+    # TPEx 上櫃補充（備用 URL）
+    tpex_urls = [
+        'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
+        'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes',
+    ]
+    for tpex_url in tpex_urls:
+        try:
+            resp = requests.get(tpex_url, timeout=25)
+            if resp.status_code == 200:
+                before = len(results)
+                _parse_source({(item.get('Code','') or item.get('SecuritiesCompanyCode','')): item
+                               for item in resp.json()})
+                if len(results) > before:
+                    log.info(f"  TPEx 補充 {len(results)-before} 檔 ETF 收盤價")
+                break
+            else:
+                log.warning(f"  TPEx ETF {tpex_url.split('/')[2]} 回傳 {resp.status_code}，試備用...")
+        except Exception as e:
+            log.warning(f"  TPEx ETF {tpex_url.split('/')[2]} 失敗（{e.__class__.__name__}），試備用...")
 
     log.info(f"✓ 今日ETF收盤價：{len(results)} 檔")
     return results
@@ -780,7 +790,13 @@ def save_etf_prices_today(trade_date: str,
 # ══════════════════════════════════════════════════════════
 DIVIDEND_ETF_THRESHOLD = 5  # 同日同股 ≥ 這個數量的 ETF 同步減碼 → 視為除息
 
-def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
+def detect_changes(trade_date: str, yesterday: str,
+                   prices: dict[str, float] | None = None) -> pd.DataFrame:
+    """
+    比對今日與前一交易日持股變化。
+    prices: 傳入 fetch_stock_close_prices 的結果，直接用記憶體價格計算
+            amount_change，不依賴 DB 裡可能是 0 的 close_price。
+    """
     conn = sqlite3.connect(DB_PATH)
 
     df_t = pd.read_sql(
@@ -827,7 +843,9 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
         elif wt == 0:  action = 'FULL_SELL'
         elif diff > 0: action = 'INCREASE'
         else:          action = 'DECREASE'
-        price      = r.get('close_price', 0)
+        price_from_db = r.get('close_price', 0)
+        # 優先用記憶體裡的即時價格，DB 裡的 close_price 可能因速率限制而是 0
+        price = (prices.get(r['stock_code'], 0) if prices else 0) or price_from_db
         shares_chg = r['shares_t'] - r['shares_y']
         changes.append({
             'trade_date':    trade_date,
@@ -849,14 +867,33 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
 
     df_c = pd.DataFrame(changes)
 
-    # ── 除息防呆：同日同一股票，DECREASE/FULL_SELL 的 ETF 數 ≥ 閾值 → 標記除息 ──
+    # ── 除息防呆 ───────────────────────────────────────────
+    # 條件：同日同一股票，符合以下任一：
+    #   (A) 賣出 ETF 數 ≥ DIVIDEND_ETF_THRESHOLD（5）
+    #   (B) 賣出 ETF 數 / 持有該股的 ETF 總數 ≥ 80%，且平均 weight 降幅 < 1.5%
+    # 兩個條件都要搭配「降幅小」才算除息，大幅減碼不標除息
     sell_actions = {'DECREASE', 'FULL_SELL'}
-    sell_counts = (
-        df_c[df_c['action'].isin(sell_actions)]
-        .groupby('stock_code')['etf_code']
-        .nunique()
-    )
-    dividend_stocks = set(sell_counts[sell_counts >= DIVIDEND_ETF_THRESHOLD].index)
+    dividend_stocks = set()
+
+    # 計算每支股票：持有 ETF 數、賣出 ETF 數、平均降幅
+    all_stocks = df_c['stock_code'].unique()
+    for stock in all_stocks:
+        sub = df_c[df_c['stock_code'] == stock]
+        sell_sub  = sub[sub['action'].isin(sell_actions)]
+        if sell_sub.empty:
+            continue
+        total_etf_holding = len(sub)           # 持有這支股票的 ETF 總數
+        sell_etf_count    = len(sell_sub)       # 賣出的 ETF 數
+        avg_drop = sell_sub['weight_change'].abs().mean()  # 平均降幅（絕對值）
+
+        cond_a = sell_etf_count >= DIVIDEND_ETF_THRESHOLD
+        cond_b = (total_etf_holding > 0 and
+                  sell_etf_count / total_etf_holding >= 0.8 and
+                  avg_drop < 1.5)
+
+        if (cond_a or cond_b) and avg_drop < 1.5:  # 兩條件都要搭配降幅小
+            dividend_stocks.add(stock)
+
     if dividend_stocks:
         df_c.loc[
             df_c['stock_code'].isin(dividend_stocks) &
@@ -864,8 +901,8 @@ def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
             'is_dividend'
         ] = 1
         log.info(f"  ⚠ 除息防呆：標記 {len(dividend_stocks)} 支股票"
-                 f"（{sorted(dividend_stocks)}）共 "
-                 f"{(df_c['is_dividend']==1).sum()} 筆為除息，不計入賣出排行")
+                 f"（{sorted(dividend_stocks)[:10]}{'...' if len(dividend_stocks)>10 else ''}）"
+                 f"共 {(df_c['is_dividend']==1).sum()} 筆為除息")
 
     # 先刪今天舊紀錄，避免重跑時 UNIQUE constraint 衝突
     conn = sqlite3.connect(DB_PATH)
@@ -1291,7 +1328,7 @@ def run(target_date: str | None = None):
         "SELECT * FROM daily_holdings WHERE trade_date=?", conn, params=[today_str])
     conn.close()
 
-    df_changes = detect_changes(today_str, yesterday_str)
+    df_changes = detect_changes(today_str, yesterday_str, prices=stock_prices)
 
     # 計算連續加碼/減碼天數（streak）
     by_etf_stock, by_stock = compute_streaks(today_str, lookback_days=10)
