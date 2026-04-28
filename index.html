@@ -681,7 +681,7 @@ main {
         <thead>
           <tr>
             <th width="32">#</th><th>ETF</th><th>成分股</th><th>動作</th>
-            <th>前次佔比</th><th>現在佔比</th><th>變化</th>
+            <th>前次佔比</th><th>現在佔比</th><th>變化</th><th>金額</th>
           </tr>
         </thead>
         <tbody id="changesTbody"></tbody>
@@ -806,6 +806,35 @@ main {
   </div>
 </div>
 
+<!-- ═══ 成分明細 MODAL ═══ -->
+<div class="modal-overlay" id="holdingsModal" onclick="if(event.target===this)closeHoldingsModal()">
+  <div class="modal" style="width:560px;max-width:92vw;max-height:80vh;display:flex;flex-direction:column;padding:0;">
+    <div style="padding:20px 22px 12px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div>
+          <div id="hmTicker" style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);letter-spacing:1px;"></div>
+          <div id="hmName" class="modal-title" style="margin-bottom:4px;"></div>
+          <div id="hmMeta" style="font-family:var(--font-mono);font-size:10px;color:var(--sumi-45);"></div>
+        </div>
+        <span style="cursor:pointer;font-size:18px;color:var(--sumi-45);padding:4px 8px;line-height:1;" onclick="closeHoldingsModal()">✕</span>
+      </div>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:8px 22px 18px;">
+      <table class="etf-table" style="width:100%;">
+        <thead>
+          <tr>
+            <th width="32">#</th>
+            <th>成分股</th>
+            <th style="text-align:right;">權重</th>
+            <th style="text-align:right;">股數</th>
+          </tr>
+        </thead>
+        <tbody id="hmTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <div class="footer-note">
   追蹤標的：00981A · 00982A · 00991A · 00992A · 00993A · 00980A · 00985A · 00995A · 00984A · 00987A · 00994A · 00996A · 00400A · 00401A<br>
   基準比較：0050 元大台灣50 · 009816 凱基台灣TOP50 ｜ 股票名稱可點擊開啟K線分析<br>
@@ -840,7 +869,7 @@ const DONUT_COLORS = [
 let APP = {
   isDemo: false, summary: null,
   buyRank: [], sellRank: [], changes: [], holdings: {},
-  etfPrices: {}, performance: {}, priceHistory: {},
+  etfPrices: {}, performance: {}, priceHistory: {}, streaks: {},
   etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0})),
 };
 let rankSort = 'consensus'; // 'consensus' | 'amount'
@@ -895,6 +924,40 @@ function stockNameLink(code, name){
   >${name}</a>`;
 }
 
+// ── 連續買賣徽章 ──────────────────────────────────────────
+// streaks.json 結構（後端產出後）：
+//   { "by_etf_stock": { "00981A": { "2330": {"buy":3,"sell":0}, ... }, ... },
+//     "by_stock":     { "2330": {"max_buy":3,"max_sell":0,"etf_count_buy":5}, ... } }
+// 後端尚未產出時，APP.streaks={}，所有徽章自動隱藏，不影響顯示。
+function streakForEtfStock(etfCode, stockCode) {
+  const m = APP.streaks?.by_etf_stock;
+  if (!m || !m[etfCode]) return null;
+  return m[etfCode][stockCode] || null;
+}
+function streakForStock(stockCode) {
+  const m = APP.streaks?.by_stock;
+  if (!m) return null;
+  return m[stockCode] || null;
+}
+// 連 2 天 → 淺色，連 3+ 天 → 深色
+function streakBadge(buyDays, sellDays) {
+  if (buyDays && buyDays >= 2) {
+    const dark = buyDays >= 3;
+    const bg   = dark ? 'rgba(192,68,85,0.22)' : 'rgba(219,90,107,0.12)';
+    const bd   = dark ? 'rgba(192,68,85,0.55)' : 'rgba(219,90,107,0.32)';
+    const fg   = dark ? '#a03040' : '#c04455';
+    return `<span title="連續加碼 ${buyDays} 天" style="display:inline-block;margin-left:6px;padding:1px 6px;font-family:var(--font-mono);font-size:9px;font-weight:600;background:${bg};border:1px solid ${bd};color:${fg};border-radius:3px;letter-spacing:0.3px;">▲連${buyDays}</span>`;
+  }
+  if (sellDays && sellDays >= 2) {
+    const dark = sellDays >= 3;
+    const bg   = dark ? 'rgba(90,128,50,0.22)' : 'rgba(122,158,82,0.12)';
+    const bd   = dark ? 'rgba(90,128,50,0.55)' : 'rgba(122,158,82,0.32)';
+    const fg   = dark ? '#3f6020' : '#5a8032';
+    return `<span title="連續減碼 ${sellDays} 天" style="display:inline-block;margin-left:6px;padding:1px 6px;font-family:var(--font-mono);font-size:9px;font-weight:600;background:${bg};border:1px solid ${bd};color:${fg};border-radius:3px;letter-spacing:0.3px;">▼連${sellDays}</span>`;
+  }
+  return '';
+}
+
 // ── 安全 JSON 載入 (不讓整頁崩潰) ─────────────────────────────
 async function loadJSON(path) {
   const r = await fetch(path + '?t=' + Date.now());
@@ -905,57 +968,41 @@ function safeJSON(path, fallback) {
   return loadJSON(path).catch(() => fallback);
 }
 
-// ── 主資料初始化 (雙重容錯) ─────────────────────────────────
+// ── 主資料初始化 (Promise.allSettled，逐項容錯) ───────────────
+// 任何單一檔案失敗都不會把整頁打回 Demo，已成功的資料會正常顯示
 async function initData() {
-  try {
-    // 核心資料（必要）
-    const [summary, buyRank, sellRank, changes, holdings] = await Promise.all([
-      loadJSON('data/summary.json'),
-      loadJSON('data/buy_ranking.json'),
-      loadJSON('data/sell_ranking.json'),
-      loadJSON('data/daily_changes.json'),
-      loadJSON('data/holdings.json'),
-    ]);
-    // 選用資料
-    const [etfPrices, performance, priceHistory] = await Promise.all([
-      safeJSON('data/etf_prices.json', {}),
-      safeJSON('data/performance.json', {}),
-      safeJSON('data/price_history.json', {}),
-    ]);
+  const FILES = [
+    'data/summary.json',
+    'data/buy_ranking.json',
+    'data/sell_ranking.json',
+    'data/daily_changes.json',
+    'data/holdings.json',
+    'data/etf_prices.json',
+    'data/performance.json',
+    'data/price_history.json',
+    'data/streaks.json',          // 連續買賣統計（後端尚未產出，沒有就跳過）
+  ];
+  const results = await Promise.allSettled(FILES.map(loadJSON));
+  const get = (i, fallback) => results[i].status === 'fulfilled' ? (results[i].value ?? fallback) : fallback;
 
-    APP = {
-      isDemo: false,
-      summary,
-      buyRank: buyRank || [],
-      sellRank: sellRank || [],
-      changes: changes || [],
-      holdings: holdings || {},
-      etfPrices: etfPrices || {},
-      performance: performance || {},
-      priceHistory: priceHistory || {},
-      etfs: (summary.active_etfs || []).map(e => ({ ticker: e.code, name: e.name, price: 0, chg: 0, nav: 0, aum: 0 })),
-    };
-    if (APP.etfs.length === 0) {
-      APP.etfs = Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 }));
-    }
-    // 填入價格資訊
-    APP.etfs = APP.etfs.map(e => {
-      const p = APP.etfPrices[e.ticker] || {};
-      return { ...e, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0 };
-    });
+  const summary      = get(0, null);
+  const buyRank      = get(1, []);
+  const sellRank     = get(2, []);
+  const changes      = get(3, []);
+  const holdings     = get(4, {});
+  const etfPrices    = get(5, {});
+  const performance  = get(6, {});
+  const priceHistory = get(7, {});
+  const streaks      = get(8, {});
 
-    if (summary.date) {
-      const d = new Date(summary.date);
-      document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
-    } else {
-      document.getElementById('todayDate').textContent = '--/--';
-    }
-    document.querySelector('.logo-sub').textContent = `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot"></span><span>資料：${summary.date || '最新'}</span>`;
-    document.getElementById('dataPill').style.display = 'flex';
-    console.log('✅ 真實資料載入成功');
-  } catch (e) {
-    console.warn('⚠️ 載入失敗，切換為示範模式(Demo)', e);
+  // 統計失敗的檔案（用於提示）
+  const failed = results.map((r, i) => r.status === 'rejected' ? FILES[i] : null).filter(Boolean);
+
+  // 判斷是否要走 Demo：summary 跟 holdings 兩個核心檔都失敗才走 Demo
+  const coreFailed = (results[0].status === 'rejected') && (results[4].status === 'rejected');
+
+  if (coreFailed) {
+    console.warn('⚠️ 核心資料全部失敗，切換為示範模式', failed);
     APP = {
       isDemo: true,
       summary: null,
@@ -966,11 +1013,49 @@ async function initData() {
       etfPrices: {},
       performance: {},
       priceHistory: {},
+      streaks: {},
       etfs: Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 })),
     };
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot" style="background:#db5a6b;"></span><span>示範模式 (暫無即時資料)</span>`;
-    document.getElementById('dataPill').style.display = 'flex';
-    document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
+    const pill = document.getElementById('dataPill');
+    pill.innerHTML = `<span class="live-dot" style="background:#db5a6b;"></span><span>示範模式 (暫無即時資料)</span>`;
+    pill.style.display = 'flex';
+    pill.style.background = 'rgba(219,90,107,0.12)';
+  } else {
+    APP = {
+      isDemo: false,
+      summary,
+      buyRank,
+      sellRank,
+      changes,
+      holdings,
+      etfPrices,
+      performance,
+      priceHistory,
+      streaks,
+      etfs: (summary?.active_etfs || []).map(e => ({ ticker: e.code, name: e.name, price: 0, chg: 0, nav: 0, aum: 0 })),
+    };
+    if (APP.etfs.length === 0) {
+      APP.etfs = Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 }));
+    }
+    // 填入價格資訊
+    APP.etfs = APP.etfs.map(e => {
+      const p = APP.etfPrices[e.ticker] || {};
+      return { ...e, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0 };
+    });
+    if (summary?.date) {
+      const d = new Date(summary.date);
+      document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
+    } else {
+      document.getElementById('todayDate').textContent = '--/--';
+    }
+    document.querySelector('.logo-sub').textContent = `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
+    const pill = document.getElementById('dataPill');
+    const dateLabel = summary?.date || '最新';
+    const partialNote = failed.length ? `（${failed.length}項待產出）` : '';
+    pill.innerHTML = `<span class="live-dot"></span><span>資料：${dateLabel}${partialNote}</span>`;
+    pill.style.display = 'flex';
+    if (failed.length) console.info('ℹ️ 部分資料尚未產出（將略過）：', failed);
+    console.log('✅ 真實資料載入成功');
   }
   renderAll();
 }
@@ -1031,23 +1116,29 @@ function renderRankings() {
   const maxB = buys[0] ? Math.max(...buys.map(r => Math.abs(r.value))) : 1;
   const maxS = sells[0] ? Math.max(...sells.map(r => Math.abs(r.value))) : 1;
 
-  document.getElementById('buyRankTbody').innerHTML = buys.map((r,i)=>`
-    <tr>
+  document.getElementById('buyRankTbody').innerHTML = buys.map((r,i)=>{
+    const sk = streakForStock(r.stock_code);
+    const badge = sk ? streakBadge(sk.max_buy, 0) : '';
+    return `<tr>
       <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td>
+      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span>${badge}</td>
       <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
       <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
       <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 
-  document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>`
-    <tr>
+  document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>{
+    const sk = streakForStock(r.stock_code);
+    const badge = sk ? streakBadge(0, sk.max_sell) : '';
+    return `<tr>
       <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
-      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span></td>
+      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}<span class="stock-code">${r.stock_code}</span>${badge}</td>
       <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
       <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
       <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1064,14 +1155,23 @@ function _renderChangeTable(data) {
     const diff = (r.weight_after||0) - (r.weight_before||0);
     const name = ETF_META[r.etf_code] || r.etf_code || '';
     const isBuy = r.action==='NEW_BUY', isSell = r.action==='FULL_SELL';
+    // 個別 ETF × 個別 stock 的連續天數徽章
+    const sk = streakForEtfStock(r.etf_code, r.stock_code);
+    const badge = sk ? streakBadge(sk.buy, sk.sell) : '';
+    // 金額欄：amount_change 為正紅、為負綠
+    const amt = r.amount_change || 0;
+    const amtCell = amt !== 0
+      ? `<span class="${amt>0?'up':'down'}" style="font-family:var(--font-mono)">${fmtMoney(amt)}</span>`
+      : '<span class="flat">—</span>';
     return `<tr>
       <td><span class="rn">${i+1}</span></td>
       <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
-      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span></td>
+      <td>${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}<span class="stock-code">${r.stock_code||''}</span>${badge}</td>
       <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
       <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
       <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
       <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}</td>
+      <td>${amtCell}</td>
     </tr>`;
   }).join('');
 }
@@ -1101,10 +1201,12 @@ function updateKpi() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  P3: 成分佔比 (甜甜圈，完整保留)
+//  P3: 成分佔比 — 方案 B（Top 9 重新標準化），點「+其餘成分」展開明細
 // ═══════════════════════════════════════════════════════════
 let donutsDone = false;
 const donutCharts = new Map();
+const TOP_N_DONUT  = 9;   // 圓形圖切片數
+const MODAL_TOP_N  = 20;  // modal 展開顯示前 N 檔，其餘併為其他
 
 function renderDonuts() {
   if (donutsDone) return;
@@ -1119,40 +1221,65 @@ function renderDonuts() {
     ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, isWatch: false })),
     ...extra.map(t => ({ ticker: t, name: `自選 ${t}`, isWatch: true })),
   ];
+
   items.forEach(({ ticker, name, isWatch }, di) => {
     const cid = 'dc_' + ticker.replace(/\W/g,'_');
-    const realData = (!isWatch && APP.holdings[ticker] && APP.holdings[ticker].holdings) ? APP.holdings[ticker].holdings : [];
-    let coloredSlices = [];
-    let totalCount = 0;
+    const realData = (APP.holdings[ticker] && APP.holdings[ticker].holdings) ? APP.holdings[ticker].holdings : [];
+
+    let topItems = [];   // 圓形圖切片來源（已重新標準化）
+    let topShareSum = 0; // Top N 在原始持股中佔的總權重（用於說明）
+    let totalCount = 0;  // 該 ETF 總成分數
+    let usingMock = false;
+
     if (realData.length) {
       totalCount = realData.length;
-      const top9 = realData.slice(0,9);
-      const top9sum = top9.reduce((s,h)=>s+(h.weight_pct||0),0);
-      const otherPct = Math.max(0, +(100 - top9sum).toFixed(1));
-      coloredSlices = [
-        ...top9.map(h => ({ name: h.stock_name || h.stock_code, w: +(h.weight_pct||0) })),
-        ...(otherPct > 0.1 ? [{ name: '其他', w: otherPct }] : []),
-      ];
+      // 排序保險（API 多半已排好；這裡再排一次以防）
+      const sorted = [...realData].sort((a,b)=>(b.weight_pct||0)-(a.weight_pct||0));
+      const topN   = sorted.slice(0, TOP_N_DONUT);
+      topShareSum = topN.reduce((s,h)=>s+(h.weight_pct||0), 0);
+      // 方案 B：把 Top N 的權重重新標準化到 100%（圓形圖內部比例反映 Top N 之間的相對佔比）
+      topItems = topN.map(h => {
+        const orig = +(h.weight_pct||0);
+        const norm = topShareSum > 0 ? +(orig / topShareSum * 100).toFixed(1) : 0;
+        return { name: h.stock_name || h.stock_code, originalPct: orig, normalizedPct: norm };
+      });
     } else {
-      // 模擬成分
+      // 模擬資料（Demo 模式）
+      usingMock = true;
       const tops = [
-        { name: '台積電', w: 28 }, { name: '廣達', w: 9 }, { name: '聯發科', w: 7 },
-        { name: '鴻海', w: 6 }, { name: '台達電', w: 5 }, { name: '聯電', w: 4 },
+        { name:'台積電', w:28 }, { name:'廣達', w:9 }, { name:'聯發科', w:7 },
+        { name:'鴻海', w:6 },   { name:'台達電', w:5 }, { name:'聯電', w:4 },
+        { name:'統一', w:3 },   { name:'中鋼', w:2.5 },{ name:'富邦金', w:2 },
       ];
-      const sum = tops.reduce((s,x)=>s+x.w,0);
-      coloredSlices = [...tops, { name: '其他', w: +(100-sum).toFixed(1) }];
-      totalCount = realData.length || 20;
+      topShareSum = tops.reduce((s,x)=>s+x.w, 0);
+      topItems = tops.map(t => ({
+        name: t.name, originalPct: t.w,
+        normalizedPct: +(t.w / topShareSum * 100).toFixed(1),
+      }));
+      totalCount = 20;
     }
+
     const card = document.createElement('div');
     card.className = 'donut-card' + (isWatch ? ' is-watch' : '');
     card.style.animationDelay = `${di*0.04}s`;
-    // 精簡 legend 避免過長，保留原始風格
-    const legendHtml = coloredSlices.slice(0,5).map((s,i)=>`
+
+    // Legend：顯示 Top 5（用 originalPct，使用者一眼看到「在這檔 ETF 真實佔比」）
+    const legendHtml = topItems.slice(0,5).map((s,i)=>`
       <div class="legend-row">
         <span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span>
         <span style="font-size:11px">${s.name}</span>
-        <span class="legend-pct">${s.w.toFixed(1)}%</span>
+        <span class="legend-pct">${s.originalPct.toFixed(1)}%</span>
       </div>`).join('');
+
+    // 「+其餘成分」按鈕：可點擊（Demo 模式無真實資料，停用點擊）
+    const moreCount = Math.max(0, totalCount - 5);
+    const moreBtn = (totalCount > 5)
+      ? (usingMock
+         ? `<div style="font-size:10px;color:var(--sumi-30);margin-top:4px;font-style:italic;">+ ${moreCount} 檔（示範模式）</div>`
+         : `<div onclick="openHoldingsModal('${ticker}')" style="margin-top:6px;padding:5px 8px;font-size:10px;font-family:var(--font-mono);color:var(--aizumi-dk);background:rgba(77,116,148,0.06);border:1px dashed rgba(77,116,148,0.3);border-radius:3px;cursor:pointer;text-align:center;letter-spacing:0.5px;transition:all .15s;" onmouseover="this.style.background='rgba(77,116,148,0.14)'" onmouseout="this.style.background='rgba(77,116,148,0.06)'">+ 其餘 ${moreCount} 檔（點擊展開）</div>`)
+      : '';
+
+    // 中央顯示：總成分數（不變）
     card.innerHTML = `
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
         <div><div class="donut-ticker">${ticker}</div><div class="donut-name">${name}</div></div>
@@ -1160,25 +1287,87 @@ function renderDonuts() {
       </div>
       <div class="donut-wrap">
         <canvas id="${cid}" width="120" height="120"></canvas>
-        <div class="donut-center"><div class="donut-center-val">${totalCount||coloredSlices.length}</div><div class="donut-center-sub">成分</div></div>
+        <div class="donut-center"><div class="donut-center-val">${totalCount}</div><div class="donut-center-sub">成分</div></div>
       </div>
-      <div class="donut-legend">${legendHtml}${coloredSlices.length>5?'<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;">+ 其餘成分</div>':''}</div>`;
+      <div style="text-align:center;font-family:var(--font-mono);font-size:9px;color:var(--sumi-45);margin-bottom:8px;letter-spacing:0.5px;">
+        Top ${topItems.length} 共佔 ${topShareSum.toFixed(1)}%
+      </div>
+      <div class="donut-legend">${legendHtml}${moreBtn}</div>`;
     grid.appendChild(card);
+
+    // 圓形圖只用 Top N 重新標準化後的比例 → 視覺乾淨，無「其他」吃版面
     const chart = new Chart(document.getElementById(cid), {
       type: 'doughnut',
       data: {
-        labels: coloredSlices.map(s=>s.name),
+        labels: topItems.map(s=>s.name),
         datasets: [{
-          data: coloredSlices.map(s=>s.w),
-          backgroundColor: coloredSlices.map((_,i)=>DONUT_COLORS[i]),
+          data: topItems.map(s=>s.normalizedPct),
+          backgroundColor: topItems.map((_,i)=>DONUT_COLORS[i]),
           borderColor: '#fff8e8', borderWidth: 2,
         }]
       },
-      options: { cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(1)}%` } } } }
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              // tooltip 顯示原始佔比（在整個 ETF 內），更直觀
+              label: ctx => {
+                const item = topItems[ctx.dataIndex];
+                return `${item.name}：${item.originalPct.toFixed(1)}%（原始）`;
+              }
+            }
+          }
+        }
+      }
     });
     donutCharts.set(cid, chart);
   });
 }
+
+// ── 成分明細 Modal ─────────────────────────────────────────
+window.openHoldingsModal = function(ticker) {
+  const data = APP.holdings[ticker];
+  if (!data || !data.holdings || !data.holdings.length) {
+    alert('找不到這檔 ETF 的成分資料');
+    return;
+  }
+  const list = [...data.holdings].sort((a,b)=>(b.weight_pct||0)-(a.weight_pct||0));
+  const top  = list.slice(0, MODAL_TOP_N);
+  const rest = list.slice(MODAL_TOP_N);
+  const restPct = rest.reduce((s,h)=>s+(h.weight_pct||0), 0);
+
+  document.getElementById('hmTicker').textContent = ticker;
+  document.getElementById('hmName').textContent   = data.name || ETF_META[ticker] || ticker;
+  document.getElementById('hmMeta').textContent   =
+    `共 ${list.length} 檔成分 · 顯示前 ${top.length} 檔（依權重）`;
+
+  const rows = top.map((h,i)=>{
+    const sk = streakForEtfStock(ticker, h.stock_code);
+    const badge = sk ? streakBadge(sk.buy, sk.sell) : '';
+    const sharesStr = h.shares ? Math.round(h.shares).toLocaleString() : '—';
+    return `<tr>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
+      <td>${stockNameLink(h.stock_code, `<span class="stock-name">${h.stock_name||''}</span>`)}<span class="stock-code">${h.stock_code||''}</span>${badge}</td>
+      <td style="text-align:right;font-family:var(--font-mono);font-weight:600;color:var(--sumi);">${(h.weight_pct||0).toFixed(2)}%</td>
+      <td style="text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);">${sharesStr}</td>
+    </tr>`;
+  }).join('');
+  const restRow = rest.length
+    ? `<tr style="border-top:1px solid var(--border);background:rgba(200,181,96,0.05);">
+        <td><span class="rn">—</span></td>
+        <td><span style="color:var(--sumi-60);font-style:italic;">其餘 ${rest.length} 檔</span></td>
+        <td style="text-align:right;font-family:var(--font-mono);color:var(--sumi-60);">${restPct.toFixed(2)}%</td>
+        <td style="text-align:right;color:var(--sumi-45);">—</td>
+      </tr>`
+    : '';
+  document.getElementById('hmTbody').innerHTML = rows + restRow;
+  document.getElementById('holdingsModal').classList.add('open');
+};
+window.closeHoldingsModal = function() {
+  document.getElementById('holdingsModal').classList.remove('open');
+};
 
 // ═══════════════════════════════════════════════════════════
 //  P4: 月績效 (完整保留，含折線圖)
