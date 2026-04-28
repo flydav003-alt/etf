@@ -291,45 +291,78 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 # ══════════════════════════════════════════════════════════
 async def _fetch_one_etf_nav_aum(page, code: str) -> dict:
     """抓取單一ETF的NAV和規模（async，供 fetch_etf_nav_and_aum 使用）"""
-    url = f"https://www.pocket.tw/etf/tw/{code}"
     result = {'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0}
-    try:
-        await page.goto(url, timeout=25000, wait_until='networkidle')
-        await page.wait_for_timeout(3000)
-        text = await page.inner_text('body')
 
-        # ── NAV 淨值 ──
+    # ── 第一步：從主頁抓規模 ─────────────────────────────
+    try:
+        url_main = f"https://www.pocket.tw/etf/tw/{code}"
+        await page.goto(url_main, timeout=25000, wait_until='networkidle')
+        await page.wait_for_timeout(2000)
+        text_main = await page.inner_text('body')
+
+        # 規模（億）— 主頁有
+        m_aum = re.search(r'規模[（(]億[）)]?\s*[:：]?\s*([\d,]+\.?[\d]*)', text_main)
+        if m_aum:
+            result['aum'] = float(m_aum.group(1).replace(',',''))
+
+        # 折溢價 — 主頁有追蹤誤差表，裡面有折溢價
         for pattern in [
-            r'淨值\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
-            r'NAV\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
-            r'昨日淨值.*?([\d,]+\.[\d]{1,3})',
+            r'折溢價\s*\n?\s*([-\d.]+)%',
+            r'折溢價\s*([-\d.]+)',
         ]:
-            m = re.search(pattern, text)
+            m_pd = re.search(pattern, text_main)
+            if m_pd:
+                pd_val = float(m_pd.group(1))
+                if abs(pd_val) < 20:
+                    result['premium_pct'] = pd_val
+                    break
+
+    except Exception as e:
+        log.debug(f"  {code} 主頁抓取失敗: {e}")
+
+    # ── 第二步：從折溢價頁抓 NAV ─────────────────────────
+    # Pocket.tw /discountpremium 頁面有淨值資料
+    try:
+        url_dp = f"https://www.pocket.tw/etf/tw/{code}/discountpremium"
+        await page.goto(url_dp, timeout=25000, wait_until='networkidle')
+        await page.wait_for_timeout(2500)
+        text_dp = await page.inner_text('body')
+
+        # 淨值模式（折溢價頁通常有「淨值 XX.XX」格式）
+        for pattern in [
+            r'淨值\s*([\d,]+\.[\d]{1,3})',
+            r'NAV\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
+            r'每單位淨資產價值\s*[:：]?\s*([\d,]+\.[\d]{1,3})',
+            r'([\d]{2,3}\.[\d]{2,3})\s*元?.*?淨值',
+        ]:
+            m = re.search(pattern, text_dp)
             if m:
                 nav = float(m.group(1).replace(',',''))
                 if 1 < nav < 10000:
                     result['nav'] = nav
                     break
 
-        # ── 規模（億）──
-        m_aum = re.search(r'規模[（(]億[）)]?\s*[:：]?\s*([\d,]+\.?[\d]*)', text)
-        if m_aum:
-            result['aum'] = float(m_aum.group(1).replace(',',''))
+        # 若折溢價頁也有更精確的折溢價，更新
+        if result['premium_pct'] == 0:
+            for pattern in [r'折溢價\s*([-\d.]+)%', r'([-\d.]+)%\s*折溢價']:
+                m_pd = re.search(pattern, text_dp)
+                if m_pd:
+                    pd_val = float(m_pd.group(1))
+                    if abs(pd_val) < 20:
+                        result['premium_pct'] = pd_val
+                        break
 
-        # ── 折溢價 ──
-        for pattern in [
-            r'折溢價\s*[:：]?\s*([-\d.]+)%',
-            r'([-\d.]+)%\s*折溢價',
-        ]:
-            m_pd = re.search(pattern, text)
-            if m_pd:
-                pd_val = float(m_pd.group(1))
-                if abs(pd_val) < 10:
-                    result['premium_pct'] = pd_val
-                    break
+        # 若還是沒有 NAV，從折溢價反推（若有市價和折溢價）
+        if result['nav'] == 0 and result['premium_pct'] != 0:
+            # 找市價
+            m_price = re.search(r'(\d{2,3}\.\d{2})\s*[▲▼元]', text_dp)
+            if m_price:
+                mkt = float(m_price.group(1))
+                result['nav'] = round(mkt / (1 + result['premium_pct']/100), 2)
 
     except Exception as e:
-        log.debug(f"  {code} Playwright失敗: {e}")
+        log.debug(f"  {code} 折溢價頁抓取失敗: {e}")
+
     return result
 
 
@@ -568,13 +601,33 @@ def save_etf_prices_today(trade_date: str,
 # ══════════════════════════════════════════════════════════
 def detect_changes(trade_date: str, yesterday: str) -> pd.DataFrame:
     conn = sqlite3.connect(DB_PATH)
-    df_t = pd.read_sql("SELECT * FROM daily_holdings WHERE trade_date=?", conn, params=[trade_date])
-    df_y = pd.read_sql("SELECT * FROM daily_holdings WHERE trade_date=?", conn, params=[yesterday])
 
-    if df_y.empty:
-        log.info(f"⚠ 無昨日資料（{yesterday}），跳過變化偵測")
+    df_t = pd.read_sql(
+        "SELECT * FROM daily_holdings WHERE trade_date=?",
+        conn, params=[trade_date]
+    )
+
+    # ★ 修正：不靠傳入的 yesterday，直接查 DB 裡最近一個有資料的交易日
+    # 這樣週一也能正確找到上週五，不受週末計算邏輯影響
+    prev_dates = pd.read_sql("""
+        SELECT DISTINCT trade_date FROM daily_holdings
+        WHERE trade_date < ?
+        ORDER BY trade_date DESC
+        LIMIT 1
+    """, conn, params=[trade_date])
+
+    if prev_dates.empty:
+        log.info(f"⚠ DB 中無前一交易日資料，跳過變化偵測（首次執行正常）")
         conn.close()
         return pd.DataFrame()
+
+    prev_date = prev_dates.iloc[0]['trade_date']
+    log.info(f"  比對日期：今日={trade_date}，前一交易日={prev_date}")
+
+    df_y = pd.read_sql(
+        "SELECT * FROM daily_holdings WHERE trade_date=?",
+        conn, params=[prev_date]
+    )
 
     merged = pd.merge(
         df_t[['etf_code','stock_code','stock_name','weight_pct','shares','close_price']],
