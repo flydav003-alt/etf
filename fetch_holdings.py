@@ -286,15 +286,23 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
 
 # ══════════════════════════════════════════════════════════
 # 5+6. 同時抓取 ETF NAV 淨值 + 規模
-#    來源：Pocket.tw 折溢價頁（Grok 驗證可抓）
+#    照 Grok 驗證的方式：
+#    - domcontentloaded（比 networkidle 快）
+#    - BeautifulSoup soup.get_text 解析（Grok 用此方式成功）
+#    - 抓到就立即 break，不等下一個 URL
+#    - wait_for_timeout 8000ms（Grok 驗證值）
 # ══════════════════════════════════════════════════════════
-async def _fetch_one_etf_nav_aum(page, code: str) -> dict:
+async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
     """
-    照 Grok 驗證的方式：
-    先試 Pocket.tw 折溢價頁，再試主頁
-    wait_for_timeout 8000ms 確保 JS 渲染完成
+    完全照 Grok colab 驗證版本
+    每檔開新 page，抓到市價+規模就視為成功
     """
-    result = {'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0}
+    from bs4 import BeautifulSoup
+
+    result = {
+        'nav': 0.0, 'aum': 0.0, 'premium_pct': 0.0,
+        'market_price': None, 'success': False, 'source': None
+    }
 
     urls = [
         ("Pocket_Discount", f"https://www.pocket.tw/etf/tw/{code}/discountpremium/"),
@@ -302,67 +310,74 @@ async def _fetch_one_etf_nav_aum(page, code: str) -> dict:
     ]
 
     for name, url in urls:
+        page = None
         try:
-            await page.goto(url, timeout=30000, wait_until='networkidle')
+            page = await context.new_page()
+            await page.goto(url, timeout=60000, wait_until="domcontentloaded")
             await page.wait_for_timeout(8000)
-            text = await page.inner_text('body')
 
-            market_price = None
-            m_price = re.search(r'(\d{2,3}\.\d{2})\s*[▲▼]', text)
-            if m_price:
-                market_price = float(m_price.group(1))
+            content = await page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            text = soup.get_text(separator=" ", strip=True)
 
-            # 規模（億）
-            m_aum = re.search(r'規模[（(]億[）)]?\s*[:：]?\s*([\d,\.]+)', text)
-            if m_aum:
-                result['aum'] = float(m_aum.group(1).replace(',', ''))
+            # 市價
+            if not result['market_price']:
+                m = re.search(r'(\d{2}\.\d{1,3})\s*[▲▼]', text)
+                if m:
+                    result['market_price'] = float(m.group(1))
+
+            # 規模
+            if not result['aum']:
+                s = re.search(r'規模.*?([\d,\.]+)\s*億', text)
+                if not s:
+                    s = re.search(r'資產規模.*?([\d,\.]+)', text)
+                if s:
+                    result['aum'] = float(s.group(1).replace(',', ''))
 
             # 淨值
-            nav_patterns = [
-                r'淨值\s*[:：]?\s*(\d{2,3}\.\d{2,3})',
-                r'NAV\s*[:：]?\s*(\d{2,3}\.\d{2,3})',
-                r'昨日淨值.*?(\d{2,3}\.\d{2,3})',
-            ]
-            for pattern in nav_patterns:
-                m = re.search(pattern, text)
-                if m:
-                    nav_val = float(m.group(1))
-                    if market_price is None or abs(nav_val - market_price) < 5:
-                        result['nav'] = nav_val
-                        break
+            if not result['nav']:
+                n = re.search(r'淨值\s*[:：]?\s*(\d{2}\.\d{1,3})', text)
+                if n:
+                    result['nav'] = float(n.group(1))
 
             # 折溢價
-            pd_patterns = [
-                r'折溢價.*?([-\d\.]+)%',
-                r'折溢價[（(]%[）)]?\s*[:：]?\s*([-\d\.]+)',
-                r'([-\d\.]+)%\s*折溢價',
-            ]
-            for pattern in pd_patterns:
-                m = re.search(pattern, text)
-                if m:
-                    pd_val = float(m.group(1))
-                    if abs(pd_val) < 5:
+            if not result['premium_pct']:
+                pd_m = re.search(r'折溢價.*?([-\d\.]+)%', text)
+                if pd_m:
+                    pd_val = float(pd_m.group(1))
+                    if abs(pd_val) < 10:
                         result['premium_pct'] = pd_val
-                        break
 
-            if market_price and result['nav'] > 0:
+            # 抓到市價+規模就成功，跳出
+            if result['market_price'] and result['aum']:
+                result['success'] = True
+                result['source']  = name
+                await page.close()
                 break
 
         except Exception as e:
             log.debug(f"  [{name}] {code} 失敗: {e}")
-            continue
+        finally:
+            if page and not page.is_closed():
+                try: await page.close()
+                except: pass
 
     return result
 
 
 def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
+    """
+    用 Playwright + BeautifulSoup 從 Pocket.tw 抓取所有 ETF 的 NAV 和規模
+    照 Grok colab 驗證版本，一次開一個 browser 跑所有檔
+    """
     nav_map = {}
     aum_map = {}
 
     try:
         from playwright.async_api import async_playwright
-    except ImportError:
-        log.warning("Playwright 未安裝，跳過 NAV/規模抓取")
+        from bs4 import BeautifulSoup  # noqa: F401 確認有安裝
+    except ImportError as e:
+        log.warning(f"缺少套件，跳過 NAV/規模抓取：{e}")
         return nav_map, aum_map
 
     async def _run():
@@ -371,14 +386,16 @@ def fetch_etf_nav_and_aum() -> tuple[dict, dict]:
             ctx = await browser.new_context(
                 user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             )
-            page = await ctx.new_page()
             for code in ALL_PRICE_ETFS:
-                r = await _fetch_one_etf_nav_aum(page, code)
+                r = await _fetch_one_etf_nav_aum(ctx, code)
                 if r['nav'] > 0:
                     nav_map[code] = r['nav']
                 if r['aum'] > 0:
                     aum_map[code] = r['aum']
-                log.info(f"  {code}: NAV={r['nav']}, AUM={r['aum']}億, 折溢價={r['premium_pct']}%")
+                log.info(
+                    f"  {code}: NAV={r['nav']}, AUM={r['aum']}億, "
+                    f"折溢價={r['premium_pct']}%, 來源={r['source']}"
+                )
                 await asyncio.sleep(1)
             await browser.close()
 
