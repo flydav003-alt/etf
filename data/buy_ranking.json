@@ -2,11 +2,10 @@
   {
     "stock_code": "2330",
     "stock_name": "台積電",
-    "etf_count": 2,
-    "value": 1026045000.0,
+    "etf_count": 1,
+    "value": 1019250000.0,
     "etf_list": [
-      "00992A",
-      "00993A"
+      "00992A"
     ]
   },
   {
@@ -159,15 +158,6 @@
     ]
   },
   {
-    "stock_code": "2330",
-    "stock_name": "台灣積體",
-    "etf_count": 1,
-    "value": 113250000.0,
-    "etf_list": [
-      "00991A"
-    ]
-  },
-  {
     "stock_code": "8046",
     "stock_name": "南電",
     "etf_count": 2,
@@ -184,6 +174,15 @@
     "value": 75725000.0,
     "etf_list": [
       "00400A"
+    ]
+  },
+  {
+    "stock_code": "7769",
+    "stock_name": "鴻勁",
+    "etf_count": 1,
+    "value": 64610000.0,
+    "etf_list": [
+      "00993A"
     ]
   }
 ]
