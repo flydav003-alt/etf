@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>主動ETF追蹤儀表板</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -1111,10 +1114,16 @@ window.filterChanges=function(){
 //  P3: 成分佔比（修正顏色對應 + 展開全部 + 真實成分數）
 // ═══════════════════════════════════════════
 let donutsDone=false;
+const donutCharts = new Map();  // 儲存每個 canvas 的 Chart 實例，防止記憶體洩漏
+
 function renderDonuts(){
   if(donutsDone)return;
   donutsDone=true;
   const grid=document.getElementById('donutGrid');
+
+  // 銷毀所有舊的 Chart 實例
+  donutCharts.forEach(chart => { try{ chart.destroy(); }catch{} });
+  donutCharts.clear();
   grid.innerHTML='';
   const extra=getExtraWatch();
   const items=[
@@ -1230,7 +1239,7 @@ function renderDonuts(){
     grid.appendChild(card);
 
     // ── 圓餅圖用 coloredSlices，與 legend 顏色 100% 一致 ──
-    new Chart(document.getElementById(cid),{
+    const chartInst = new Chart(document.getElementById(cid),{
       type:'doughnut',
       data:{
         labels:coloredSlices.map(s=>s.name),
@@ -1255,6 +1264,7 @@ function renderDonuts(){
         animation:{animateRotate:true,duration:700}
       }
     });
+    donutCharts.set(cid, chartInst);  // 儲存實例供下次重繪前銷毀
   });
 }
 
