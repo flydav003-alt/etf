@@ -840,7 +840,7 @@ main {
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  資料載入系統 + K線連結 + 全功能修正版（容錯 + 保留所有功能）
+//  資料載入系統 + K線連結 + 全功能修正版
 // ═══════════════════════════════════════════════════════════════
 
 const KLINE_BASE = 'https://flydav003-alt.github.io/k-line/';
@@ -868,6 +868,7 @@ let APP = {
   buyRank: [], sellRank: [], changes: [], holdings: {},
   etfPrices: {}, performance: {},
   etfs: Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0})),
+  priceHistory: {}, 
 };
 let rankSort = 'consensus'; // 'consensus' | 'amount'
 
@@ -900,28 +901,42 @@ const MOCK = {
   ],
 };
 
-// ── JSON載入 (安全版) ─────────────────────────────────────────
+// ── JSON載入 ─────────────────────────────────────────────────
 async function loadJSON(path) {
   const r = await fetch(path + '?t=' + Date.now());
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 }
 
+// 安全載入：失敗回傳預設值，不中斷整體
 function safeJSON(path, fallback) {
   return loadJSON(path).catch(() => fallback);
 }
 
-async function initData() {
   try {
     // ★ 核心必要檔案：失敗才切Demo
-    const [summary, buyRank, sellRank, changes, holdings, etfPrices, performance, priceHistory] = await Promise.all([
-      loadJSON('data/summary.json'),
-      loadJSON('data/buy_ranking.json'),
-      loadJSON('data/sell_ranking.json'),
-      loadJSON('data/daily_changes.json'),
-      loadJSON('data/holdings.json'),
-      safeJSON('data/etf_prices.json', {}),
-      safeJSON('data/performance.json', {}),
+    const results = await Promise.allSettled([
+  loadJSON('data/summary.json'),
+  loadJSON('data/buy_ranking.json'),
+  loadJSON('data/sell_ranking.json'),
+  loadJSON('data/daily_changes.json'),
+  loadJSON('data/holdings.json'),
+]);
+const summary = results[0].status === 'fulfilled' ? results[0].value : null;
+const buyRank = results[1].status === 'fulfilled' ? results[1].value : [];
+const sellRank = results[2].status === 'fulfilled' ? results[2].value : [];
+const changes = results[3].status === 'fulfilled' ? results[3].value : [];
+const holdings = results[4].status === 'fulfilled' ? results[4].value : {};     
+const summary = results[0].status === 'fulfilled' ? results[0].value : null;
+const buyRank = results[1].status === 'fulfilled' ? results[1].value : [];
+const sellRank = results[2].status === 'fulfilled' ? results[2].value : [];
+const changes = results[3].status === 'fulfilled' ? results[3].value : [];
+const holdings = results[4].status === 'fulfilled' ? results[4].value : {};
+
+    // ★ 選用檔案：不存在不影響主功能
+    const [etfPrices, performance, priceHistory] = await Promise.all([
+      safeJSON('data/etf_prices.json',    {}),
+      safeJSON('data/performance.json',   {}),
       safeJSON('data/price_history.json', {}),
     ]);
 
@@ -937,8 +952,6 @@ async function initData() {
 
     if (summary.active_etfs) {
       APP.etfs = summary.active_etfs.map(e=>({ticker:e.code,name:e.name,price:0,chg:0,nav:0,aum:0}));
-    } else {
-      APP.etfs = Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}));
     }
 
     // 從 etf_prices.json 填入ETF價格（若有）
@@ -953,28 +966,21 @@ async function initData() {
     }
     document.querySelector('.logo-sub').textContent =
       `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
-    document.getElementById('dataPill').innerHTML = `<span class="live-dot"></span><span>資料：${summary.date||''}</span>`;
+    document.getElementById('dataPill').textContent = '資料：' + (summary.date||'');
     document.getElementById('dataPill').style.display = 'flex';
     console.log('✓ 資料載入成功');
 
   } catch(e) {
-    // 核心檔案失敗 -> Demo模式
-    APP.isDemo = true;
-    APP.buyRank = MOCK.buyRank;
-    APP.sellRank = MOCK.sellRank;
-    APP.changes = MOCK.changes;
-    APP.holdings = {};
-    APP.etfPrices = {};
-    APP.performance = {};
-    APP.priceHistory = {};
-    APP.etfs = Object.entries(ETF_META).map(([ticker,name])=>({ticker,name,price:0,chg:0,nav:0,aum:0}));
-    document.getElementById('dataPill').innerHTML = '<span class="live-dot" style="background:#db5a6b;"></span><span>⚠ Demo模式（尚無真實資料）</span>';
-    document.getElementById('dataPill').style.display = 'flex';
-    document.getElementById('dataPill').style.background = 'rgba(219,90,107,0.12)';
-    console.warn('切換Demo模式:', e.message);
+     APP.isDemo = true;
+     APP.buyRank = MOCK.buyRank;
+     APP.sellRank = MOCK.sellRank;
+     APP.changes = MOCK.changes;
+     APP.priceHistory = {};   // 確保不為 undefined
+     APP.holdings = {};       // 確保不為 undefined
+     // ... 其他 APP 屬性都給預設值
+     console.warn('切換Demo模式:', e.message);
+     renderAll();  // ★ 加上這行強制渲染
   }
-  renderAll();
-}
 
 // ── WATCHLIST ────────────────────────────────────────────────
 let watchlist = JSON.parse(localStorage.getItem('mushi_etf_watch')||'[]');
@@ -1092,22 +1098,22 @@ function renderRankings(){
       <td>
         ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}
         <span class="stock-code">${r.stock_code}</span>
-       </div>
-      <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></div>
-      <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</div>
-      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></div>
+      </td>
+      <td><span style="color:#c04455;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
+      <td class="up" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill kobai" style="width:${(Math.abs(r.value)/maxB*100).toFixed(0)}%"></div></div></div></td>
     </tr>`).join('');
 
   document.getElementById('sellRankTbody').innerHTML = sells.map((r,i)=>`
     <tr>
-      <td><span class="rn ${rankCls(i)}">${i+1}</span></div>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
       <td>
         ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name}</span>`)}
         <span class="stock-code">${r.stock_code}</span>
-       </div>
-      <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></div>
-      <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</div>
-      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></div>
+      </td>
+      <td><span style="color:#5a8032;font-family:var(--font-mono);font-weight:600">${r.etf_count}</span><span style="color:var(--sumi-45);font-size:10px"> 檔</span></td>
+      <td class="down" style="font-family:var(--font-mono)">${fmtMoney(r.value)}</td>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill wakaba" style="width:${(Math.abs(r.value)/maxS*100).toFixed(0)}%"></div></div></div></td>
     </tr>`).join('');
 }
 
@@ -1125,18 +1131,18 @@ function _renderChangeTable(data){
     const name = ETF_META[r.etf_code]||r.etf_code||'';
     const isBuy=r.action==='NEW_BUY', isSell=r.action==='FULL_SELL';
     return `<tr>
-      <td><span class="rn">${i+1}</span></div>
-      <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></div>
+      <td><span class="rn">${i+1}</span></td>
+      <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${name}</span></td>
       <td>
         ${stockNameLink(r.stock_code, `<span class="stock-name">${r.stock_name||''}</span>`)}
         <span class="stock-code">${r.stock_code||''}</span>
-       </div>
-      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></div>
-      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</div>
-      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</div>
+      </td>
+      <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
+      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
       <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">
         ${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}
-      </div>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -1149,321 +1155,505 @@ window.filterChanges=function(){
 };
 
 // ═══════════════════════════════════════════
-//  P3: 成分佔比（完整保留展開功能）
+//  P3: 成分佔比（修正顏色對應 + 展開全部 + 真實成分數）
 // ═══════════════════════════════════════════
 let donutsDone=false;
-const donutCharts = new Map();
+const donutCharts = new Map();  // 儲存每個 canvas 的 Chart 實例，防止記憶體洩漏
 
-window.toggleRestHoldings = function(restId, btn){
-  const el = document.getElementById(restId);
-  if(!el) return;
-  const isOpen = el.style.display !== 'none';
-  el.style.display = isOpen ? 'none' : 'flex';
-  const labelSpan = btn.querySelector('.toggle-label');
-  if(labelSpan) labelSpan.textContent = isOpen ? '＋ 展開' : '－ 收合';
-};
+function renderDonuts(){
+  if(donutsDone)return;
+  donutsDone=true;
+  const grid=document.getElementById('donutGrid');
 
-function renderDonuts() {
-  const grid = document.getElementById('donutGrid');
-  if (!grid) return;
-  donutCharts.forEach(ch => { try { ch.destroy(); } catch(e) {} });
+  // 銷毀所有舊的 Chart 實例
+  donutCharts.forEach(chart => { try{ chart.destroy(); }catch{} });
   donutCharts.clear();
-  grid.innerHTML = '';
-  const extra = getExtraWatch();
-  const items = [
-    ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, isWatch: false })),
-    ...extra.map(t => ({ ticker: t, name: `自選 ${t}`, isWatch: true })),
+  grid.innerHTML='';
+  const extra=getExtraWatch();
+  const items=[
+    ...APP.etfs.map(e=>({ticker:e.ticker,name:e.name,isWatch:false})),
+    ...extra.map(t=>({ticker:t,name:`自選 ${t}`,isWatch:true})),
   ];
-  items.forEach(({ ticker, name, isWatch }, di) => {
-    const cid = 'dc_' + ticker.replace(/\W/g, '_');
-    let realData = (!isWatch && APP.holdings[ticker] && APP.holdings[ticker].holdings) ? APP.holdings[ticker].holdings : [];
-    let coloredSlices = [], totalCount = 0;
-    if (realData.length) {
+  items.forEach(({ticker,name,isWatch},di)=>{
+    const cid='dc_'+ticker.replace(/\W/g,'_');
+    const realData=!isWatch&&APP.holdings[ticker]&&APP.holdings[ticker].holdings;
+
+    // ── 建立 coloredSlices：圓餅圖和legend共用同一個陣列 ──
+    // 關鍵：顏色由 index 決定，兩者必須用完全相同的陣列
+    let coloredSlices, totalCount, extraCount;
+
+    if(realData&&realData.length){
       totalCount = realData.length;
-      const top9 = realData.slice(0, 9);
-      const top9sum = top9.reduce((s, h) => s + (h.weight_pct || 0), 0);
-      const otherPct = Math.max(0, +(100 - top9sum).toFixed(1));
+      // 前9大持股（有具體顏色）+ 其他（最後一色）
+      const top9    = realData.slice(0,9);
+      const top9sum = top9.reduce((s,h)=>s+(h.weight_pct||0),0);
+      const otherPct= Math.max(0, +(100-top9sum).toFixed(1));
       coloredSlices = [
-        ...top9.map(h => ({ name: h.stock_name || h.stock_code, w: +(h.weight_pct || 0) })),
-        ...(otherPct > 0.1 ? [{ name: '其他', w: otherPct }] : []),
+        ...top9.map(h=>({name:h.stock_name||h.stock_code, w:+(h.weight_pct||0)})),
+        ...(otherPct>0.1 ? [{name:'其他', w:otherPct}] : []),
       ];
+      // legend 展開後額外顯示的資料（6~20名，純文字列表，不對應圓餅顏色）
+      extraCount = totalCount > 9 ? Math.min(totalCount, 20) - 9 : 0;
     } else {
-      totalCount = 0;
-      const tops = [
-        { name: '台積電', w: 28 }, { name: '廣達', w: 9 }, { name: '聯發科', w: 7 },
-        { name: '鴻海', w: 6 }, { name: '台達電', w: 5 }, { name: '聯電', w: 4 },
+      totalCount = 0; extraCount = 0;
+      const tops=[
+        {name:'台積電',w:+(15+Math.random()*18).toFixed(1)},
+        {name:'廣達',  w:+(4+Math.random()*7).toFixed(1)},
+        {name:'鴻海',  w:+(4+Math.random()*6).toFixed(1)},
+        {name:'台達電',w:+(3+Math.random()*5).toFixed(1)},
+        {name:'聯發科',w:+(3+Math.random()*6).toFixed(1)},
       ];
-      const sum = tops.reduce((s, x) => s + x.w, 0);
-      coloredSlices = [...tops, { name: '其他', w: +(100 - sum).toFixed(1) }];
+      const sum=tops.reduce((s,x)=>s+x.w,0);
+      coloredSlices=[...tops,{name:'其他',w:+Math.max(100-sum,10).toFixed(1)}];
     }
-    const show5 = coloredSlices.slice(0, 5);
-    const restSlices = coloredSlices.slice(5);
-    const card = document.createElement('div');
-    card.className = 'donut-card' + (isWatch ? ' is-watch' : '');
-    card.style.animationDelay = `${di * 0.04}s`;
-    const restId = `${cid}_rest`;
-    card.innerHTML = `
+
+    const card=document.createElement('div');
+    card.className='donut-card'+(isWatch?' is-watch':'');
+    card.style.animationDelay=`${di*0.04}s`;
+
+    // ── legend：前5用coloredSlices（顏色對應圓餅），展開後補充6~20名 ──
+    const show5 = coloredSlices.slice(0,5);
+    // 6~9名也有圓餅顏色，10+（其他）只有一個合計色
+    const rest9 = coloredSlices.slice(5);   // 6~9名 + 其他（有顏色）
+    // 額外的10~20名：只顯示文字，無對應圓餅顏色，用灰點區分
+    const extraSlices = (realData&&extraCount>0)
+      ? realData.slice(9, Math.min(totalCount,20)).map(h=>({
+          name:h.stock_name||h.stock_code, w:+(h.weight_pct||0)
+        }))
+      : [];
+    const restId=`rest_${cid}`;
+
+    // legend前5（顏色完全對應圓餅）
+    const legendHtml=show5.map((s,i)=>`
+      <div class="legend-row">
+        <span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span>
+        <span style="font-size:11px">${s.name}</span>
+        <span class="legend-pct">${s.w.toFixed(1)}%</span>
+      </div>`).join('');
+
+    // 展開後：6~9名有顏色 + 10~20名無顏色 + 超過20提示
+    const hasRest = rest9.length > 0 || extraSlices.length > 0;
+    const restHtml = hasRest ? `
+      <div id="${restId}" style="display:none;flex-direction:column;gap:4px;margin-top:4px;">
+        ${rest9.map((s,i)=>`
+          <div class="legend-row">
+            <span class="legend-dot" style="background:${DONUT_COLORS[i+5]}"></span>
+            <span style="font-size:11px">${s.name}</span>
+            <span class="legend-pct">${s.w.toFixed(1)}%</span>
+          </div>`).join('')}
+        ${extraSlices.length?`
+          <div style="font-size:9px;color:var(--sumi-45);padding:3px 0 2px;margin-top:2px;letter-spacing:0.5px;">─ 以下合計於「其他」 ─</div>
+          ${extraSlices.map(s=>`
+            <div class="legend-row">
+              <span class="legend-dot" style="background:rgba(28,18,9,0.2)"></span>
+              <span style="font-size:11px;color:var(--sumi-60)">${s.name}</span>
+              <span class="legend-pct" style="color:var(--sumi-45)">${s.w.toFixed(1)}%</span>
+            </div>`).join('')}`:''}
+        ${totalCount>20?`
+          <div style="font-size:10px;color:var(--sumi-45);padding:4px 0;border-top:1px solid var(--border);margin-top:2px;">
+            ＋ 另有 ${totalCount-20} 檔，完整清單請至投信官網
+          </div>`:''}
+      </div>
+      <div onclick="toggleRestHoldings('${restId}',this)"
+        style="font-size:10px;color:var(--aizumi-dk);cursor:pointer;margin-top:5px;
+               display:flex;align-items:center;gap:4px;font-family:var(--font-mono);
+               padding:3px 0;border-top:1px solid var(--border);">
+        <span class="toggle-label">＋ 展開（共 ${Math.min(totalCount||coloredSlices.length,20)} 檔）</span>
+      </div>` : (totalCount>5?`<div style="font-size:10px;color:var(--sumi-45);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">共 ${totalCount} 檔成分</div>`:'');
+
+    card.innerHTML=`
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
-        <div><div class="donut-ticker">${ticker}</div><div class="donut-name">${name}</div></div>
-        <span class="tag ${isWatch ? 'watch-t' : 'active-t'}">${isWatch ? '自選' : '主動ETF'}</span>
+        <div>
+          <div class="donut-ticker">${ticker}</div>
+          <div class="donut-name">${name}</div>
+        </div>
+        <span class="tag ${isWatch?'watch-t':'active-t'}">${isWatch?'自選':'主動ETF'}</span>
       </div>
       <div class="donut-wrap">
         <canvas id="${cid}" width="120" height="120"></canvas>
-        <div class="donut-center"><div class="donut-center-val">${totalCount || coloredSlices.length}</div><div class="donut-center-sub">成分</div></div>
-      </div>
-      <div class="donut-legend">
-        ${show5.map((s, i) => `<div class="legend-row"><span class="legend-dot" style="background:${DONUT_COLORS[i]}"></span><span style="font-size:11px">${s.name}</span><span class="legend-pct">${s.w.toFixed(1)}%</span></div>`).join('')}
-        ${restSlices.length ? `<div onclick="toggleRestHoldings('${restId}', this)" style="font-size:10px;color:var(--aizumi-dk);cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;font-family:var(--font-mono);"><span class="toggle-label">＋ 其餘成分 (${restSlices.length} 檔)</span></div>` : ''}
-        <div id="${restId}" style="display:none; flex-direction:column; gap:4px; margin-top:4px;">
-          ${restSlices.map((s, idx) => `<div class="legend-row"><span class="legend-dot" style="background:${DONUT_COLORS[(5 + idx) % DONUT_COLORS.length]}"></span><span style="font-size:11px">${s.name}</span><span class="legend-pct">${s.w.toFixed(1)}%</span></div>`).join('')}
-          ${coloredSlices.length > 20 ? `<div style="font-size:10px;color:var(--sumi-45);padding:4px 0;border-top:1px solid var(--border);margin-top:2px;">＋ 另有 ${coloredSlices.length - 20} 檔，完整清單請至投信官網</div>` : ''}
+        <div class="donut-center">
+          <div class="donut-center-val">${totalCount||coloredSlices.length}</div>
+          <div class="donut-center-sub">成分</div>
         </div>
       </div>
-    `;
+      <div class="donut-legend">
+        ${legendHtml}
+        ${restHtml}
+      </div>`;
     grid.appendChild(card);
-    const chart = new Chart(document.getElementById(cid), {
-      type: 'doughnut',
-      data: {
-        labels: coloredSlices.map(s => s.name),
-        datasets: [{
-          data: coloredSlices.map(s => s.w),
-          backgroundColor: coloredSlices.map((_, i) => DONUT_COLORS[i % DONUT_COLORS.length]),
-          borderColor: '#fff8e8', borderWidth: 2,
-        }],
+
+    // ── 圓餅圖用 coloredSlices，與 legend 顏色 100% 一致 ──
+    const chartInst = new Chart(document.getElementById(cid),{
+      type:'doughnut',
+      data:{
+        labels:coloredSlices.map(s=>s.name),
+        datasets:[{
+          data:coloredSlices.map(s=>s.w),
+          backgroundColor:coloredSlices.map((_,i)=>DONUT_COLORS[i]),
+          borderColor:'#fff8e8',borderWidth:2,
+          hoverBorderColor:'#e8dfc0',hoverBorderWidth:3,
+        }]
       },
-      options: {
-        cutout: '70%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(1)}%`,
-            },
-          },
+      options:{
+        cutout:'70%',
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            backgroundColor:'rgba(28,18,9,0.88)',titleColor:'#f0ead2',
+            bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',
+            borderWidth:1,padding:10,
+            callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed.toFixed(1)}%`}
+          }
         },
-        animation: { animateRotate: true, duration: 700 },
-      },
+        animation:{animateRotate:true,duration:700}
+      }
     });
-    donutCharts.set(cid, chart);
+    donutCharts.set(cid, chartInst);  // 儲存實例供下次重繪前銷毀
   });
 }
 
+window.toggleRestHoldings=function(id, btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'flex';
+  const label=btn.querySelector('.toggle-label');
+  if(label){
+    const count=el.querySelectorAll('.legend-row').length;
+    label.textContent=open?`＋ 其餘 ${count} 檔`:`－ 收合`;
+  }
+};
+
 // ═══════════════════════════════════════════
-//  P4: 月績效（完整保留）
+//  P4: 月績效（真實資料 + 修正折線圖隨月份變動）
 // ═══════════════════════════════════════════
-const MONTHS_12 = (() => {
-  const months = []; const d = new Date();
-  for (let i = 11; i >= 0; i--) {
-    const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
-    months.push(`${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, '0')}`);
+// 動態產生近12個月清單
+const MONTHS_12=(()=>{
+  const months=[]; const d=new Date();
+  for(let i=11;i>=0;i--){
+    const m=new Date(d.getFullYear(),d.getMonth()-i,1);
+    months.push(`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`);
   }
   return months;
 })();
-let selMonth = MONTHS_12[MONTHS_12.length - 1];
-let perfChartInst = null;
 
-function getPerfData(ticker) {
-  const real = APP.performance[ticker];
-  if (real && Object.keys(real).length > 0) return real;
-  const fake = {};
-  MONTHS_12.forEach(m => { fake[m] = +(Math.random() * 18 - 6).toFixed(2); });
+let selMonth=MONTHS_12[MONTHS_12.length-1];
+let perfChartInst=null;
+
+function getPerfData(ticker){
+  const real=APP.performance[ticker];
+  if(real&&Object.keys(real).length>0)return real;
+  // 無真實資料用隨機（有標示）
+  const fake={};
+  MONTHS_12.forEach(m=>{ fake[m]=+(Math.random()*18-6).toFixed(2); });
   return fake;
 }
-function getPerfItems() {
-  const at = APP.etfs.map(e => e.ticker);
+
+function getPerfItems(){
+  const at=APP.etfs.map(e=>e.ticker);
   return [
-    { ticker: '0050', name: '元大台灣50', cat: 'bench' },
-    { ticker: '009816', name: '凱基台灣TOP50', cat: 'bench' },
-    ...watchlist.filter(t => !BENCH_META[t] && !at.includes(t)).map(t => ({ ticker: t, name: `自選 ${t}`, cat: 'watch' })),
-    ...APP.etfs.map(e => ({ ticker: e.ticker, name: e.name, cat: 'active' })),
+    {ticker:'0050',name:'元大台灣50',cat:'bench'},
+    {ticker:'009816',name:'凱基台灣TOP50',cat:'bench'},
+    ...watchlist.filter(t=>!Object.keys(BENCH_META).includes(t)&&!at.includes(t))
+                .map(t=>({ticker:t,name:`自選 ${t}`,cat:'watch'})),
+    ...APP.etfs.map(e=>({ticker:e.ticker,name:e.name,cat:'active'})),
   ];
 }
-function renderMonthSel() {
-  document.getElementById('monthSelector').innerHTML = MONTHS_12.map(m =>
-    `<button class="month-btn${m === selMonth ? ' active' : ''}" onclick="selectMonth('${m}')">${m}</button>`
+
+function renderMonthSel(){
+  document.getElementById('monthSelector').innerHTML=MONTHS_12.map(m=>
+    `<button class="month-btn${m===selMonth?' active':''}" onclick="selectMonth('${m}')">${m}</button>`
   ).join('');
 }
-window.selectMonth = m => { selMonth = m; renderMonthSel(); renderPerfTable(); renderPerfChartFn(); };
-function hasRealPerf() { return APP.etfs.some(e => { const p = APP.performance[e.ticker]; return p && Object.keys(p).length > 0; }); }
-function renderPerfTable() {
-  const list = getPerfItems().map(e => {
-    const pd = getPerfData(e.ticker);
-    const ret = pd[selMonth] ?? null;
-    return { ...e, ret };
-  }).filter(e => e.ret !== null).sort((a, b) => b.ret - a.ret);
-  const maxR = Math.max(1, ...list.map(r => Math.abs(r.ret)));
-  const isRealData = hasRealPerf();
-  document.getElementById('perfTbody').innerHTML = list.map((r, i) => {
-    const catTag = r.cat === 'bench' ? '<span class="tag bench-t">大盤</span>' : (r.cat === 'watch' ? '<span class="tag watch-t">自選</span>' : '<span class="tag active-t">主動</span>');
-    const fakeNote = !isRealData ? '<span style="font-size:9px;color:var(--sumi-30);margin-left:4px;">示範</span>' : '';
+window.selectMonth=m=>{
+  selMonth=m; renderMonthSel(); renderPerfTable();
+  // ★ 修正：切換月份同步更新折線圖
+  renderPerfChartFn();
+};
+
+function hasRealPerf(){
+  return APP.etfs.some(e=>{
+    const p=APP.performance[e.ticker];
+    return p&&Object.keys(p).length>0;
+  });
+}
+
+function renderPerfTable(){
+  const list=getPerfItems().map(e=>{
+    const pd=getPerfData(e.ticker);
+    const ret=pd[selMonth]??null;
+    return {...e,ret};
+  }).filter(e=>e.ret!==null).sort((a,b)=>b.ret-a.ret);
+  const maxR=Math.max(1,...list.map(r=>Math.abs(r.ret)));
+
+  const isRealData=hasRealPerf();
+  document.getElementById('perfTbody').innerHTML=list.map((r,i)=>{
+    const catTag=r.cat==='bench'
+      ?'<span class="tag bench-t">大盤</span>'
+      :r.cat==='watch'?'<span class="tag watch-t">自選</span>'
+      :'<span class="tag active-t">主動</span>';
+    const fakeNote=!isRealData?'<span style="font-size:9px;color:var(--sumi-30);margin-left:4px;">示範</span>':'';
     return `<tr>
-      <td><span class="rn ${rankCls(i)}">${i + 1}</span></td>
-      <td><span class="etf-pill" style="${r.cat === 'watch' ? 'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10' : r.cat === 'bench' ? 'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)' : ''}">${r.ticker}</span><span class="etf-sub">${r.name}</span>${fakeNote}</td>
+      <td><span class="rn ${rankCls(i)}">${i+1}</span></td>
+      <td>
+        <span class="etf-pill" style="${r.cat==='watch'?'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10':''}${r.cat==='bench'?'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)':''}">${r.ticker}</span>
+        <span class="etf-sub">${r.name}</span>${fakeNote}
+      </td>
       <td>${catTag}</td>
-      <td class="${colorCls(r.ret)}" style="font-size:14px">${fmtPct(r.ret)}</div>
-      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill ${r.ret >= 0 ? 'kobai' : 'wakaba'}" style="width:${(Math.abs(r.ret) / maxR * 100).toFixed(0)}%"></div></div></div></div>
+      <td class="${colorCls(r.ret)}" style="font-size:14px">${fmtPct(r.ret)}</td>
+      <td style="min-width:70px"><div class="bar-wrap"><div class="bar-track"><div class="bar-fill ${r.ret>=0?'kobai':'wakaba'}" style="width:${(Math.abs(r.ret)/maxR*100).toFixed(0)}%"></div></div></div></td>
     </tr>`;
   }).join('');
 }
-function renderPerfChartFn() {
-  if (perfChartInst) perfChartInst.destroy();
-  const allItems = getPerfItems();
-  const sortedBySelMonth = [...allItems].filter(e => { const pd = getPerfData(e.ticker); return pd[selMonth] != null; }).sort((a, b) => (getPerfData(b.ticker)[selMonth] || -999) - (getPerfData(a.ticker)[selMonth] || -999));
-  const top5 = sortedBySelMonth.filter(e => e.cat !== 'bench').slice(0, 5);
-  const benchItems = allItems.filter(e => e.cat === 'bench');
-  const toChart = [...top5, ...benchItems];
-  const clrs = ['#4d7494', '#7a9e52', '#c8a84b', '#db5a6b', '#8a6aaa', '#9a9080', '#5b9eac'];
-  const validMonths = MONTHS_12.filter(m => toChart.some(e => getPerfData(e.ticker)[m] != null));
-  perfChartInst = new Chart(document.getElementById('perfChart'), {
-    type: 'line',
-    data: {
-      labels: validMonths,
-      datasets: toChart.map((e, i) => ({
-        label: e.ticker,
-        data: validMonths.map(m => getPerfData(e.ticker)[m] ?? null),
-        borderColor: clrs[i % clrs.length],
-        backgroundColor: clrs[i % clrs.length] + '18',
-        borderWidth: e.cat === 'bench' ? 1.5 : 2,
-        borderDash: e.cat === 'bench' ? [4, 3] : [],
-        pointRadius: 4, pointHoverRadius: 6, tension: 0.4, fill: false,
-        spanGaps: true,
-      })),
+
+function renderPerfChartFn(){
+  if(perfChartInst)perfChartInst.destroy();
+  // ★ 修正：每次重算 Top5（基於當前月份排序）
+  const allItems=getPerfItems();
+  const sortedBySelMonth=[...allItems].filter(e=>{
+    const pd=getPerfData(e.ticker);
+    return pd[selMonth]!=null;
+  }).sort((a,b)=>{
+    const pa=getPerfData(a.ticker)[selMonth]??-999;
+    const pb=getPerfData(b.ticker)[selMonth]??-999;
+    return pb-pa;
+  });
+  const top5=sortedBySelMonth.filter(e=>e.cat!=='bench').slice(0,5);
+  const benchItems=allItems.filter(e=>e.cat==='bench');
+  const toChart=[...top5,...benchItems];
+  const clrs=['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#9a9080','#5b9eac'];
+
+  // 只顯示有資料的月份
+  const validMonths=MONTHS_12.filter(m=>toChart.some(e=>{
+    const pd=getPerfData(e.ticker);
+    return pd[m]!=null;
+  }));
+
+  perfChartInst=new Chart(document.getElementById('perfChart'),{
+    type:'line',
+    data:{
+      labels:validMonths,
+      datasets:toChart.map((e,i)=>({
+        label:e.ticker,
+        data:validMonths.map(m=>getPerfData(e.ticker)[m]??null),
+        borderColor:clrs[i%clrs.length],
+        backgroundColor:clrs[i%clrs.length]+'18',
+        borderWidth:e.cat==='bench'?1.5:2,
+        borderDash:e.cat==='bench'?[4,3]:[],
+        pointRadius:4,pointHoverRadius:6,tension:0.4,fill:false,
+        spanGaps:true,
+      }))
     },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: 'rgba(28,18,9,0.55)', font: { size: 11, family: 'DM Mono' }, boxWidth: 12, padding: 14 } },
-        tooltip: { backgroundColor: 'rgba(28,18,9,0.9)', titleColor: '#f0ead2', bodyColor: 'rgba(240,234,210,0.75)', borderColor: 'rgba(200,181,96,0.3)', borderWidth: 1, padding: 10 },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{color:'rgba(28,18,9,0.55)',font:{size:11,family:'DM Mono'},boxWidth:12,padding:14}},
+        tooltip:{
+          backgroundColor:'rgba(28,18,9,0.9)',titleColor:'#f0ead2',
+          bodyColor:'rgba(240,234,210,0.75)',borderColor:'rgba(200,181,96,0.3)',
+          borderWidth:1,padding:10,
+        }
       },
-      scales: {
-        x: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 } }, grid: { color: 'rgba(200,181,96,0.1)' } },
-        y: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, callback: v => v + '%' }, grid: { color: 'rgba(200,181,96,0.1)' } },
-      },
-    },
+      scales:{
+        x:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10}},grid:{color:'rgba(200,181,96,0.1)'}},
+        y:{ticks:{color:'rgba(28,18,9,0.45)',font:{size:10},callback:v=>v+'%'},grid:{color:'rgba(200,181,96,0.1)'}}
+      }
+    }
   });
 }
-function renderPerfPage() {
+
+function renderPerfPage(){
   renderMonthSel(); renderPerfTable(); renderPerfChartFn();
-  if (!hasRealPerf()) { const note = document.getElementById('perfRealNote'); if (note) note.style.display = 'block'; }
+  if(!hasRealPerf()){
+    const note=document.getElementById('perfRealNote');
+    if(note)note.style.display='block';
+  }
 }
 
 // ═══════════════════════════════════════════
-//  P5: ETF 總覽
+//  P5: ETF 總覽（補真實價格、NAV、規模）
 // ═══════════════════════════════════════════
-function renderEtfList() {
-  const q = (document.getElementById('etfSearch') || {}).value?.toLowerCase() || '';
-  const at = APP.etfs.map(e => e.ticker);
-  const benchRows = Object.entries(BENCH_META).map(([ticker, name]) => {
-    const p = APP.etfPrices[ticker] || {};
-    return { ticker, name, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0, premium: p.premium_pct || 0, cat: 'bench' };
+function renderEtfList(){
+  const q=(document.getElementById('etfSearch')||{}).value?.toLowerCase()||'';
+  const at=APP.etfs.map(e=>e.ticker);
+
+  // 基準ETF
+  const benchRows=Object.entries(BENCH_META).map(([ticker,name])=>{
+    const p=APP.etfPrices[ticker]||{};
+    return {ticker,name,price:p.close||0,chg:p.chg_pct||0,nav:p.nav||0,
+            aum:p.aum_billion||0,premium:p.premium_pct||0,cat:'bench'};
   });
-  const extraW = getExtraWatch().map(t => {
-    const p = APP.etfPrices[t] || {};
-    return { ticker: t, name: `自選ETF ${t}`, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0, premium: p.premium_pct || 0, cat: 'watch' };
+  // 自選（非主動ETF）
+  const extraW=getExtraWatch().map(t=>{
+    const p=APP.etfPrices[t]||{};
+    return {ticker:t,name:`自選ETF ${t}`,price:p.close||0,chg:p.chg_pct||0,
+            nav:p.nav||0,aum:p.aum_billion||0,premium:p.premium_pct||0,cat:'watch'};
   });
-  const activeRows = APP.etfs.map(e => {
-    const p = APP.etfPrices[e.ticker] || {};
-    return { ticker: e.ticker, name: e.name, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0, premium: p.premium_pct || 0, cat: 'active' };
+  // 主動ETF
+  const activeRows=APP.etfs.map(e=>{
+    const p=APP.etfPrices[e.ticker]||{};
+    return {ticker:e.ticker,name:e.name,
+            price:p.close||0,chg:p.chg_pct||0,
+            nav:p.nav||0,aum:p.aum_billion||0,
+            premium:p.premium_pct||0,cat:'active'};
   });
-  let rows = [...benchRows, ...extraW, ...activeRows];
-  rows = rows.filter((r, i, a) => a.findIndex(x => x.ticker === r.ticker) === i);
-  if (q) rows = rows.filter(r => r.ticker.toLowerCase().includes(q) || r.name.includes(q));
-  document.getElementById('etfListTbody').innerHTML = rows.map((r, i) => {
-    const catTag = r.cat === 'bench' ? '<span class="tag bench-t">大盤基準</span>' : (r.cat === 'watch' ? '<span class="tag watch-t">自選</span>' : '<span class="tag active-t">主動ETF</span>');
-    const pillStyle = r.cat === 'watch' ? 'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10' : (r.cat === 'bench' ? 'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)' : '');
-    const priceStr = r.price > 0 ? r.price.toFixed(2) : '─';
-    const chgStr = r.chg !== 0 ? fmtPct(r.chg) : '─';
-    const navStr = r.nav > 0 ? r.nav.toFixed(2) : '─';
-    const premStr = r.premium !== 0 ? (r.premium > 0 ? '+' : '') + r.premium.toFixed(2) + '%' : '─';
-    const aumStr = r.aum > 0 ? r.aum.toFixed(1) : '─';
+
+  const rows=[...benchRows,...extraW,...activeRows]
+    .filter((r,i,a)=>a.findIndex(x=>x.ticker===r.ticker)===i)
+    .filter(r=>!q||r.ticker.toLowerCase().includes(q)||r.name.includes(q));
+
+  document.getElementById('etfListTbody').innerHTML=rows.map((r,i)=>{
+    const catTag=r.cat==='bench'
+      ?'<span class="tag bench-t">大盤基準</span>'
+      :r.cat==='watch'?'<span class="tag watch-t">自選</span>'
+      :'<span class="tag active-t">主動ETF</span>';
+    const pillStyle=r.cat==='watch'
+      ?'border-color:rgba(200,168,75,.42);background:rgba(200,168,75,.15);color:#7a5a10'
+      :r.cat==='bench'
+      ?'border-color:var(--sumi-15);background:rgba(28,18,9,.05);color:var(--sumi-60)':'';
+    const priceStr=r.price>0?r.price.toFixed(2):'─';
+    const chgStr=r.chg!==0?fmtPct(r.chg):'─';
+    const navStr=r.nav>0?r.nav.toFixed(2):'─';
+    const premStr=r.premium!==0?(r.premium>0?'+':'')+r.premium.toFixed(2)+'%':'─';
+    const aumStr=r.aum>0?r.aum.toFixed(1):'─';
     return `<tr>
-      <td><span class="rn ${i === 0 ? 'gold' : ''}">${i + 1}</span></td>
+      <td><span class="rn ${i===0?'gold':''}">${i+1}</span></td>
       <td><span class="etf-pill" style="${pillStyle}">${r.ticker}</span></td>
-      <td style="font-weight:500;color:var(--sumi)">${r.name}</div>
-      <td>${catTag}</div>
-      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${priceStr}</div>
-      <td class="${colorCls(r.chg)}">${chgStr}</div>
-      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${navStr}</div>
-      <td class="${colorCls(r.premium)}" style="font-family:var(--font-mono)">${premStr}</div>
-      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${aumStr}</div>
+      <td style="font-weight:500;color:var(--sumi)">${r.name}</td>
+      <td>${catTag}</td>
+      <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${priceStr}</td>
+      <td class="${colorCls(r.chg)}">${chgStr}</td>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${navStr}</td>
+      <td class="${colorCls(r.premium)}" style="font-family:var(--font-mono)">${premStr}</td>
+      <td style="font-family:var(--font-mono);color:var(--sumi-60)">${aumStr}</td>
     </tr>`;
   }).join('');
 }
 
 // ═══════════════════════════════════════════
-//  P6: 自選ETF & 走勢圖（完整保留）
+//  P6: 自選ETF
 // ═══════════════════════════════════════════
-let watchChartInst = null;
-let watchPeriod = '3m';
-const PERIOD_DAYS = { '1m': 30, '3m': 90, '6m': 180, '1y': 365 };
+let watchChartInst=null;
+let watchPeriod='3m';  // 預設3個月
+
+// ── 從 price_history 計算指定期間的累積報酬率序列 ────────────
 function calcCumReturn(ticker, days) {
-  const history = APP.priceHistory[ticker];
+  const history = APP.priceHistory ? APP.priceHistory[ticker] : null;
   if (!history || history.length < 2) return null;
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
-  const cutStr = cutoff.toISOString().slice(0, 10);
+  // ...
+}
+
+  // 取最近 days 天的資料
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutStr = cutoff.toISOString().slice(0,10);
+
   const filtered = history.filter(d => d.date >= cutStr);
   if (filtered.length < 2) return null;
+
+  // 以第一筆為基準，計算累積報酬率
   const base = filtered[0].close;
-  return filtered.map(d => ({ date: d.date, value: +((d.close - base) / base * 100).toFixed(2) }));
+  return filtered.map(d => ({
+    date:  d.date,
+    value: +((d.close - base) / base * 100).toFixed(2),
+  }));
 }
+
+// ── 期間天數對應 ─────────────────────────────────────────────
+const PERIOD_DAYS = { '1m':30, '3m':90, '6m':180, '1y':365 };
+const PERIOD_LABEL= { '1m':'1個月', '3m':'3個月', '6m':'6個月', '1y':'1年' };
+
 window.setWatchPeriod = function(p) {
   watchPeriod = p;
-  ['1m', '3m', '6m', '1y'].forEach(k => { const btn = document.getElementById(`wc_${k}`); if (btn) btn.classList.toggle('active', k === p); });
+  ['1m','3m','6m','1y'].forEach(k => {
+    const btn = document.getElementById(`wc_${k}`);
+    if (btn) btn.classList.toggle('active', k===p);
+  });
   renderWatchChart();
 };
-function renderWatchlist() {
-  const at = APP.etfs.map(e => e.ticker);
-  const grid = document.getElementById('watchlistGrid');
-  const cards = watchlist.map(ticker => {
-    const ae = APP.etfs.find(e => e.ticker === ticker);
-    const bp = APP.etfPrices[ticker] || {};
-    const price = ae ? ae.price : (bp.close || 0);
-    const chg = ae ? ae.chg : (bp.chg_pct || 0);
-    const name = ae ? ae.name : (ETF_META[ticker] || BENCH_META[ticker] || ticker);
-    const isExtra = !at.includes(ticker) && !BENCH_META[ticker];
+
+function renderWatchlist(){
+  const at=APP.etfs.map(e=>e.ticker);
+  const grid=document.getElementById('watchlistGrid');
+  const cards=watchlist.map(ticker=>{
+    const ae=APP.etfs.find(e=>e.ticker===ticker);
+    const bp=APP.etfPrices[ticker]||{};
+    const price=ae?ae.price:(bp.close||0);
+    const chg  =ae?ae.chg:(bp.chg_pct||0);
+    const name =ae?ae.name:(ETF_META[ticker]||BENCH_META[ticker]||ticker);
+    const isExtra=!at.includes(ticker)&&!Object.keys(BENCH_META).includes(ticker);
     return `<div class="watch-card">
       <span class="wc-remove" onclick="removeWatch('${ticker}')">✕</span>
       <div class="wc-ticker">${ticker}</div>
-      <div class="wc-name">${name}${isExtra ? '&nbsp;<span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>' : ''}</div>
-      <div class="wc-price ${colorCls(chg)}">${price > 0 ? price.toFixed(2) : '─'}</div>
-      <div class="wc-change ${colorCls(chg)}">${chg !== 0 ? fmtPct(chg) + ' 今日' : '─'}</div>
+      <div class="wc-name">${name}${isExtra?'&nbsp;<span class="tag watch-t" style="font-size:8px;padding:1px 5px">自選</span>':''}</div>
+      <div class="wc-price ${colorCls(chg)}">${price>0?price.toFixed(2):'─'}</div>
+      <div class="wc-change ${colorCls(chg)}">${chg!==0?fmtPct(chg)+' 今日':'─'}</div>
     </div>`;
   }).join('');
-  const addBtn = watchlist.length < 8 ? `<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>` : '';
-  grid.innerHTML = cards + addBtn;
+  const addBtn=watchlist.length<8
+    ?`<div><button class="add-btn" onclick="openModal()">＋ 新增（${watchlist.length}/8）</button></div>`:'';
+  grid.innerHTML=cards+addBtn;
   renderWatchChart();
 }
-function renderWatchChart() {
-  if (watchChartInst) { watchChartInst.destroy(); watchChartInst = null; }
-  const canvas = document.getElementById('watchChart');
+
+function renderWatchChart(){
+  if(watchChartInst){ watchChartInst.destroy(); watchChartInst=null; }
+  const canvas  = document.getElementById('watchChart');
   const emptyEl = document.getElementById('watchChartEmpty');
+
   const days = PERIOD_DAYS[watchPeriod] || 90;
-  const clrs = ['#4d7494', '#7a9e52', '#c8a84b', '#db5a6b', '#8a6aaa', '#5b9eac', '#c07840', '#6aab8e'];
+  const clrs = ['#4d7494','#7a9e52','#c8a84b','#db5a6b','#8a6aaa','#5b9eac','#c07840','#6aab8e'];
+
+  // ── 建立各自選ETF的資料序列 ──────────────────────────────
   const validDatasets = [];
-  watchlist.slice(0, 8).forEach((ticker, i) => {
+  watchlist.slice(0,8).forEach((ticker,i)=>{
     const series = calcCumReturn(ticker, days);
-    if (series) validDatasets.push({ ticker, series, color: clrs[i % clrs.length] });
+    if (series) {
+      validDatasets.push({ ticker, series, color: clrs[i%clrs.length] });
+    }
   });
+
+  // ── 0050 基準線（永遠顯示，不管有沒有自選）────────────
   const bench0050 = calcCumReturn('0050', days);
+
+  // ── 若完全無資料，顯示提示 ───────────────────────────────
   if (validDatasets.length === 0 && !bench0050) {
-    if (emptyEl) emptyEl.style.display = 'block';
-    canvas.style.display = 'none';
+    if(emptyEl) emptyEl.style.display='block';
+    canvas.style.display='none';
     return;
   }
-  if (emptyEl) emptyEl.style.display = 'none';
-  canvas.style.display = 'block';
+  if(emptyEl) emptyEl.style.display='none';
+  canvas.style.display='block';
+
+  // ── 對齊日期：取所有序列共有的日期範圍 ──────────────────
+  // 用 0050 或第一個有資料的 ETF 的日期序列作為 X 軸基準
   const baseSeries = bench0050 || validDatasets[0]?.series || [];
-  const labels = baseSeries.map(d => {
+  const labels = baseSeries.map(d=>{
+    // 顯示格式：1個月用 M/D，較長用 YY/MM
     const dt = new Date(d.date);
-    return days <= 60 ? `${dt.getMonth() + 1}/${dt.getDate()}` : `${dt.getFullYear().toString().slice(2)}/${String(dt.getMonth() + 1).padStart(2, '0')}`;
+    return days <= 60
+      ? `${dt.getMonth()+1}/${dt.getDate()}`
+      : `${dt.getFullYear().toString().slice(2)}/${String(dt.getMonth()+1).padStart(2,'0')}`;
   });
+
+  // 工具函數：把任意序列對應到 baseSeries 的日期（最近鄰插值）
   function alignToDates(series) {
     const map = {};
     series.forEach(d => map[d.date] = d.value);
-    return baseSeries.map(d => map[d.date] !== undefined ? map[d.date] : null);
+    return baseSeries.map(d => {
+      if (map[d.date] !== undefined) return map[d.date];
+      // 找最近的日期
+      const closest = series.reduce((best, s) =>
+        Math.abs(new Date(s.date)-new Date(d.date)) < Math.abs(new Date(best.date)-new Date(d.date)) ? s : best
+      );
+      return closest ? closest.value : null;
+    });
   }
+
   const datasets = [];
-  validDatasets.forEach(({ ticker, series, color }) => {
+
+  // 自選ETF線條
+  validDatasets.forEach(({ticker, series, color}) => {
     datasets.push({
       label: ticker,
       data: alignToDates(series),
@@ -1475,6 +1665,8 @@ function renderWatchChart() {
       spanGaps: true,
     });
   });
+
+  // 0050 基準線（灰色虛線，較細）
   if (bench0050) {
     datasets.push({
       label: '0050基準',
@@ -1482,49 +1674,95 @@ function renderWatchChart() {
       borderColor: 'rgba(28,18,9,0.45)',
       backgroundColor: 'transparent',
       borderWidth: 1.5,
-      borderDash: [5, 3],
+      borderDash: [5,3],
       pointRadius: 0,
       tension: 0.3,
       spanGaps: true,
     });
   }
+
+  // 0% 水平基準
+  datasets.push({
+    label: '_zero',
+    data: labels.map(()=>0),
+    borderColor: 'rgba(28,18,9,0.12)',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderDash: [3,3],
+    pointRadius: 0,
+    tension: 0,
+  });
+
   watchChartInst = new Chart(canvas, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
+    type:'line',
+    data:{ labels, datasets },
+    options:{
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: 2.2,
-      plugins: {
-        legend: { labels: { color: 'rgba(28,18,9,0.55)', font: { size: 11, family: 'DM Mono' }, boxWidth: 12, padding: 14 } },
-        tooltip: { backgroundColor: 'rgba(28,18,9,0.9)', titleColor: '#f0ead2', bodyColor: 'rgba(240,234,210,0.75)', borderColor: 'rgba(200,181,96,0.3)', borderWidth: 1, padding: 10 },
+      plugins:{
+        legend:{ labels:{
+          color:'rgba(28,18,9,0.55)',
+          font:{size:11,family:'DM Mono'},
+          boxWidth:12, padding:14,
+          filter: item => item.text !== '_zero',
+        }},
+        tooltip:{
+          backgroundColor:'rgba(28,18,9,0.9)',
+          titleColor:'#f0ead2',
+          bodyColor:'rgba(240,234,210,0.75)',
+          borderColor:'rgba(200,181,96,0.3)',
+          borderWidth:1, padding:10,
+          callbacks:{
+            label: ctx => {
+              if(ctx.dataset.label==='_zero') return null;
+              const v = ctx.parsed.y;
+              if(v===null||v===undefined) return null;
+              const prefix = ctx.dataset.label==='0050基準'?'0050: ':'';
+              return `${prefix}${ctx.dataset.label !== '0050基準' ? ctx.dataset.label+': ' : ''}${v>0?'+':''}${(+v).toFixed(2)}%`;
+            }
+          }
+        }
       },
-      scales: {
-        x: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, maxTicksLimit: 8 }, grid: { color: 'rgba(200,181,96,0.1)' } },
-        y: { ticks: { color: 'rgba(28,18,9,0.45)', font: { size: 10 }, callback: v => (Number.isFinite(+v) ? (+v).toFixed(1) : v) + '%' }, grid: { color: 'rgba(200,181,96,0.1)' } },
-      },
-    },
+      scales:{
+        x:{
+          ticks:{ color:'rgba(28,18,9,0.45)', font:{size:10}, maxTicksLimit:8 },
+          grid:{ color:'rgba(200,181,96,0.1)' }
+        },
+        y:{
+          ticks:{
+            color:'rgba(28,18,9,0.45)', font:{size:10},
+            callback: v => (Number.isFinite(+v) ? (+v).toFixed(1) : v) + '%'
+          },
+          grid:{ color:'rgba(200,181,96,0.1)' }
+        }
+      }
+    }
   });
 }
-function removeWatch(t) {
-  watchlist = watchlist.filter(x => x !== t);
-  saveWatch(); donutsDone = false;
-  renderWatchlist(); renderEtfList(); renderDonuts();
+
+function removeWatch(t){
+  watchlist=watchlist.filter(x=>x!==t);
+  saveWatch();donutsDone=false;
+  renderWatchlist();renderEtfList();
 }
-window.openModal = () => { document.getElementById('addModal').classList.add('open'); document.getElementById('addInput').focus(); };
-window.closeModal = () => { document.getElementById('addModal').classList.remove('open'); document.getElementById('addInput').value = ''; };
-document.getElementById('addModal').addEventListener('click', e => { if (e.target.id === 'addModal') closeModal(); });
-document.getElementById('addInput').addEventListener('keydown', e => { if (e.key === 'Enter') confirmAdd(); });
-window.confirmAdd = function() {
-  const v = document.getElementById('addInput').value.trim().toUpperCase();
-  if (!v) { alert('請輸入ETF代號'); return; }
-  if (watchlist.includes(v)) { alert('已在自選清單中'); closeModal(); return; }
-  if (watchlist.length >= 8) { alert('最多8檔'); closeModal(); return; }
-  watchlist.push(v); saveWatch(); donutsDone = false;
-  renderWatchlist(); renderEtfList(); closeModal();
+
+window.openModal  =()=>{document.getElementById('addModal').classList.add('open');document.getElementById('addInput').focus();};
+window.closeModal =()=>{document.getElementById('addModal').classList.remove('open');document.getElementById('addInput').value='';};
+document.getElementById('addModal').addEventListener('click',e=>{if(e.target.id==='addModal')closeModal();});
+document.getElementById('addInput').addEventListener('keydown',e=>{if(e.key==='Enter')confirmAdd();});
+window.confirmAdd=function(){
+  const v=document.getElementById('addInput').value.trim().toUpperCase();
+  if(!v){alert('請輸入ETF代號');return;}
+  if(watchlist.includes(v)){alert('已在自選清單中');closeModal();return;}
+  if(watchlist.length>=8){alert('最多8檔');closeModal();return;}
+  watchlist.push(v);saveWatch();donutsDone=false;
+  renderWatchlist();renderEtfList();closeModal();
 };
 
 renderWatchlist();
+
+// ── 啟動 ─────────────────────────────────────────────────────
 initData();
 </script>
 </body>
