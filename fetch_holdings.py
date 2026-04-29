@@ -872,9 +872,12 @@ def find_display_date(today_str: str) -> tuple[str, bool]:
     """
     conn = sqlite3.connect(DB_PATH)
     try:
+        # 【實際交易過濾】只看 shares_change != 0 的記錄
+        # 否則早晨那種「全是權重漂移」的日子會被誤判成「有買有賣」不回退
         df = pd.read_sql("""
             SELECT trade_date, action FROM holdings_changes
             WHERE trade_date <= ?
+              AND shares_change IS NOT NULL AND shares_change != 0
             ORDER BY trade_date DESC
         """, conn, params=[today_str])
     except Exception:
@@ -1054,16 +1057,19 @@ def compute_streaks(today_str: str, lookback_days: int = 10) -> tuple[dict, dict
     - by_stock:     { stock_code: {max_buy, max_sell, etf_count_buy, etf_count_sell} }
     """
     conn = sqlite3.connect(DB_PATH)
+    # 【實際交易過濾】只算 shares_change != 0 的,排除純權重漂移
+    # 否則股價波動會讓 streak 失真(連續加碼/減碼應該是真有買賣才算)
     df = pd.read_sql("""
         SELECT trade_date, etf_code, stock_code, action
         FROM holdings_changes
         WHERE trade_date <= ?
+          AND shares_change IS NOT NULL AND shares_change != 0
         ORDER BY trade_date DESC
     """, conn, params=[today_str])
     conn.close()
 
     if df.empty:
-        log.info("⚠ holdings_changes 為空,無 streak 可計算")
+        log.info("⚠ holdings_changes 為空(或無實際交易),無 streak 可計算")
         return {}, {}
 
     all_dates = sorted(df['trade_date'].unique(), reverse=True)[:lookback_days]
@@ -1247,8 +1253,20 @@ def export_json(trade_date: str,
     _export_history_changes(trade_date, days=10)
 
     # ── buy_ranking / sell_ranking / daily_changes 用 display_date 的資料 ──
+    # 【實際交易過濾】只保留 shares_change != 0 的記錄,排除純權重漂移
+    # （ETF 沒實際買賣、單純因其他股票價格波動導致權重變化的記錄）
     if not df_display.empty:
-        buy = (df_display[df_display['amount_change'] > 0]
+        before_n = len(df_display)
+        df_real = df_display[df_display['shares_change'].fillna(0) != 0].copy()
+        drift_n = before_n - len(df_real)
+        if drift_n > 0:
+            log.info(f"  📊 過濾權重漂移：{before_n} 筆中 {drift_n} 筆無實際交易，"
+                     f"剩 {len(df_real)} 筆實際買賣")
+    else:
+        df_real = df_display
+
+    if not df_real.empty:
+        buy = (df_real[df_real['amount_change'] > 0]
                .groupby(['stock_code','stock_name'])
                .agg(etf_count=('etf_code','nunique'),
                     value=('amount_change','sum'),
@@ -1257,7 +1275,7 @@ def export_json(trade_date: str,
                .reset_index().head(20).to_dict('records'))
         _wj('data/buy_ranking.json', buy)
 
-        sell = (df_display[df_display['amount_change'] < 0]
+        sell = (df_real[df_real['amount_change'] < 0]
                 .groupby(['stock_code','stock_name'])
                 .agg(etf_count=('etf_code','nunique'),
                      value=('amount_change','sum'),
@@ -1266,9 +1284,9 @@ def export_json(trade_date: str,
                 .reset_index().head(20).to_dict('records'))
         _wj('data/sell_ranking.json', sell)
 
-        df_display.to_json('data/daily_changes.json', orient='records', force_ascii=False)
+        df_real.to_json('data/daily_changes.json', orient='records', force_ascii=False)
     else:
-        # 第一天或 DB 完全沒資料：用共識持股填入買入排行
+        # 第一天、DB 完全沒資料、或顯示日全是權重漂移：用共識持股填入買入排行
         consensus = (df_holdings
                      .groupby(['stock_code','stock_name'])
                      .agg(etf_count=('etf_code','nunique'), value=('amount_est','sum'))
@@ -1393,10 +1411,12 @@ def _export_history_changes(today_str: str, days: int = 10):
     """
     conn = sqlite3.connect(DB_PATH)
     try:
-        # 先抓最近 N 個有異動的交易日
+        # 【實際交易過濾】只抓 shares_change != 0 的記錄,排除純權重漂移
+        # 先抓最近 N 個「有實際交易」的交易日
         dates_df = pd.read_sql("""
             SELECT DISTINCT trade_date FROM holdings_changes
             WHERE trade_date <= ?
+              AND shares_change IS NOT NULL AND shares_change != 0
             ORDER BY trade_date DESC LIMIT ?
         """, conn, params=[today_str, days])
 
@@ -1408,7 +1428,7 @@ def _export_history_changes(today_str: str, days: int = 10):
                 'by_etf_stock': {},
                 'by_stock': {},
             })
-            log.info("✓ 異動歷史匯出：無歷史紀錄")
+            log.info("✓ 異動歷史匯出：無實際交易紀錄")
             return
 
         date_list = dates_df['trade_date'].tolist()
@@ -1419,6 +1439,7 @@ def _export_history_changes(today_str: str, days: int = 10):
                    shares_change, close_price, amount_change
             FROM holdings_changes
             WHERE trade_date IN ({placeholders})
+              AND shares_change IS NOT NULL AND shares_change != 0
             ORDER BY trade_date DESC, etf_code, stock_code
         """, conn, params=date_list)
     except Exception as e:
