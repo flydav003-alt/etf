@@ -704,6 +704,8 @@ def reprice_zero_holdings(trade_date: str) -> dict[str, float]:
     對 daily_holdings 中 close_price=0 的持股，重新抓一次收盤價並更新 DB。
     回傳補到的 {stock_code: price}，讓呼叫端可以合併進記憶體的 price dict，
     確保 detect_changes 計算 amount_change 時用到完整的價格。
+
+    【修法3】補抓率 < 70% 時，等 2 秒再重試一次（救 TPEx 偶發 DNS/速率失敗）
     """
     conn = sqlite3.connect(DB_PATH)
     missing = pd.read_sql("""
@@ -720,6 +722,20 @@ def reprice_zero_holdings(trade_date: str) -> dict[str, float]:
     log.info(f"  補抓 {len(miss_codes)} 支缺收盤價的股票：{sorted(miss_codes)}")
 
     prices = fetch_stock_close_prices(miss_codes)
+
+    # ── 【修法3】補抓率太低時自動重試一次 ──
+    # TPEx 上櫃股的兩個備用 URL 偶發 DNS 或速率失敗，
+    # 第一次抓不到不代表股票真的查不到，等 2 秒重試通常會補上
+    valid_count = sum(1 for p in prices.values() if p > 0)
+    if miss_codes and valid_count < len(miss_codes) * 0.7:
+        still_missing = miss_codes - {c for c, p in prices.items() if p > 0}
+        log.warning(f"  補抓率偏低（{valid_count}/{len(miss_codes)}），2 秒後重試 {len(still_missing)} 支...")
+        time.sleep(2)
+        retry_prices = fetch_stock_close_prices(still_missing)
+        retry_valid = sum(1 for p in retry_prices.values() if p > 0)
+        prices.update({c: p for c, p in retry_prices.items() if p > 0})
+        log.info(f"  ✓ 重試補上 {retry_valid} 支")
+
     if not prices:
         log.warning("  補抓收盤價：無結果，跳過")
         return {}
@@ -737,10 +753,11 @@ def reprice_zero_holdings(trade_date: str) -> dict[str, float]:
     conn.commit()
     conn.close()
 
-    still_missing = len(miss_codes) - len(prices)
-    log.info(f"✓ 補價完成：更新 {len(prices)} 支，仍缺 {still_missing} 支"
+    valid_final = sum(1 for p in prices.values() if p > 0)
+    still_missing = len(miss_codes) - valid_final
+    log.info(f"✓ 補價完成：更新 {valid_final} 支，仍缺 {still_missing} 支"
              f"（可能是未上市/下市/非台股）")
-    return prices
+    return {c: p for c, p in prices.items() if p > 0}
 
 
 # ══════════════════════════════════════════════════════════
@@ -824,11 +841,14 @@ def detect_changes(trade_date: str, yesterday: str,
 
     merged = pd.merge(
         df_t[['etf_code','stock_code','stock_name','weight_pct','shares','close_price']],
-        df_y[['etf_code','stock_code','weight_pct','shares']],
+        # ── 【修法2】把昨日的 close_price 也帶進來,作為今日抓不到時的備援 ──
+        df_y[['etf_code','stock_code','weight_pct','shares','close_price']],
         on=['etf_code','stock_code'], how='outer', suffixes=('_t','_y')
     ).fillna(0)
 
     changes = []
+    zero_price_count = 0
+    yday_fallback_count = 0
     for _, r in merged.iterrows():
         wt, wy = r['weight_pct_t'], r['weight_pct_y']
         diff   = round(wt - wy, 4)
@@ -838,9 +858,20 @@ def detect_changes(trade_date: str, yesterday: str,
         elif wt == 0:  action = 'FULL_SELL'
         elif diff > 0: action = 'INCREASE'
         else:          action = 'DECREASE'
-        price_from_db = r.get('close_price', 0)
-        # 優先用記憶體裡的即時價格，DB 裡的 close_price 可能因速率限制而是 0
-        price = (prices.get(r['stock_code'], 0) if prices else 0) or price_from_db
+
+        # ── 【修法2】三層 fallback 取得 close_price ──
+        # 1. 記憶體裡的即時價格(已合併今日+前日 stock_codes 的查價結果)
+        # 2. 今日 daily_holdings 的 close_price(可能是 reprice_zero_holdings 補抓到的)
+        # 3. 昨日 daily_holdings 的 close_price(救 FULL_SELL 漏網之魚:API 暫時掛、新上市股等)
+        price_today_db = r.get('close_price_t', 0) or 0
+        price_yday_db  = r.get('close_price_y', 0) or 0
+        price_mem      = (prices.get(r['stock_code'], 0) if prices else 0) or 0
+        price = price_mem or price_today_db or price_yday_db
+        if price == 0:
+            zero_price_count += 1
+        elif price_mem == 0 and price_today_db == 0 and price_yday_db > 0:
+            yday_fallback_count += 1
+
         shares_chg = r['shares_t'] - r['shares_y']
         changes.append({
             'trade_date':    trade_date,
@@ -860,6 +891,11 @@ def detect_changes(trade_date: str, yesterday: str,
         return pd.DataFrame()
 
     df_c = pd.DataFrame(changes)
+
+    if yday_fallback_count > 0:
+        log.info(f"  ✓ 使用昨日收盤價救援 {yday_fallback_count} 筆異動金額")
+    if zero_price_count > 0:
+        log.warning(f"  ⚠ 仍有 {zero_price_count} 筆異動找不到任何收盤價（金額將為 0）")
 
     # 先刪今天舊紀錄，避免重跑時 UNIQUE constraint 衝突
     conn = sqlite3.connect(DB_PATH)
@@ -1060,6 +1096,9 @@ def export_json(trade_date: str,
     # ── price_history.json（每日收盤價，供走勢圖使用）────
     _export_price_history()
 
+    # ── history.json（近 N 個交易日異動明細，供 modal 顯示走勢）──
+    _export_history_changes(trade_date, days=10)
+
     if not df_changes.empty:
         buy = (df_changes[df_changes['amount_change'] > 0]
                .groupby(['stock_code','stock_name'])
@@ -1182,6 +1221,96 @@ def _export_price_history():
     log.info(f"✓ 價格歷史匯出：{len(history)} 檔")
 
 
+def _export_history_changes(today_str: str, days: int = 10):
+    """
+    匯出近 N 個交易日的所有持股異動,供前端 modal 顯示「過去 5 天動向」。
+
+    回傳結構（兩種索引方式,前端任選一種使用）：
+    {
+      "date": "2026-04-29",
+      "trade_dates": ["2026-04-29", "2026-04-28", ...],   # 涵蓋的交易日(由新到舊)
+      "by_etf_stock": {                                    # 主索引:依 ETF + 股票分組
+        "00981A": {
+          "2330": [
+            {"trade_date": "2026-04-29", "action": "INCREASE", ...},
+            {"trade_date": "2026-04-28", "action": "INCREASE", ...},
+            ...
+          ]
+        }
+      },
+      "by_stock": {                                        # 副索引:單支股票橫跨 ETF 的所有異動
+        "2330": [{"trade_date":"2026-04-29","etf_code":"00981A",...}, ...]
+      }
+    }
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        # 先抓最近 N 個有異動的交易日
+        dates_df = pd.read_sql("""
+            SELECT DISTINCT trade_date FROM holdings_changes
+            WHERE trade_date <= ?
+            ORDER BY trade_date DESC LIMIT ?
+        """, conn, params=[today_str, days])
+
+        if dates_df.empty:
+            conn.close()
+            _wj('data/history.json', {
+                'date': today_str,
+                'trade_dates': [],
+                'by_etf_stock': {},
+                'by_stock': {},
+            })
+            log.info("✓ 異動歷史匯出：無歷史紀錄")
+            return
+
+        date_list = dates_df['trade_date'].tolist()
+        placeholders = ','.join(['?'] * len(date_list))
+        df = pd.read_sql(f"""
+            SELECT trade_date, etf_code, stock_code, stock_name, action,
+                   weight_before, weight_after, weight_change,
+                   shares_change, close_price, amount_change
+            FROM holdings_changes
+            WHERE trade_date IN ({placeholders})
+            ORDER BY trade_date DESC, etf_code, stock_code
+        """, conn, params=date_list)
+    except Exception as e:
+        log.warning(f"history.json 匯出失敗: {e}")
+        conn.close()
+        _wj('data/history.json', {})
+        return
+    conn.close()
+
+    # 建主索引：by_etf_stock[etf_code][stock_code] = [異動列表]
+    by_etf_stock: dict = {}
+    by_stock:     dict = {}
+    for _, r in df.iterrows():
+        rec = {
+            'trade_date':    r['trade_date'],
+            'etf_code':      r['etf_code'],
+            'stock_code':    r['stock_code'],
+            'stock_name':    r['stock_name'],
+            'action':        r['action'],
+            'weight_before': float(r['weight_before']) if pd.notna(r['weight_before']) else 0,
+            'weight_after':  float(r['weight_after'])  if pd.notna(r['weight_after'])  else 0,
+            'weight_change': float(r['weight_change']) if pd.notna(r['weight_change']) else 0,
+            'shares_change': float(r['shares_change']) if pd.notna(r['shares_change']) else 0,
+            'close_price':   float(r['close_price'])   if pd.notna(r['close_price'])   else 0,
+            'amount_change': float(r['amount_change']) if pd.notna(r['amount_change']) else 0,
+        }
+        by_etf_stock.setdefault(r['etf_code'], {}).setdefault(r['stock_code'], []).append(rec)
+        by_stock.setdefault(r['stock_code'], []).append(rec)
+
+    out = {
+        'date':         today_str,
+        'trade_dates':  date_list,
+        'by_etf_stock': by_etf_stock,
+        'by_stock':     by_stock,
+        'total_records': len(df),
+    }
+    _wj('data/history.json', out)
+    log.info(f"✓ 異動歷史匯出：{len(df)} 筆，涵蓋 {len(date_list)} 個交易日")
+
+
 def _wj(path: str, obj):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(obj, f, ensure_ascii=False, indent=2, default=str)
@@ -1236,9 +1365,36 @@ def run(target_date: str | None = None):
 
     log.info(f"共抓取 {len(all_holdings)} 筆持股（{len(all_codes)} 支股票）")
 
+    # ── 【修法1】把前一交易日的股票代碼也加入查價清單 ──
+    # 解決 FULL_SELL（完全賣出）股票算不到金額的問題：
+    # 被完全賣出的股票今天已不在持股裡，all_codes 不會包含它，
+    # 結果它的收盤價沒抓到，detect_changes 計算 amount_change 時 price=0 → 金額顯示為 0
+    today_only_count = len(all_codes)
+    try:
+        conn_prev = sqlite3.connect(DB_PATH)
+        prev_dates = pd.read_sql(
+            "SELECT DISTINCT trade_date FROM daily_holdings "
+            "WHERE trade_date < ? ORDER BY trade_date DESC LIMIT 1",
+            conn_prev, params=[today_str]
+        )
+        if not prev_dates.empty:
+            prev_date = prev_dates.iloc[0]['trade_date']
+            prev_stocks = pd.read_sql(
+                "SELECT DISTINCT stock_code FROM daily_holdings "
+                "WHERE trade_date=? AND stock_code != 'CASH'",
+                conn_prev, params=[prev_date]
+            )
+            prev_codes = set(prev_stocks['stock_code'].tolist())
+            extra_codes = prev_codes - all_codes
+            all_codes.update(prev_codes)
+            log.info(f"  合併前一交易日({prev_date})持股，新增 {len(extra_codes)} 支可能完全賣出的股票")
+        conn_prev.close()
+    except Exception as e:
+        log.warning(f"  合併前一交易日持股失敗（可能首次執行）: {e}")
+
     # 抓個股收盤價
     stock_prices = fetch_stock_close_prices(all_codes)
-    log.info(f"✓ 取得 {len(stock_prices)} 支個股收盤價")
+    log.info(f"✓ 取得 {len(stock_prices)} 支個股收盤價（今日{today_only_count}支 + 前日新增）")
 
     # 存入 daily_holdings
     total_saved = 0
