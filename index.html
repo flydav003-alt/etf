@@ -863,7 +863,7 @@ main {
         <div>
           <div id="hmhTicker" style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);letter-spacing:1px;"></div>
           <div id="hmhTitle" class="modal-title" style="margin-bottom:2px;"></div>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--sumi-45);">過去 5 個交易日異動紀錄</div>
+          <div id="hmhSubtitle" style="font-family:var(--font-mono);font-size:10px;color:var(--sumi-45);">近期異動紀錄</div>
         </div>
         <span style="cursor:pointer;font-size:18px;color:var(--sumi-45);padding:4px 8px;" onclick="closeHistoryModal()">✕</span>
       </div>
@@ -1024,6 +1024,7 @@ async function initData() {
     'data/performance.json',
     'data/price_history.json',
     'data/streaks.json',          // 連續買賣統計（後端尚未產出，沒有就跳過）
+    'data/history.json',          // 近 N 個交易日的異動明細（modal 顯示走勢）
   ];
   const results = await Promise.allSettled(FILES.map(loadJSON));
   const get = (i, fallback) => results[i].status === 'fulfilled' ? (results[i].value ?? fallback) : fallback;
@@ -1037,6 +1038,7 @@ async function initData() {
   const performance  = get(6, {});
   const priceHistory = get(7, {});
   const streaks      = get(8, {});
+  const history      = get(9, {});
 
   // 統計失敗的檔案（用於提示）
   const failed = results.map((r, i) => r.status === 'rejected' ? FILES[i] : null).filter(Boolean);
@@ -1057,6 +1059,7 @@ async function initData() {
       performance: {},
       priceHistory: {},
       streaks: {},
+      history: {},
       etfs: Object.entries(ETF_META).map(([ticker, name]) => ({ ticker, name, price: 0, chg: 0, nav: 0, aum: 0 })),
     };
     const pill = document.getElementById('dataPill');
@@ -1075,6 +1078,7 @@ async function initData() {
       performance,
       priceHistory,
       streaks,
+      history,
       etfs: (summary?.active_etfs || []).map(e => ({ ticker: e.code, name: e.name, price: 0, chg: 0, nav: 0, aum: 0 })),
     };
     if (APP.etfs.length === 0) {
@@ -1085,20 +1089,32 @@ async function initData() {
       const p = APP.etfPrices[e.ticker] || {};
       return { ...e, price: p.close || 0, chg: p.chg_pct || 0, nav: p.nav || 0, aum: p.aum_billion || 0 };
     });
-    if (summary?.date) {
-      const d = new Date(summary.date);
+
+    // ── 顯示日期(如果後端有 display_date 就用它,沒有就 fallback 到 date) ──
+    const displayDate = summary?.display_date || summary?.date || '';
+    const isFallback  = !!summary?.is_fallback;
+    if (displayDate) {
+      const d = new Date(displayDate);
       document.getElementById('todayDate').textContent = `${d.getMonth()+1}/${d.getDate()}`;
     } else {
       document.getElementById('todayDate').textContent = '--/--';
     }
     document.querySelector('.logo-sub').textContent = `TAIWAN ACTIVE ETF TRACKER — ${APP.etfs.length} FUNDS`;
+
+    // ── header pill: 顯示資料日期 + 回退提示 ──
     const pill = document.getElementById('dataPill');
-    const dateLabel = summary?.date || '最新';
     const partialNote = failed.length ? `（${failed.length}項待產出）` : '';
-    pill.innerHTML = `<span class="live-dot"></span><span>資料：${dateLabel}${partialNote}</span>`;
+    if (isFallback) {
+      pill.innerHTML = `<span class="live-dot" style="background:#c8a84b;"></span><span>資料：${displayDate}（今日尚未公告，顯示前一交易日）</span>`;
+      pill.style.background = 'rgba(200,168,75,0.15)';
+    } else {
+      pill.innerHTML = `<span class="live-dot"></span><span>資料：${displayDate || '最新'}${partialNote}</span>`;
+      pill.style.background = '';
+    }
     pill.style.display = 'flex';
+
     if (failed.length) console.info('ℹ️ 部分資料尚未產出（將略過）：', failed);
-    console.log('✅ 真實資料載入成功');
+    console.log(`✅ 真實資料載入成功 (顯示日: ${displayDate}${isFallback ? ' [回退]' : ''})`);
   }
   renderAll();
 }
@@ -1478,24 +1494,36 @@ window.closeHoldingsModal = function() {
   document.getElementById('holdingsModal').classList.remove('open');
 };
 
-// ── 過去5天動向 Modal ──────────────────────────────────────
+// ── 過去 N 天動向 Modal（讀 history.json，沒有則退回今日 daily_changes）─
 window.openHistoryModal = function(etfCode, stockCode, stockName) {
-  // 從 APP.changes（今日）往回找，同時也從 daily_changes.json 的歷史中找
-  // 目前 APP.changes 只有今日；用 APP.changes 找今日，其餘靠 DB 已匯出的 data
-  // 前端只有 daily_changes.json（今日），歷史需要後端存成 history，目前用今日資料展示
-  // 先從 APP.changes 找同一 etf+stock 的所有紀錄（今日可能有多筆？不會）
-  // 再補充說明過去資料累積後的計畫
-
   document.getElementById('hmhTicker').textContent = `${etfCode} × ${stockCode}`;
   document.getElementById('hmhTitle').textContent  = stockName || stockCode;
 
-  // 從 APP.changes 篩出同 etf + stock 的紀錄
-  const rows = (APP.changes || []).filter(r =>
-    r.etf_code === etfCode && r.stock_code === stockCode
-  );
+  // 優先從 history.json 抓近 N 個交易日的記錄
+  let rows = APP.history?.by_etf_stock?.[etfCode]?.[stockCode];
+  if (!rows || !rows.length) {
+    // 退回今日 daily_changes（系統剛跑第一天時 history.json 還沒有資料）
+    rows = (APP.changes || []).filter(r =>
+      r.etf_code === etfCode && r.stock_code === stockCode);
+  }
+  // 排序：日期由新到舊
+  rows = [...(rows || [])].sort((a, b) => (b.trade_date || '').localeCompare(a.trade_date || ''));
 
   const tbody = document.getElementById('hmhTbody');
   const empty = document.getElementById('hmhEmpty');
+  const sub   = document.getElementById('hmhSubtitle');
+
+  // 副標題:依實際資料涵蓋天數動態顯示
+  const tradeDates = APP.history?.trade_dates || [];
+  if (sub) {
+    if (tradeDates.length >= 2) {
+      sub.textContent = `近 ${tradeDates.length} 個交易日異動紀錄(${tradeDates[tradeDates.length-1]} ~ ${tradeDates[0]})`;
+    } else if (tradeDates.length === 1) {
+      sub.textContent = `${tradeDates[0]} 異動紀錄`;
+    } else {
+      sub.textContent = '近期異動紀錄';
+    }
+  }
 
   if (!rows.length) {
     tbody.innerHTML = '';
