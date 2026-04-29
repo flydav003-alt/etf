@@ -6,6 +6,21 @@
   ],
   "by_etf_stock": {
     "00400A": {
+      "2454": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00400A",
+          "stock_code": "2454",
+          "stock_name": "聯發科",
+          "action": "INCREASE",
+          "weight_before": 4.42,
+          "weight_after": 7.07,
+          "weight_change": 2.65,
+          "shares_change": 200000.0,
+          "close_price": 2615.0,
+          "amount_change": 523000000.0
+        }
+      ],
       "3081": [
         {
           "trade_date": "2026-04-29",
@@ -17,8 +32,81 @@
           "weight_after": 0.0,
           "weight_change": -0.57,
           "shares_change": -42000.0,
-          "close_price": 2505.0,
-          "amount_change": -105210000.0
+          "close_price": 2445.0,
+          "amount_change": -102690000.0
+        }
+      ],
+      "4958": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00400A",
+          "stock_code": "4958",
+          "stock_name": "臻鼎-KY",
+          "action": "INCREASE",
+          "weight_before": 0.98,
+          "weight_after": 1.14,
+          "weight_change": 0.16,
+          "shares_change": 93000.0,
+          "close_price": 394.0,
+          "amount_change": 36642000.0
+        },
+        {
+          "trade_date": "2026-04-28",
+          "etf_code": "00400A",
+          "stock_code": "4958",
+          "stock_name": "臻鼎-KY",
+          "action": "INCREASE",
+          "weight_before": 0.77,
+          "weight_after": 0.98,
+          "weight_change": 0.21,
+          "shares_change": 68000.0,
+          "close_price": 358.5,
+          "amount_change": 24378000.0
+        }
+      ],
+      "5274": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00400A",
+          "stock_code": "5274",
+          "stock_name": "信  驊",
+          "action": "INCREASE",
+          "weight_before": 3.18,
+          "weight_after": 4.13,
+          "weight_change": 0.95,
+          "shares_change": 10000.0,
+          "close_price": 16555.0,
+          "amount_change": 165550000.0
+        }
+      ],
+      "6147": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00400A",
+          "stock_code": "6147",
+          "stock_name": "頎邦",
+          "action": "NEW_BUY",
+          "weight_before": 0.0,
+          "weight_after": 0.13,
+          "weight_change": 0.13,
+          "shares_change": 150000.0,
+          "close_price": 158.0,
+          "amount_change": 23700000.0
+        }
+      ],
+      "6187": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00400A",
+          "stock_code": "6187",
+          "stock_name": "萬  潤",
+          "action": "DECREASE",
+          "weight_before": 1.41,
+          "weight_after": 0.89,
+          "weight_change": -0.52,
+          "shares_change": -85000.0,
+          "close_price": 1100.0,
+          "amount_change": -93500000.0
         }
       ],
       "2360": [
@@ -66,21 +154,6 @@
           "amount_change": 268480000.0
         }
       ],
-      "4958": [
-        {
-          "trade_date": "2026-04-28",
-          "etf_code": "00400A",
-          "stock_code": "4958",
-          "stock_name": "臻鼎-KY",
-          "action": "INCREASE",
-          "weight_before": 0.77,
-          "weight_after": 0.98,
-          "weight_change": 0.21,
-          "shares_change": 68000.0,
-          "close_price": 358.5,
-          "amount_change": 24378000.0
-        }
-      ],
       "6121": [
         {
           "trade_date": "2026-04-28",
@@ -124,8 +197,8 @@
           "weight_after": 0.0,
           "weight_change": -0.08,
           "shares_change": -458000.0,
-          "close_price": 375.5,
-          "amount_change": -171979000.0
+          "close_price": 362.5,
+          "amount_change": -166025000.0
         }
       ],
       "6488": [
@@ -139,8 +212,8 @@
           "weight_after": 0.0,
           "weight_change": -0.09,
           "shares_change": -333000.0,
-          "close_price": 580.0,
-          "amount_change": -193140000.0
+          "close_price": 536.0,
+          "amount_change": -178488000.0
         }
       ],
       "1590": [
@@ -279,6 +352,278 @@
         }
       ]
     },
+    "00985A": {
+      "2059": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "2059",
+          "stock_name": "川湖科技",
+          "action": "INCREASE",
+          "weight_before": 3.02,
+          "weight_after": 6.12,
+          "weight_change": 3.1,
+          "shares_change": 74000.0,
+          "close_price": 3980.0,
+          "amount_change": 294520000.0
+        }
+      ],
+      "2474": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "2474",
+          "stock_name": "可成科技",
+          "action": "DECREASE",
+          "weight_before": 0.95,
+          "weight_after": 0.29,
+          "weight_change": -0.66,
+          "shares_change": -288000.0,
+          "close_price": 231.0,
+          "amount_change": -66528000.0
+        }
+      ],
+      "2881": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "2881",
+          "stock_name": "富邦金融控股",
+          "action": "INCREASE",
+          "weight_before": 0.24,
+          "weight_after": 1.3,
+          "weight_change": 1.06,
+          "shares_change": 1198000.0,
+          "close_price": 88.6,
+          "amount_change": 106142800.0
+        }
+      ],
+      "2891": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "2891",
+          "stock_name": "中國信託金融控股",
+          "action": "INCREASE",
+          "weight_before": 0.05,
+          "weight_after": 1.19,
+          "weight_change": 1.14,
+          "shares_change": 2241000.0,
+          "close_price": 53.3,
+          "amount_change": 119445300.0
+        }
+      ],
+      "3037": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "3037",
+          "stock_name": "欣興電子",
+          "action": "DECREASE",
+          "weight_before": 0.42,
+          "weight_after": 0.05,
+          "weight_change": -0.37,
+          "shares_change": -47000.0,
+          "close_price": 825.0,
+          "amount_change": -38775000.0
+        }
+      ],
+      "3105": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "3105",
+          "stock_name": "穩懋半導體",
+          "action": "DECREASE",
+          "weight_before": 0.67,
+          "weight_after": 0.2,
+          "weight_change": -0.47,
+          "shares_change": -99000.0,
+          "close_price": 502.0,
+          "amount_change": -49698000.0
+        }
+      ],
+      "3264": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "3264",
+          "stock_name": "欣銓科技",
+          "action": "DECREASE",
+          "weight_before": 0.23,
+          "weight_after": 0.05,
+          "weight_change": -0.18,
+          "shares_change": -96000.0,
+          "close_price": 199.5,
+          "amount_change": -19152000.0
+        }
+      ],
+      "3529": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "3529",
+          "stock_name": "力旺電子",
+          "action": "DECREASE",
+          "weight_before": 1.19,
+          "weight_after": 0.19,
+          "weight_change": -1.0,
+          "shares_change": -26000.0,
+          "close_price": 3900.0,
+          "amount_change": -101400000.0
+        }
+      ],
+      "3533": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "3533",
+          "stock_name": "嘉澤端子工業",
+          "action": "DECREASE",
+          "weight_before": 0.9,
+          "weight_after": 0.48,
+          "weight_change": -0.42,
+          "shares_change": -16000.0,
+          "close_price": 2670.0,
+          "amount_change": -42720000.0
+        }
+      ],
+      "3653": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "3653",
+          "stock_name": "健策精密工業",
+          "action": "DECREASE",
+          "weight_before": 2.0,
+          "weight_after": 1.73,
+          "weight_change": -0.27,
+          "shares_change": -9000.0,
+          "close_price": 4950.0,
+          "amount_change": -44550000.0
+        }
+      ],
+      "4904": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "4904",
+          "stock_name": "遠傳電信",
+          "action": "INCREASE",
+          "weight_before": 0.17,
+          "weight_after": 0.5,
+          "weight_change": 0.33,
+          "shares_change": 353000.0,
+          "close_price": 94.4,
+          "amount_change": 33323200.0
+        }
+      ],
+      "4958": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "4958",
+          "stock_name": "臻鼎科技控股",
+          "action": "DECREASE",
+          "weight_before": 0.89,
+          "weight_after": 0.2,
+          "weight_change": -0.69,
+          "shares_change": -183000.0,
+          "close_price": 394.0,
+          "amount_change": -72102000.0
+        }
+      ],
+      "6239": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "6239",
+          "stock_name": "力成科技",
+          "action": "DECREASE",
+          "weight_before": 0.21,
+          "weight_after": 0.05,
+          "weight_change": -0.16,
+          "shares_change": -73000.0,
+          "close_price": 218.5,
+          "amount_change": -15950500.0
+        }
+      ],
+      "6415": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "6415",
+          "stock_name": "矽力杰",
+          "action": "DECREASE",
+          "weight_before": 1.89,
+          "weight_after": 0.97,
+          "weight_change": -0.92,
+          "shares_change": -221000.0,
+          "close_price": 413.0,
+          "amount_change": -91273000.0
+        }
+      ],
+      "6488": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "6488",
+          "stock_name": "環球晶圓",
+          "action": "DECREASE",
+          "weight_before": 1.92,
+          "weight_after": 0.98,
+          "weight_change": -0.94,
+          "shares_change": -154000.0,
+          "close_price": 536.0,
+          "amount_change": -82544000.0
+        }
+      ],
+      "6781": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "6781",
+          "stock_name": "AES Holding Co Ltd",
+          "action": "DECREASE",
+          "weight_before": 1.78,
+          "weight_after": 1.38,
+          "weight_change": -0.4,
+          "shares_change": -27000.0,
+          "close_price": 1205.0,
+          "amount_change": -32535000.0
+        }
+      ],
+      "7769": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "7769",
+          "stock_name": "鴻勁精密",
+          "action": "INCREASE",
+          "weight_before": 5.68,
+          "weight_after": 6.43,
+          "weight_change": 0.75,
+          "shares_change": 12000.0,
+          "close_price": 5100.0,
+          "amount_change": 61200000.0
+        }
+      ],
+      "8046": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00985A",
+          "stock_code": "8046",
+          "stock_name": "南亞電路板",
+          "action": "DECREASE",
+          "weight_before": 1.66,
+          "weight_after": 1.18,
+          "weight_change": -0.48,
+          "shares_change": -52000.0,
+          "close_price": 932.0,
+          "amount_change": -48464000.0
+        }
+      ]
+    },
     "00991A": {
       "3081": [
         {
@@ -291,8 +636,8 @@
           "weight_after": 0.0,
           "weight_change": -0.77,
           "shares_change": -110000.0,
-          "close_price": 2505.0,
-          "amount_change": -275550000.0
+          "close_price": 2445.0,
+          "amount_change": -268950000.0
         }
       ],
       "2327": [
@@ -338,8 +683,8 @@
           "weight_after": 0.0,
           "weight_change": -1.03,
           "shares_change": -1508000.0,
-          "close_price": 362.0,
-          "amount_change": -545896000.0
+          "close_price": 369.5,
+          "amount_change": -557206000.0
         }
       ],
       "2330": [
@@ -475,8 +820,8 @@
           "weight_after": 0.0,
           "weight_change": -0.79,
           "shares_change": -131000.0,
-          "close_price": 755.0,
-          "amount_change": -98905000.0
+          "close_price": 756.0,
+          "amount_change": -99036000.0
         }
       ],
       "3481": [
@@ -520,8 +865,8 @@
           "weight_after": 0.0,
           "weight_change": -0.87,
           "shares_change": -207000.0,
-          "close_price": 544.0,
-          "amount_change": -112608000.0
+          "close_price": 557.0,
+          "amount_change": -115299000.0
         }
       ],
       "6505": [
@@ -1338,22 +1683,35 @@
       ]
     },
     "00995A": {
-      "6187": [
+      "2303": [
         {
           "trade_date": "2026-04-29",
           "etf_code": "00995A",
-          "stock_code": "6187",
-          "stock_name": "萬潤科技",
-          "action": "FULL_SELL",
-          "weight_before": 0.21,
-          "weight_after": 0.0,
-          "weight_change": -0.21,
-          "shares_change": -10000.0,
-          "close_price": 1115.0,
-          "amount_change": -11150000.0
+          "stock_code": "2303",
+          "stock_name": "聯華電子",
+          "action": "NEW_BUY",
+          "weight_before": 0.0,
+          "weight_after": 0.77,
+          "weight_change": 0.77,
+          "shares_change": 525000.0,
+          "close_price": 75.1,
+          "amount_change": 39427500.0
         }
       ],
       "2404": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "2404",
+          "stock_name": "漢唐集成",
+          "action": "DECREASE",
+          "weight_before": 0.23,
+          "weight_after": 0.13,
+          "weight_change": -0.1,
+          "shares_change": -5000.0,
+          "close_price": 969.0,
+          "amount_change": -4845000.0
+        },
         {
           "trade_date": "2026-04-28",
           "etf_code": "00995A",
@@ -1370,6 +1728,19 @@
       ],
       "2454": [
         {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "2454",
+          "stock_name": "聯發科技",
+          "action": "INCREASE",
+          "weight_before": 3.39,
+          "weight_after": 3.63,
+          "weight_change": 0.24,
+          "shares_change": 6000.0,
+          "close_price": 2615.0,
+          "amount_change": 15690000.0
+        },
+        {
           "trade_date": "2026-04-28",
           "etf_code": "00995A",
           "stock_code": "2454",
@@ -1381,6 +1752,94 @@
           "shares_change": 8000.0,
           "close_price": 2435.0,
           "amount_change": 19480000.0
+        }
+      ],
+      "3037": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "3037",
+          "stock_name": "欣興電子",
+          "action": "DECREASE",
+          "weight_before": 4.21,
+          "weight_after": 3.65,
+          "weight_change": -0.56,
+          "shares_change": -28000.0,
+          "close_price": 825.0,
+          "amount_change": -23100000.0
+        }
+      ],
+      "3324": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "3324",
+          "stock_name": "雙鴻科技",
+          "action": "DECREASE",
+          "weight_before": 0.52,
+          "weight_after": 0.39,
+          "weight_change": -0.13,
+          "shares_change": -6000.0,
+          "close_price": 1160.0,
+          "amount_change": -6960000.0
+        }
+      ],
+      "3711": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "3711",
+          "stock_name": "日月光投資控股",
+          "action": "INCREASE",
+          "weight_before": 1.17,
+          "weight_after": 1.67,
+          "weight_change": 0.5,
+          "shares_change": 55000.0,
+          "close_price": 495.5,
+          "amount_change": 27252500.0
+        }
+      ],
+      "6187": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "6187",
+          "stock_name": "萬潤科技",
+          "action": "FULL_SELL",
+          "weight_before": 0.21,
+          "weight_after": 0.0,
+          "weight_change": -0.21,
+          "shares_change": -10000.0,
+          "close_price": 1100.0,
+          "amount_change": -11000000.0
+        }
+      ],
+      "6285": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00995A",
+          "stock_code": "6285",
+          "stock_name": "啟碁科技",
+          "action": "DECREASE",
+          "weight_before": 0.28,
+          "weight_after": 0.17,
+          "weight_change": -0.11,
+          "shares_change": -26000.0,
+          "close_price": 217.5,
+          "amount_change": -5655000.0
+        },
+        {
+          "trade_date": "2026-04-28",
+          "etf_code": "00995A",
+          "stock_code": "6285",
+          "stock_name": "啟碁科技",
+          "action": "DECREASE",
+          "weight_before": 0.36,
+          "weight_after": 0.28,
+          "weight_change": -0.08,
+          "shares_change": -20000.0,
+          "close_price": 211.5,
+          "amount_change": -4230000.0
         }
       ],
       "3211": [
@@ -1396,21 +1855,6 @@
           "shares_change": -26000.0,
           "close_price": 375.5,
           "amount_change": -9763000.0
-        }
-      ],
-      "6285": [
-        {
-          "trade_date": "2026-04-28",
-          "etf_code": "00995A",
-          "stock_code": "6285",
-          "stock_name": "啟碁科技",
-          "action": "DECREASE",
-          "weight_before": 0.36,
-          "weight_after": 0.28,
-          "weight_change": -0.08,
-          "shares_change": -20000.0,
-          "close_price": 211.5,
-          "amount_change": -4230000.0
         }
       ],
       "6669": [
@@ -1430,6 +1874,51 @@
       ]
     },
     "00996A": {
+      "2467": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00996A",
+          "stock_code": "2467",
+          "stock_name": "志聖工業",
+          "action": "DECREASE",
+          "weight_before": 2.65,
+          "weight_after": 2.13,
+          "weight_change": -0.52,
+          "shares_change": -40000.0,
+          "close_price": 545.0,
+          "amount_change": -21800000.0
+        }
+      ],
+      "3665": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00996A",
+          "stock_code": "3665",
+          "stock_name": "貿聯-KY",
+          "action": "DECREASE",
+          "weight_before": 3.29,
+          "weight_after": 2.92,
+          "weight_change": -0.37,
+          "shares_change": -8000.0,
+          "close_price": 2630.0,
+          "amount_change": -21040000.0
+        }
+      ],
+      "4958": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00996A",
+          "stock_code": "4958",
+          "stock_name": "臻鼎-KY",
+          "action": "DECREASE",
+          "weight_before": 7.37,
+          "weight_after": 6.65,
+          "weight_change": -0.72,
+          "shares_change": -55000.0,
+          "close_price": 394.0,
+          "amount_change": -21670000.0
+        }
+      ],
       "5234": [
         {
           "trade_date": "2026-04-29",
@@ -1443,6 +1932,34 @@
           "shares_change": -20000.0,
           "close_price": 428.0,
           "amount_change": -8560000.0
+        }
+      ],
+      "6830": [
+        {
+          "trade_date": "2026-04-29",
+          "etf_code": "00996A",
+          "stock_code": "6830",
+          "stock_name": "汎銓",
+          "action": "INCREASE",
+          "weight_before": 0.09,
+          "weight_after": 1.09,
+          "weight_change": 1.0,
+          "shares_change": 50000.0,
+          "close_price": 716.0,
+          "amount_change": 35800000.0
+        },
+        {
+          "trade_date": "2026-04-28",
+          "etf_code": "00996A",
+          "stock_code": "6830",
+          "stock_name": "汎銓",
+          "action": "NEW_BUY",
+          "weight_before": 0.0,
+          "weight_after": 0.09,
+          "weight_change": 0.09,
+          "shares_change": 5000.0,
+          "close_price": 651.0,
+          "amount_change": 3255000.0
         }
       ],
       "2337": [
@@ -1503,21 +2020,6 @@
           "shares_change": -11000.0,
           "close_price": 2070.0,
           "amount_change": -22770000.0
-        }
-      ],
-      "6830": [
-        {
-          "trade_date": "2026-04-28",
-          "etf_code": "00996A",
-          "stock_code": "6830",
-          "stock_name": "汎銓",
-          "action": "NEW_BUY",
-          "weight_before": 0.0,
-          "weight_after": 0.09,
-          "weight_change": 0.09,
-          "shares_change": 5000.0,
-          "close_price": 651.0,
-          "amount_change": 3255000.0
         }
       ]
     },
@@ -1662,6 +2164,73 @@
     }
   },
   "by_stock": {
+    "2454": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00400A",
+        "stock_code": "2454",
+        "stock_name": "聯發科",
+        "action": "INCREASE",
+        "weight_before": 4.42,
+        "weight_after": 7.07,
+        "weight_change": 2.65,
+        "shares_change": 200000.0,
+        "close_price": 2615.0,
+        "amount_change": 523000000.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "2454",
+        "stock_name": "聯發科技",
+        "action": "INCREASE",
+        "weight_before": 3.39,
+        "weight_after": 3.63,
+        "weight_change": 0.24,
+        "shares_change": 6000.0,
+        "close_price": 2615.0,
+        "amount_change": 15690000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00981A",
+        "stock_code": "2454",
+        "stock_name": "聯發科",
+        "action": "INCREASE",
+        "weight_before": 4.35,
+        "weight_after": 4.84,
+        "weight_change": 0.49,
+        "shares_change": 216000.0,
+        "close_price": 2435.0,
+        "amount_change": 525960000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "2454",
+        "stock_name": "聯發科",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.5,
+        "weight_change": 0.5,
+        "shares_change": 24000.0,
+        "close_price": 2435.0,
+        "amount_change": 58440000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00995A",
+        "stock_code": "2454",
+        "stock_name": "聯發科技",
+        "action": "INCREASE",
+        "weight_before": 2.81,
+        "weight_after": 3.39,
+        "weight_change": 0.58,
+        "shares_change": 8000.0,
+        "close_price": 2435.0,
+        "amount_change": 19480000.0
+      }
+    ],
     "3081": [
       {
         "trade_date": "2026-04-29",
@@ -1673,8 +2242,8 @@
         "weight_after": 0.0,
         "weight_change": -0.57,
         "shares_change": -42000.0,
-        "close_price": 2505.0,
-        "amount_change": -105210000.0
+        "close_price": 2445.0,
+        "amount_change": -102690000.0
       },
       {
         "trade_date": "2026-04-29",
@@ -1686,8 +2255,159 @@
         "weight_after": 0.0,
         "weight_change": -0.77,
         "shares_change": -110000.0,
-        "close_price": 2505.0,
-        "amount_change": -275550000.0
+        "close_price": 2445.0,
+        "amount_change": -268950000.0
+      }
+    ],
+    "4958": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00400A",
+        "stock_code": "4958",
+        "stock_name": "臻鼎-KY",
+        "action": "INCREASE",
+        "weight_before": 0.98,
+        "weight_after": 1.14,
+        "weight_change": 0.16,
+        "shares_change": 93000.0,
+        "close_price": 394.0,
+        "amount_change": 36642000.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "4958",
+        "stock_name": "臻鼎科技控股",
+        "action": "DECREASE",
+        "weight_before": 0.89,
+        "weight_after": 0.2,
+        "weight_change": -0.69,
+        "shares_change": -183000.0,
+        "close_price": 394.0,
+        "amount_change": -72102000.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00996A",
+        "stock_code": "4958",
+        "stock_name": "臻鼎-KY",
+        "action": "DECREASE",
+        "weight_before": 7.37,
+        "weight_after": 6.65,
+        "weight_change": -0.72,
+        "shares_change": -55000.0,
+        "close_price": 394.0,
+        "amount_change": -21670000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00400A",
+        "stock_code": "4958",
+        "stock_name": "臻鼎-KY",
+        "action": "INCREASE",
+        "weight_before": 0.77,
+        "weight_after": 0.98,
+        "weight_change": 0.21,
+        "shares_change": 68000.0,
+        "close_price": 358.5,
+        "amount_change": 24378000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "4958",
+        "stock_name": "臻鼎-KY",
+        "action": "DECREASE",
+        "weight_before": 1.36,
+        "weight_after": 1.19,
+        "weight_change": -0.17,
+        "shares_change": -91000.0,
+        "close_price": 358.5,
+        "amount_change": -32623500.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00994A",
+        "stock_code": "4958",
+        "stock_name": "臻鼎-KY",
+        "action": "INCREASE",
+        "weight_before": 0.78,
+        "weight_after": 1.13,
+        "weight_change": 0.35,
+        "shares_change": 30000.0,
+        "close_price": 358.5,
+        "amount_change": 10755000.0
+      }
+    ],
+    "5274": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00400A",
+        "stock_code": "5274",
+        "stock_name": "信  驊",
+        "action": "INCREASE",
+        "weight_before": 3.18,
+        "weight_after": 4.13,
+        "weight_change": 0.95,
+        "shares_change": 10000.0,
+        "close_price": 16555.0,
+        "amount_change": 165550000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "5274",
+        "stock_name": "信驊科技",
+        "action": "INCREASE",
+        "weight_before": 0.9,
+        "weight_after": 1.03,
+        "weight_change": 0.13,
+        "shares_change": 1000.0,
+        "close_price": 16095.0,
+        "amount_change": 16095000.0
+      }
+    ],
+    "6147": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00400A",
+        "stock_code": "6147",
+        "stock_name": "頎邦",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.13,
+        "weight_change": 0.13,
+        "shares_change": 150000.0,
+        "close_price": 158.0,
+        "amount_change": 23700000.0
+      }
+    ],
+    "6187": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00400A",
+        "stock_code": "6187",
+        "stock_name": "萬  潤",
+        "action": "DECREASE",
+        "weight_before": 1.41,
+        "weight_after": 0.89,
+        "weight_change": -0.52,
+        "shares_change": -85000.0,
+        "close_price": 1100.0,
+        "amount_change": -93500000.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "6187",
+        "stock_name": "萬潤科技",
+        "action": "FULL_SELL",
+        "weight_before": 0.21,
+        "weight_after": 0.0,
+        "weight_change": -0.21,
+        "shares_change": -10000.0,
+        "close_price": 1100.0,
+        "amount_change": -11000000.0
       }
     ],
     "3211": [
@@ -1701,8 +2421,8 @@
         "weight_after": 0.0,
         "weight_change": -0.08,
         "shares_change": -458000.0,
-        "close_price": 375.5,
-        "amount_change": -171979000.0
+        "close_price": 362.5,
+        "amount_change": -166025000.0
       },
       {
         "trade_date": "2026-04-28",
@@ -1729,8 +2449,417 @@
         "weight_after": 0.0,
         "weight_change": -0.09,
         "shares_change": -333000.0,
-        "close_price": 580.0,
-        "amount_change": -193140000.0
+        "close_price": 536.0,
+        "amount_change": -178488000.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "6488",
+        "stock_name": "環球晶圓",
+        "action": "DECREASE",
+        "weight_before": 1.92,
+        "weight_after": 0.98,
+        "weight_change": -0.94,
+        "shares_change": -154000.0,
+        "close_price": 536.0,
+        "amount_change": -82544000.0
+      }
+    ],
+    "2059": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "2059",
+        "stock_name": "川湖科技",
+        "action": "INCREASE",
+        "weight_before": 3.02,
+        "weight_after": 6.12,
+        "weight_change": 3.1,
+        "shares_change": 74000.0,
+        "close_price": 3980.0,
+        "amount_change": 294520000.0
+      }
+    ],
+    "2474": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "2474",
+        "stock_name": "可成科技",
+        "action": "DECREASE",
+        "weight_before": 0.95,
+        "weight_after": 0.29,
+        "weight_change": -0.66,
+        "shares_change": -288000.0,
+        "close_price": 231.0,
+        "amount_change": -66528000.0
+      }
+    ],
+    "2881": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "2881",
+        "stock_name": "富邦金融控股",
+        "action": "INCREASE",
+        "weight_before": 0.24,
+        "weight_after": 1.3,
+        "weight_change": 1.06,
+        "shares_change": 1198000.0,
+        "close_price": 88.6,
+        "amount_change": 106142800.0
+      }
+    ],
+    "2891": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "2891",
+        "stock_name": "中國信託金融控股",
+        "action": "INCREASE",
+        "weight_before": 0.05,
+        "weight_after": 1.19,
+        "weight_change": 1.14,
+        "shares_change": 2241000.0,
+        "close_price": 53.3,
+        "amount_change": 119445300.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00993A",
+        "stock_code": "2891",
+        "stock_name": "中信金",
+        "action": "FULL_SELL",
+        "weight_before": 0.85,
+        "weight_after": 0.0,
+        "weight_change": -0.85,
+        "shares_change": -2002000.0,
+        "close_price": 53.3,
+        "amount_change": -106706600.0
+      }
+    ],
+    "3037": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "3037",
+        "stock_name": "欣興電子",
+        "action": "DECREASE",
+        "weight_before": 0.42,
+        "weight_after": 0.05,
+        "weight_change": -0.37,
+        "shares_change": -47000.0,
+        "close_price": 825.0,
+        "amount_change": -38775000.0
+      },
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "3037",
+        "stock_name": "欣興電子",
+        "action": "DECREASE",
+        "weight_before": 4.21,
+        "weight_after": 3.65,
+        "weight_change": -0.56,
+        "shares_change": -28000.0,
+        "close_price": 825.0,
+        "amount_change": -23100000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00400A",
+        "stock_code": "3037",
+        "stock_name": "欣興",
+        "action": "INCREASE",
+        "weight_before": 3.18,
+        "weight_after": 4.53,
+        "weight_change": 1.35,
+        "shares_change": 320000.0,
+        "close_price": 839.0,
+        "amount_change": 268480000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "3037",
+        "stock_name": "欣興",
+        "action": "DECREASE",
+        "weight_before": 12.25,
+        "weight_after": 6.91,
+        "weight_change": -5.34,
+        "shares_change": -750000.0,
+        "close_price": 839.0,
+        "amount_change": -629250000.0
+      }
+    ],
+    "3105": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "3105",
+        "stock_name": "穩懋半導體",
+        "action": "DECREASE",
+        "weight_before": 0.67,
+        "weight_after": 0.2,
+        "weight_change": -0.47,
+        "shares_change": -99000.0,
+        "close_price": 502.0,
+        "amount_change": -49698000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "3105",
+        "stock_name": "穩懋",
+        "action": "DECREASE",
+        "weight_before": 7.09,
+        "weight_after": 5.91,
+        "weight_change": -1.18,
+        "shares_change": -298000.0,
+        "close_price": 499.5,
+        "amount_change": -148851000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00994A",
+        "stock_code": "3105",
+        "stock_name": "穩懋",
+        "action": "DECREASE",
+        "weight_before": 1.07,
+        "weight_after": 0.78,
+        "weight_change": -0.29,
+        "shares_change": -25000.0,
+        "close_price": 499.5,
+        "amount_change": -12487500.0
+      }
+    ],
+    "3264": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "3264",
+        "stock_name": "欣銓科技",
+        "action": "DECREASE",
+        "weight_before": 0.23,
+        "weight_after": 0.05,
+        "weight_change": -0.18,
+        "shares_change": -96000.0,
+        "close_price": 199.5,
+        "amount_change": -19152000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "3264",
+        "stock_name": "欣銓",
+        "action": "DECREASE",
+        "weight_before": 1.05,
+        "weight_after": 0.99,
+        "weight_change": -0.06,
+        "shares_change": -42000.0,
+        "close_price": 198.5,
+        "amount_change": -8337000.0
+      }
+    ],
+    "3529": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "3529",
+        "stock_name": "力旺電子",
+        "action": "DECREASE",
+        "weight_before": 1.19,
+        "weight_after": 0.19,
+        "weight_change": -1.0,
+        "shares_change": -26000.0,
+        "close_price": 3900.0,
+        "amount_change": -101400000.0
+      }
+    ],
+    "3533": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "3533",
+        "stock_name": "嘉澤端子工業",
+        "action": "DECREASE",
+        "weight_before": 0.9,
+        "weight_after": 0.48,
+        "weight_change": -0.42,
+        "shares_change": -16000.0,
+        "close_price": 2670.0,
+        "amount_change": -42720000.0
+      }
+    ],
+    "3653": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "3653",
+        "stock_name": "健策精密工業",
+        "action": "DECREASE",
+        "weight_before": 2.0,
+        "weight_after": 1.73,
+        "weight_change": -0.27,
+        "shares_change": -9000.0,
+        "close_price": 4950.0,
+        "amount_change": -44550000.0
+      }
+    ],
+    "4904": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "4904",
+        "stock_name": "遠傳電信",
+        "action": "INCREASE",
+        "weight_before": 0.17,
+        "weight_after": 0.5,
+        "weight_change": 0.33,
+        "shares_change": 353000.0,
+        "close_price": 94.4,
+        "amount_change": 33323200.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "4904",
+        "stock_name": "遠傳",
+        "action": "DECREASE",
+        "weight_before": 0.89,
+        "weight_after": 0.44,
+        "weight_change": -0.45,
+        "shares_change": -557000.0,
+        "close_price": 96.0,
+        "amount_change": -53472000.0
+      }
+    ],
+    "6239": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "6239",
+        "stock_name": "力成科技",
+        "action": "DECREASE",
+        "weight_before": 0.21,
+        "weight_after": 0.05,
+        "weight_change": -0.16,
+        "shares_change": -73000.0,
+        "close_price": 218.5,
+        "amount_change": -15950500.0
+      }
+    ],
+    "6415": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "6415",
+        "stock_name": "矽力杰",
+        "action": "DECREASE",
+        "weight_before": 1.89,
+        "weight_after": 0.97,
+        "weight_change": -0.92,
+        "shares_change": -221000.0,
+        "close_price": 413.0,
+        "amount_change": -91273000.0
+      }
+    ],
+    "6781": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "6781",
+        "stock_name": "AES Holding Co Ltd",
+        "action": "DECREASE",
+        "weight_before": 1.78,
+        "weight_after": 1.38,
+        "weight_change": -0.4,
+        "shares_change": -27000.0,
+        "close_price": 1205.0,
+        "amount_change": -32535000.0
+      }
+    ],
+    "7769": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "7769",
+        "stock_name": "鴻勁精密",
+        "action": "INCREASE",
+        "weight_before": 5.68,
+        "weight_after": 6.43,
+        "weight_change": 0.75,
+        "shares_change": 12000.0,
+        "close_price": 5100.0,
+        "amount_change": 61200000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00401A",
+        "stock_code": "7769",
+        "stock_name": "HON PRECISION INC",
+        "action": "INCREASE",
+        "weight_before": 2.36,
+        "weight_after": 2.66,
+        "weight_change": 0.3,
+        "shares_change": 2000.0,
+        "close_price": 4970.0,
+        "amount_change": 9940000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "7769",
+        "stock_name": "鴻勁",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.53,
+        "weight_change": 0.53,
+        "shares_change": 13000.0,
+        "close_price": 4970.0,
+        "amount_change": 64610000.0
+      }
+    ],
+    "8046": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00985A",
+        "stock_code": "8046",
+        "stock_name": "南亞電路板",
+        "action": "DECREASE",
+        "weight_before": 1.66,
+        "weight_after": 1.18,
+        "weight_change": -0.48,
+        "shares_change": -52000.0,
+        "close_price": 932.0,
+        "amount_change": -48464000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "8046",
+        "stock_name": "南電",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.52,
+        "weight_change": 0.52,
+        "shares_change": 70000.0,
+        "close_price": 913.0,
+        "amount_change": 63910000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00994A",
+        "stock_code": "8046",
+        "stock_name": "南電",
+        "action": "INCREASE",
+        "weight_before": 3.89,
+        "weight_after": 4.24,
+        "weight_change": 0.35,
+        "shares_change": 13000.0,
+        "close_price": 913.0,
+        "amount_change": 11869000.0
       }
     ],
     "8358": [
@@ -1744,8 +2873,8 @@
         "weight_after": 0.0,
         "weight_change": -1.03,
         "shares_change": -1508000.0,
-        "close_price": 362.0,
-        "amount_change": -545896000.0
+        "close_price": 369.5,
+        "amount_change": -557206000.0
       }
     ],
     "2344": [
@@ -1808,21 +2937,6 @@
         "amount_change": -113021100.0
       }
     ],
-    "2891": [
-      {
-        "trade_date": "2026-04-29",
-        "etf_code": "00993A",
-        "stock_code": "2891",
-        "stock_name": "中信金",
-        "action": "FULL_SELL",
-        "weight_before": 0.85,
-        "weight_after": 0.0,
-        "weight_change": -0.85,
-        "shares_change": -2002000.0,
-        "close_price": 53.3,
-        "amount_change": -106706600.0
-      }
-    ],
     "3131": [
       {
         "trade_date": "2026-04-29",
@@ -1862,8 +2976,8 @@
         "weight_after": 0.0,
         "weight_change": -0.79,
         "shares_change": -131000.0,
-        "close_price": 755.0,
-        "amount_change": -98905000.0
+        "close_price": 756.0,
+        "amount_change": -99036000.0
       }
     ],
     "3481": [
@@ -1907,8 +3021,8 @@
         "weight_after": 0.0,
         "weight_change": -0.87,
         "shares_change": -207000.0,
-        "close_price": 544.0,
-        "amount_change": -112608000.0
+        "close_price": 557.0,
+        "amount_change": -115299000.0
       }
     ],
     "6505": [
@@ -1954,19 +3068,187 @@
         "amount_change": 7486500.0
       }
     ],
-    "6187": [
+    "2303": [
       {
         "trade_date": "2026-04-29",
         "etf_code": "00995A",
-        "stock_code": "6187",
-        "stock_name": "萬潤科技",
-        "action": "FULL_SELL",
-        "weight_before": 0.21,
-        "weight_after": 0.0,
-        "weight_change": -0.21,
-        "shares_change": -10000.0,
-        "close_price": 1115.0,
-        "amount_change": -11150000.0
+        "stock_code": "2303",
+        "stock_name": "聯華電子",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.77,
+        "weight_change": 0.77,
+        "shares_change": 525000.0,
+        "close_price": 75.1,
+        "amount_change": 39427500.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00981A",
+        "stock_code": "2303",
+        "stock_name": "聯電",
+        "action": "INCREASE",
+        "weight_before": 1.03,
+        "weight_after": 1.28,
+        "weight_change": 0.25,
+        "shares_change": 7263000.0,
+        "close_price": 72.7,
+        "amount_change": 528020100.0
+      }
+    ],
+    "2404": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "2404",
+        "stock_name": "漢唐集成",
+        "action": "DECREASE",
+        "weight_before": 0.23,
+        "weight_after": 0.13,
+        "weight_change": -0.1,
+        "shares_change": -5000.0,
+        "close_price": 969.0,
+        "amount_change": -4845000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00995A",
+        "stock_code": "2404",
+        "stock_name": "漢唐集成",
+        "action": "DECREASE",
+        "weight_before": 0.35,
+        "weight_after": 0.23,
+        "weight_change": -0.12,
+        "shares_change": -6000.0,
+        "close_price": 969.0,
+        "amount_change": -5814000.0
+      }
+    ],
+    "3324": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "3324",
+        "stock_name": "雙鴻科技",
+        "action": "DECREASE",
+        "weight_before": 0.52,
+        "weight_after": 0.39,
+        "weight_change": -0.13,
+        "shares_change": -6000.0,
+        "close_price": 1160.0,
+        "amount_change": -6960000.0
+      }
+    ],
+    "3711": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "3711",
+        "stock_name": "日月光投資控股",
+        "action": "INCREASE",
+        "weight_before": 1.17,
+        "weight_after": 1.67,
+        "weight_change": 0.5,
+        "shares_change": 55000.0,
+        "close_price": 495.5,
+        "amount_change": 27252500.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00981A",
+        "stock_code": "3711",
+        "stock_name": "日月光投控",
+        "action": "INCREASE",
+        "weight_before": 1.74,
+        "weight_after": 2.0,
+        "weight_change": 0.26,
+        "shares_change": 1362000.0,
+        "close_price": 495.5,
+        "amount_change": 674871000.0
+      }
+    ],
+    "6285": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00995A",
+        "stock_code": "6285",
+        "stock_name": "啟碁科技",
+        "action": "DECREASE",
+        "weight_before": 0.28,
+        "weight_after": 0.17,
+        "weight_change": -0.11,
+        "shares_change": -26000.0,
+        "close_price": 217.5,
+        "amount_change": -5655000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "6285",
+        "stock_name": "啟碁科技",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.51,
+        "weight_change": 0.51,
+        "shares_change": 295000.0,
+        "close_price": 211.5,
+        "amount_change": 62392500.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00995A",
+        "stock_code": "6285",
+        "stock_name": "啟碁科技",
+        "action": "DECREASE",
+        "weight_before": 0.36,
+        "weight_after": 0.28,
+        "weight_change": -0.08,
+        "shares_change": -20000.0,
+        "close_price": 211.5,
+        "amount_change": -4230000.0
+      }
+    ],
+    "2467": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00996A",
+        "stock_code": "2467",
+        "stock_name": "志聖工業",
+        "action": "DECREASE",
+        "weight_before": 2.65,
+        "weight_after": 2.13,
+        "weight_change": -0.52,
+        "shares_change": -40000.0,
+        "close_price": 545.0,
+        "amount_change": -21800000.0
+      }
+    ],
+    "3665": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00996A",
+        "stock_code": "3665",
+        "stock_name": "貿聯-KY",
+        "action": "DECREASE",
+        "weight_before": 3.29,
+        "weight_after": 2.92,
+        "weight_change": -0.37,
+        "shares_change": -8000.0,
+        "close_price": 2630.0,
+        "amount_change": -21040000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00993A",
+        "stock_code": "3665",
+        "stock_name": "貿聯-KY",
+        "action": "DECREASE",
+        "weight_before": 1.17,
+        "weight_after": 1.07,
+        "weight_change": -0.1,
+        "shares_change": -4000.0,
+        "close_price": 2630.0,
+        "amount_change": -10520000.0
       }
     ],
     "5234": [
@@ -1995,6 +3277,34 @@
         "shares_change": 147000.0,
         "close_price": 420.5,
         "amount_change": 61813500.0
+      }
+    ],
+    "6830": [
+      {
+        "trade_date": "2026-04-29",
+        "etf_code": "00996A",
+        "stock_code": "6830",
+        "stock_name": "汎銓",
+        "action": "INCREASE",
+        "weight_before": 0.09,
+        "weight_after": 1.09,
+        "weight_change": 1.0,
+        "shares_change": 50000.0,
+        "close_price": 716.0,
+        "amount_change": 35800000.0
+      },
+      {
+        "trade_date": "2026-04-28",
+        "etf_code": "00996A",
+        "stock_code": "6830",
+        "stock_name": "汎銓",
+        "action": "NEW_BUY",
+        "weight_before": 0.0,
+        "weight_after": 0.09,
+        "weight_change": 0.09,
+        "shares_change": 5000.0,
+        "close_price": 651.0,
+        "amount_change": 3255000.0
       }
     ],
     "2360": [
@@ -2038,75 +3348,6 @@
         "shares_change": 1100000.0,
         "close_price": 226.5,
         "amount_change": 249150000.0
-      }
-    ],
-    "3037": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00400A",
-        "stock_code": "3037",
-        "stock_name": "欣興",
-        "action": "INCREASE",
-        "weight_before": 3.18,
-        "weight_after": 4.53,
-        "weight_change": 1.35,
-        "shares_change": 320000.0,
-        "close_price": 839.0,
-        "amount_change": 268480000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "3037",
-        "stock_name": "欣興",
-        "action": "DECREASE",
-        "weight_before": 12.25,
-        "weight_after": 6.91,
-        "weight_change": -5.34,
-        "shares_change": -750000.0,
-        "close_price": 839.0,
-        "amount_change": -629250000.0
-      }
-    ],
-    "4958": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00400A",
-        "stock_code": "4958",
-        "stock_name": "臻鼎-KY",
-        "action": "INCREASE",
-        "weight_before": 0.77,
-        "weight_after": 0.98,
-        "weight_change": 0.21,
-        "shares_change": 68000.0,
-        "close_price": 358.5,
-        "amount_change": 24378000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "4958",
-        "stock_name": "臻鼎-KY",
-        "action": "DECREASE",
-        "weight_before": 1.36,
-        "weight_after": 1.19,
-        "weight_change": -0.17,
-        "shares_change": -91000.0,
-        "close_price": 358.5,
-        "amount_change": -32623500.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00994A",
-        "stock_code": "4958",
-        "stock_name": "臻鼎-KY",
-        "action": "INCREASE",
-        "weight_before": 0.78,
-        "weight_after": 1.13,
-        "weight_change": 0.35,
-        "shares_change": 30000.0,
-        "close_price": 358.5,
-        "amount_change": 10755000.0
       }
     ],
     "6121": [
@@ -2264,34 +3505,6 @@
         "amount_change": 9760000.0
       }
     ],
-    "7769": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00401A",
-        "stock_code": "7769",
-        "stock_name": "HON PRECISION INC",
-        "action": "INCREASE",
-        "weight_before": 2.36,
-        "weight_after": 2.66,
-        "weight_change": 0.3,
-        "shares_change": 2000.0,
-        "close_price": 4970.0,
-        "amount_change": 9940000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "7769",
-        "stock_name": "鴻勁",
-        "action": "NEW_BUY",
-        "weight_before": 0.0,
-        "weight_after": 0.53,
-        "weight_change": 0.53,
-        "shares_change": 13000.0,
-        "close_price": 4970.0,
-        "amount_change": 64610000.0
-      }
-    ],
     "1590": [
       {
         "trade_date": "2026-04-28",
@@ -2318,21 +3531,6 @@
         "shares_change": -6000.0,
         "close_price": 1410.0,
         "amount_change": -8460000.0
-      }
-    ],
-    "2303": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00981A",
-        "stock_code": "2303",
-        "stock_name": "聯電",
-        "action": "INCREASE",
-        "weight_before": 1.03,
-        "weight_after": 1.28,
-        "weight_change": 0.25,
-        "shares_change": 7263000.0,
-        "close_price": 72.7,
-        "amount_change": 528020100.0
       }
     ],
     "2327": [
@@ -2402,62 +3600,6 @@
         "shares_change": 123000.0,
         "close_price": 145.0,
         "amount_change": 17835000.0
-      }
-    ],
-    "2454": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00981A",
-        "stock_code": "2454",
-        "stock_name": "聯發科",
-        "action": "INCREASE",
-        "weight_before": 4.35,
-        "weight_after": 4.84,
-        "weight_change": 0.49,
-        "shares_change": 216000.0,
-        "close_price": 2435.0,
-        "amount_change": 525960000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "2454",
-        "stock_name": "聯發科",
-        "action": "NEW_BUY",
-        "weight_before": 0.0,
-        "weight_after": 0.5,
-        "weight_change": 0.5,
-        "shares_change": 24000.0,
-        "close_price": 2435.0,
-        "amount_change": 58440000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00995A",
-        "stock_code": "2454",
-        "stock_name": "聯發科技",
-        "action": "INCREASE",
-        "weight_before": 2.81,
-        "weight_after": 3.39,
-        "weight_change": 0.58,
-        "shares_change": 8000.0,
-        "close_price": 2435.0,
-        "amount_change": 19480000.0
-      }
-    ],
-    "3711": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00981A",
-        "stock_code": "3711",
-        "stock_name": "日月光投控",
-        "action": "INCREASE",
-        "weight_before": 1.74,
-        "weight_after": 2.0,
-        "weight_change": 0.26,
-        "shares_change": 1362000.0,
-        "close_price": 495.5,
-        "amount_change": 674871000.0
       }
     ],
     "6669": [
@@ -2907,34 +4049,6 @@
         "amount_change": 3395000.0
       }
     ],
-    "3105": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "3105",
-        "stock_name": "穩懋",
-        "action": "DECREASE",
-        "weight_before": 7.09,
-        "weight_after": 5.91,
-        "weight_change": -1.18,
-        "shares_change": -298000.0,
-        "close_price": 499.5,
-        "amount_change": -148851000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00994A",
-        "stock_code": "3105",
-        "stock_name": "穩懋",
-        "action": "DECREASE",
-        "weight_before": 1.07,
-        "weight_after": 0.78,
-        "weight_change": -0.29,
-        "shares_change": -25000.0,
-        "close_price": 499.5,
-        "amount_change": -12487500.0
-      }
-    ],
     "3189": [
       {
         "trade_date": "2026-04-28",
@@ -2965,21 +4079,6 @@
         "amount_change": 3872000.0
       }
     ],
-    "3264": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "3264",
-        "stock_name": "欣銓",
-        "action": "DECREASE",
-        "weight_before": 1.05,
-        "weight_after": 0.99,
-        "weight_change": -0.06,
-        "shares_change": -42000.0,
-        "close_price": 198.5,
-        "amount_change": -8337000.0
-      }
-    ],
     "3491": [
       {
         "trade_date": "2026-04-28",
@@ -2993,21 +4092,6 @@
         "shares_change": 39000.0,
         "close_price": 1620.0,
         "amount_change": 63180000.0
-      }
-    ],
-    "3665": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "3665",
-        "stock_name": "貿聯-KY",
-        "action": "DECREASE",
-        "weight_before": 1.17,
-        "weight_after": 1.07,
-        "weight_change": -0.1,
-        "shares_change": -4000.0,
-        "close_price": 2630.0,
-        "amount_change": -10520000.0
       }
     ],
     "3702": [
@@ -3040,36 +4124,6 @@
         "amount_change": 64480000.0
       }
     ],
-    "4904": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "4904",
-        "stock_name": "遠傳",
-        "action": "DECREASE",
-        "weight_before": 0.89,
-        "weight_after": 0.44,
-        "weight_change": -0.45,
-        "shares_change": -557000.0,
-        "close_price": 96.0,
-        "amount_change": -53472000.0
-      }
-    ],
-    "5274": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "5274",
-        "stock_name": "信驊科技",
-        "action": "INCREASE",
-        "weight_before": 0.9,
-        "weight_after": 1.03,
-        "weight_change": 0.13,
-        "shares_change": 1000.0,
-        "close_price": 16095.0,
-        "amount_change": 16095000.0
-      }
-    ],
     "5289": [
       {
         "trade_date": "2026-04-28",
@@ -3083,34 +4137,6 @@
         "shares_change": 55000.0,
         "close_price": 1305.0,
         "amount_change": 71775000.0
-      }
-    ],
-    "6285": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "6285",
-        "stock_name": "啟碁科技",
-        "action": "NEW_BUY",
-        "weight_before": 0.0,
-        "weight_after": 0.51,
-        "weight_change": 0.51,
-        "shares_change": 295000.0,
-        "close_price": 211.5,
-        "amount_change": 62392500.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00995A",
-        "stock_code": "6285",
-        "stock_name": "啟碁科技",
-        "action": "DECREASE",
-        "weight_before": 0.36,
-        "weight_after": 0.28,
-        "weight_change": -0.08,
-        "shares_change": -20000.0,
-        "close_price": 211.5,
-        "amount_change": -4230000.0
       }
     ],
     "6515": [
@@ -3170,65 +4196,7 @@
         "close_price": 2070.0,
         "amount_change": -22770000.0
       }
-    ],
-    "8046": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00993A",
-        "stock_code": "8046",
-        "stock_name": "南電",
-        "action": "NEW_BUY",
-        "weight_before": 0.0,
-        "weight_after": 0.52,
-        "weight_change": 0.52,
-        "shares_change": 70000.0,
-        "close_price": 913.0,
-        "amount_change": 63910000.0
-      },
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00994A",
-        "stock_code": "8046",
-        "stock_name": "南電",
-        "action": "INCREASE",
-        "weight_before": 3.89,
-        "weight_after": 4.24,
-        "weight_change": 0.35,
-        "shares_change": 13000.0,
-        "close_price": 913.0,
-        "amount_change": 11869000.0
-      }
-    ],
-    "2404": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00995A",
-        "stock_code": "2404",
-        "stock_name": "漢唐集成",
-        "action": "DECREASE",
-        "weight_before": 0.35,
-        "weight_after": 0.23,
-        "weight_change": -0.12,
-        "shares_change": -6000.0,
-        "close_price": 969.0,
-        "amount_change": -5814000.0
-      }
-    ],
-    "6830": [
-      {
-        "trade_date": "2026-04-28",
-        "etf_code": "00996A",
-        "stock_code": "6830",
-        "stock_name": "汎銓",
-        "action": "NEW_BUY",
-        "weight_before": 0.0,
-        "weight_after": 0.09,
-        "weight_change": 0.09,
-        "shares_change": 5000.0,
-        "close_price": 651.0,
-        "amount_change": 3255000.0
-      }
     ]
   },
-  "total_records": 109
+  "total_records": 143
 }
