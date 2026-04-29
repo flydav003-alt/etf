@@ -11,6 +11,7 @@ import pandas as pd
 import json
 import time
 import logging
+import logging.handlers
 import asyncio
 import re
 from datetime import date, timedelta
@@ -23,7 +24,12 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
-        logging.FileHandler('etf_tracker.log', encoding='utf-8'),
+        logging.handlers.RotatingFileHandler(
+            'etf_tracker.log',
+            maxBytes=5 * 1024 * 1024,  # 5MB 上限
+            backupCount=3,              # 最多保留 3 個備份（共 20MB）
+            encoding='utf-8'
+        ),
         logging.StreamHandler()
     ]
 )
