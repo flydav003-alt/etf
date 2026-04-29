@@ -800,6 +800,107 @@ def save_etf_prices_today(trade_date: str,
 
 
 # ══════════════════════════════════════════════════════════
+# 9b. 【修法5a】一次性回補:修舊的 stock_name="0" 記錄
+#     從 daily_holdings 找該股票的歷史名稱回填到 holdings_changes
+# ══════════════════════════════════════════════════════════
+def backfill_full_sell_names():
+    """
+    舊版本 detect_changes 對 FULL_SELL 沒處理 stock_name,fillna(0) 後
+    變成數字 0 寫進 DB。這個函數一次性把 holdings_changes 表裡這些
+    stock_name 是 '0'/空字串/NULL 的記錄,從 daily_holdings 查回正確名字。
+    每次跑都會檢查,但只更新 stock_name 真的有問題的記錄,負擔很小。
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        bad = pd.read_sql("""
+            SELECT DISTINCT etf_code, stock_code, trade_date FROM holdings_changes
+            WHERE stock_name = '0' OR stock_name = '' OR stock_name IS NULL
+        """, conn)
+    except Exception as e:
+        log.warning(f"  回補 stock_name 失敗: {e}")
+        conn.close()
+        return
+
+    if bad.empty:
+        conn.close()
+        return
+
+    log.info(f"  發現 {len(bad)} 筆 holdings_changes 記錄 stock_name 不正確,開始回補...")
+    fixed = 0
+    for _, r in bad.iterrows():
+        # 從 daily_holdings 找這支股票最近一次有正確名稱的記錄
+        try:
+            lookup = pd.read_sql("""
+                SELECT stock_name FROM daily_holdings
+                WHERE etf_code = ? AND stock_code = ?
+                  AND stock_name != '' AND stock_name != '0' AND stock_name IS NOT NULL
+                ORDER BY trade_date DESC LIMIT 1
+            """, conn, params=[r['etf_code'], r['stock_code']])
+            if not lookup.empty:
+                sn = lookup.iloc[0]['stock_name']
+                conn.execute("""
+                    UPDATE holdings_changes SET stock_name = ?
+                    WHERE trade_date = ? AND etf_code = ? AND stock_code = ?
+                """, (sn, r['trade_date'], r['etf_code'], r['stock_code']))
+                fixed += 1
+        except Exception:
+            continue
+    conn.commit()
+    conn.close()
+    if fixed > 0:
+        log.info(f"  ✓ 回補完成:更新 {fixed} 筆 stock_name")
+
+
+# ══════════════════════════════════════════════════════════
+# 9c. 【修法5b】找出最近一個「有意義」的交易日
+#     用來決定 dashboard 要顯示哪天的資料
+# ══════════════════════════════════════════════════════════
+def find_display_date(today_str: str) -> tuple[str, bool]:
+    """
+    找出最近一個「有意義」的交易日,定義:同時有買入(NEW_BUY/INCREASE)
+    和賣出(FULL_SELL/DECREASE)記錄的日期。
+
+    用途:解決早晨跑腳本時 Pocket 還沒公告當日資料,但腳本還是抓到舊版本
+    導致只偵測到零星 FULL_SELL、buy_ranking 一片空白的問題。
+
+    規則:
+    - 今日 holdings_changes 同時有買有賣 → display_date = today,is_fallback=False
+    - 今日只有單向(只有買或只有賣)或沒資料 → 往回找最近一個雙向都有的日期
+    - 都找不到 → 直接回 today_str(讓現有邏輯處理)
+
+    回傳: (display_date, is_fallback)
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        df = pd.read_sql("""
+            SELECT trade_date, action FROM holdings_changes
+            WHERE trade_date <= ?
+            ORDER BY trade_date DESC
+        """, conn, params=[today_str])
+    except Exception:
+        conn.close()
+        return today_str, False
+    conn.close()
+
+    if df.empty:
+        return today_str, False
+
+    BUY_ACT  = {'NEW_BUY', 'INCREASE'}
+    SELL_ACT = {'FULL_SELL', 'DECREASE'}
+
+    # 依日期分組,從最新開始檢查
+    for date in df['trade_date'].drop_duplicates().tolist():
+        actions = set(df[df['trade_date'] == date]['action'].tolist())
+        has_buys  = bool(actions & BUY_ACT)
+        has_sells = bool(actions & SELL_ACT)
+        if has_buys and has_sells:
+            return date, (date != today_str)
+
+    # 找不到「有買有賣」的日期 → 用最新的(可能是首日只有買沒有賣)
+    return df['trade_date'].iloc[0], (df['trade_date'].iloc[0] != today_str)
+
+
+# ══════════════════════════════════════════════════════════
 # 10. 偵測今昨持股變化
 # ══════════════════════════════════════════════════════════
 def detect_changes(trade_date: str, yesterday: str,
@@ -839,16 +940,27 @@ def detect_changes(trade_date: str, yesterday: str,
     )
     conn.close()
 
+    # ── 【修法2/4】把昨日的 close_price 跟 stock_name 都帶進來 ──
+    # close_price → 今日抓不到時的備援
+    # stock_name  → 修 FULL_SELL 時 stock_name="0" 的舊 bug:
+    #   FULL_SELL 的股票今天不在 df_t,fillna(0) 會把 stock_name 變成數字 0
+    #   要從 df_y 也帶 stock_name 進來,找不到今日就用昨日的
     merged = pd.merge(
         df_t[['etf_code','stock_code','stock_name','weight_pct','shares','close_price']],
-        # ── 【修法2】把昨日的 close_price 也帶進來,作為今日抓不到時的備援 ──
-        df_y[['etf_code','stock_code','weight_pct','shares','close_price']],
+        df_y[['etf_code','stock_code','stock_name','weight_pct','shares','close_price']],
         on=['etf_code','stock_code'], how='outer', suffixes=('_t','_y')
-    ).fillna(0)
+    )
+    # stock_name 用空字串填(數值欄位才填 0,避免 stock_name 變成 0)
+    merged['stock_name_t'] = merged['stock_name_t'].fillna('').astype(str)
+    merged['stock_name_y'] = merged['stock_name_y'].fillna('').astype(str)
+    for col in ['weight_pct_t','weight_pct_y','shares_t','shares_y',
+                'close_price_t','close_price_y']:
+        merged[col] = merged[col].fillna(0)
 
     changes = []
     zero_price_count = 0
     yday_fallback_count = 0
+    name_fallback_count = 0
     for _, r in merged.iterrows():
         wt, wy = r['weight_pct_t'], r['weight_pct_y']
         diff   = round(wt - wy, 4)
@@ -858,6 +970,19 @@ def detect_changes(trade_date: str, yesterday: str,
         elif wt == 0:  action = 'FULL_SELL'
         elif diff > 0: action = 'INCREASE'
         else:          action = 'DECREASE'
+
+        # ── 【修法4】stock_name 雙層 fallback ──
+        # 今日有 → 用今日;沒有(FULL_SELL) → 用昨日
+        sn_t = (r['stock_name_t'] or '').strip()
+        sn_y = (r['stock_name_y'] or '').strip()
+        # "0" 是舊 fillna 殘留的字串,排除掉
+        if sn_t and sn_t != '0':
+            stock_name = sn_t
+        elif sn_y and sn_y != '0':
+            stock_name = sn_y
+            name_fallback_count += 1
+        else:
+            stock_name = ''
 
         # ── 【修法2】三層 fallback 取得 close_price ──
         # 1. 記憶體裡的即時價格(已合併今日+前日 stock_codes 的查價結果)
@@ -877,7 +1002,7 @@ def detect_changes(trade_date: str, yesterday: str,
             'trade_date':    trade_date,
             'etf_code':      r['etf_code'],
             'stock_code':    r['stock_code'],
-            'stock_name':    r.get('stock_name', ''),
+            'stock_name':    stock_name,
             'action':        action,
             'weight_before': round(wy, 4),
             'weight_after':  round(wt, 4),
@@ -894,6 +1019,8 @@ def detect_changes(trade_date: str, yesterday: str,
 
     if yday_fallback_count > 0:
         log.info(f"  ✓ 使用昨日收盤價救援 {yday_fallback_count} 筆異動金額")
+    if name_fallback_count > 0:
+        log.info(f"  ✓ 使用昨日股票名稱救援 {name_fallback_count} 筆 FULL_SELL 記錄")
     if zero_price_count > 0:
         log.warning(f"  ⚠ 仍有 {zero_price_count} 筆異動找不到任何收盤價（金額將為 0）")
 
@@ -1035,13 +1162,33 @@ def export_json(trade_date: str,
                 aum_map: dict):
     import datetime
 
+    # ── 【修法5】決定 dashboard 要顯示哪天的資料 ──
+    # 早晨腳本若還沒抓到當日完整資料(只偵測到零星 FULL_SELL),
+    # display_date 會自動回退到最近一個「同時有買有賣」的交易日,
+    # 讓前端不會出現空白。傍晚 cron 跑完當日完整資料後會自動切回今日。
+    display_date, is_fallback = find_display_date(trade_date)
+    if is_fallback:
+        log.info(f"  📅 今日({trade_date})資料不完整,顯示日回退到 {display_date}")
+        # 從 DB 抓 display_date 的 holdings_changes 來產生排行榜
+        conn_d = sqlite3.connect(DB_PATH)
+        df_display = pd.read_sql(
+            "SELECT * FROM holdings_changes WHERE trade_date = ?",
+            conn_d, params=[display_date]
+        )
+        conn_d.close()
+    else:
+        df_display = df_changes
+        log.info(f"  📅 顯示日 = {display_date}(今日)")
+
     # ── summary.json ──────────────────────────────────────
     summary = {
-        'date':           trade_date,
+        'date':           trade_date,           # 腳本實際跑的日期
+        'display_date':   display_date,         # 前端顯示的資料日期
+        'is_fallback':    is_fallback,          # True = 顯示的不是今日
         'etf_count':      len(ACTIVE_ETFS),
         'total_holdings': len(df_holdings),
-        'has_changes':    not df_changes.empty,
-        'change_count':   len(df_changes),
+        'has_changes':    not df_display.empty,
+        'change_count':   len(df_display),
         'updated_at':     datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         'source':         'Pocket.tw M722 API',
         'active_etfs':    [{'code': k, 'name': v} for k, v in ACTIVE_ETFS.items()],
@@ -1099,8 +1246,9 @@ def export_json(trade_date: str,
     # ── history.json（近 N 個交易日異動明細，供 modal 顯示走勢）──
     _export_history_changes(trade_date, days=10)
 
-    if not df_changes.empty:
-        buy = (df_changes[df_changes['amount_change'] > 0]
+    # ── buy_ranking / sell_ranking / daily_changes 用 display_date 的資料 ──
+    if not df_display.empty:
+        buy = (df_display[df_display['amount_change'] > 0]
                .groupby(['stock_code','stock_name'])
                .agg(etf_count=('etf_code','nunique'),
                     value=('amount_change','sum'),
@@ -1109,7 +1257,7 @@ def export_json(trade_date: str,
                .reset_index().head(20).to_dict('records'))
         _wj('data/buy_ranking.json', buy)
 
-        sell = (df_changes[df_changes['amount_change'] < 0]
+        sell = (df_display[df_display['amount_change'] < 0]
                 .groupby(['stock_code','stock_name'])
                 .agg(etf_count=('etf_code','nunique'),
                      value=('amount_change','sum'),
@@ -1118,9 +1266,9 @@ def export_json(trade_date: str,
                 .reset_index().head(20).to_dict('records'))
         _wj('data/sell_ranking.json', sell)
 
-        df_changes.to_json('data/daily_changes.json', orient='records', force_ascii=False)
+        df_display.to_json('data/daily_changes.json', orient='records', force_ascii=False)
     else:
-        # 第一天：用共識持股填入買入排行
+        # 第一天或 DB 完全沒資料：用共識持股填入買入排行
         consensus = (df_holdings
                      .groupby(['stock_code','stock_name'])
                      .agg(etf_count=('etf_code','nunique'), value=('amount_est','sum'))
@@ -1337,6 +1485,10 @@ def run(target_date: str | None = None):
     log.info(f"=== 開始執行 {today_str}（昨日：{yesterday_str}）===")
 
     init_db()
+
+    # ── 【修法5a】一次性回補 holdings_changes 裡 stock_name="0" 的舊記錄 ──
+    # 偵測到才更新,沒有就秒過,負擔很小
+    backfill_full_sell_names()
 
     # 第一次執行時補抓歷史價格（之後因有200筆以上會自動跳過）
     log.info("檢查並補抓 ETF 歷史收盤價...")
