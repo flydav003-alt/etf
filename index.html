@@ -668,12 +668,37 @@ main {
     </div>
   </div>
   <div class="section-title">14 檔主動ETF 今日換股明細</div>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" id="changeSearch" placeholder="搜尋 ETF 代號 / 成分股名稱 / 股票代號…" oninput="filterChanges()">
+
+  <!-- ── 雙搜尋列：左=今日過濾，右=跨天股票歷史 ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+    <div class="search-wrap" style="margin-bottom:0;position:relative;">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="changeSearch" placeholder="搜尋今日 ETF / 成分股 / 代號…" oninput="filterChanges()">
+    </div>
+    <div style="position:relative;">
+      <span class="search-icon" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--sumi-45);pointer-events:none;">📅</span>
+      <input class="search-input" id="stockHistorySearch"
+        placeholder="查股票歷史（代號或名稱，如 2330）"
+        oninput="filterStockHistory()"
+        style="padding-left:34px;"
+        autocomplete="off">
+      <!-- 若有輸入，右側顯示清除按鈕 -->
+      <span id="stockHistoryClear"
+        onclick="clearStockHistory()"
+        style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);
+               cursor:pointer;color:var(--sumi-45);font-size:14px;line-height:1;
+               transition:color .15s;"
+        onmouseover="this.style.color='var(--sumi-60)'"
+        onmouseout="this.style.color='var(--sumi-45)'">✕</span>
+    </div>
   </div>
-  <!-- 排序按鈕 -->
-  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+  <div id="stockHistoryHint" style="display:none;margin-bottom:8px;padding:6px 12px;
+    background:var(--aizumi-dim);border:1px solid rgba(77,116,148,0.2);border-left:3px solid var(--aizumi);
+    border-radius:var(--radius);font-size:11px;color:var(--sumi-60);font-family:var(--font-mono);">
+  </div>
+
+  <!-- 排序按鈕（股票歷史模式時變灰） -->
+  <div id="changeSortRow" style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
     <span style="font-size:11px;color:var(--sumi-45);font-family:var(--font-mono);">排序：</span>
     <button id="chgSortEtf"    onclick="setChangeSort('etf')"
       style="font-family:var(--font-mono);font-size:10px;padding:4px 14px;border-radius:3px;
@@ -691,14 +716,15 @@ main {
       依動作
     </button>
   </div>
+
   <div class="panel">
     <div class="panel-header">
-      <span>換股明細 — 今日異動</span>
-      <span class="ph-sub">資料來源：各投信每日公告</span>
+      <span id="changesPanelTitle">換股明細 — 今日異動</span>
+      <span class="ph-sub" id="changesPanelSub">資料來源：各投信每日公告</span>
     </div>
     <div class="table-scroll">
       <table class="etf-table">
-        <thead>
+        <thead id="changesThead">
           <tr>
             <th width="32">#</th><th>ETF</th><th>成分股</th><th>動作</th>
             <th>前次佔比</th><th>現在佔比</th><th>變化</th><th>金額</th>
@@ -1303,6 +1329,151 @@ window.filterChanges = function() {
     (r.stock_code||'').includes(q)
   );
   _renderChangeTable(_sortChanges(filtered));
+};
+
+// ── 股票跨天歷史搜尋 ──────────────────────────────────────────
+// 模式：stockHistoryMode = true 時，表格換成跨天歷史，排序按鈕暫時無效
+let _stockHistoryMode = false;
+
+window.filterStockHistory = function() {
+  const raw = (document.getElementById('stockHistorySearch')?.value || '').trim();
+  const clearBtn = document.getElementById('stockHistoryClear');
+  const hint     = document.getElementById('stockHistoryHint');
+  const sortRow  = document.getElementById('changeSortRow');
+  const leftSearch = document.getElementById('changeSearch');
+
+  if (!raw) {
+    // 清空 → 回到今日換股模式
+    _stockHistoryMode = false;
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (hint)     hint.style.display = 'none';
+    if (sortRow)  sortRow.style.opacity = '1';
+    if (leftSearch) leftSearch.disabled = false;
+    document.getElementById('changesPanelTitle').textContent = '換股明細 — 今日異動';
+    document.getElementById('changesPanelSub').textContent   = '資料來源：各投信每日公告';
+    // 恢復 thead
+    document.getElementById('changesThead').innerHTML = `<tr>
+      <th width="32">#</th><th>ETF</th><th>成分股</th><th>動作</th>
+      <th>前次佔比</th><th>現在佔比</th><th>變化</th><th>金額</th>
+    </tr>`;
+    _renderChangeTable(_sortChanges(_allChanges));
+    return;
+  }
+
+  // 有輸入 → 進入歷史模式
+  _stockHistoryMode = true;
+  if (clearBtn) clearBtn.style.display = 'block';
+  if (sortRow)  sortRow.style.opacity = '0.35';
+  if (leftSearch) { leftSearch.value = ''; leftSearch.disabled = true; }
+
+  const q = raw.toLowerCase();
+
+  // 從 history.json 的 by_stock 找符合的股票（支援代號/名稱模糊）
+  const byStock = APP.history?.by_stock || {};
+  const matchCodes = Object.keys(byStock).filter(code => code.toLowerCase().includes(q));
+
+  // 也從 by_stock 的值找名稱匹配
+  const nameMatchCodes = Object.keys(byStock).filter(code => {
+    const recs = byStock[code];
+    return recs && recs[0] && (recs[0].stock_name || '').includes(raw);
+  });
+
+  const allMatchCodes = [...new Set([...matchCodes, ...nameMatchCodes])];
+
+  // 整合所有記錄，展平成一維陣列
+  let rows = [];
+  allMatchCodes.forEach(code => {
+    const recs = byStock[code] || [];
+    rows.push(...recs);
+  });
+
+  // 若 history.json 尚無資料，退回 daily_changes
+  if (!rows.length) {
+    const fallback = (APP.changes || []).filter(r =>
+      (r.stock_code||'').toLowerCase().includes(q) ||
+      (r.stock_name||'').includes(raw)
+    );
+    rows = fallback.map(r => ({ ...r }));
+  }
+
+  // 排序：日期由新到舊，同日期內依 ETF 代號
+  rows.sort((a,b)=>{
+    const dc = (b.trade_date||'').localeCompare(a.trade_date||'');
+    if (dc !== 0) return dc;
+    return (a.etf_code||'').localeCompare(b.etf_code||'');
+  });
+
+  // 決定顯示的股票名稱（取第一筆有名稱的）
+  const firstName = rows.find(r => r.stock_name)?.stock_name || raw;
+  const firstCode = rows.find(r => r.stock_code)?.stock_code || '';
+  const tradeDates = APP.history?.trade_dates || [];
+  const spanNote = tradeDates.length >= 2
+    ? `${tradeDates[tradeDates.length-1]} ～ ${tradeDates[0]}`
+    : (tradeDates[0] || '最新資料');
+
+  // 更新面板標題
+  document.getElementById('changesPanelTitle').textContent =
+    rows.length ? `${firstName}（${firstCode}）跨天異動歷史` : `查無「${raw}」的異動紀錄`;
+  document.getElementById('changesPanelSub').textContent =
+    rows.length ? `共 ${rows.length} 筆 ｜ 涵蓋 ${spanNote}` : '請確認股票代號或名稱';
+
+  // 提示條
+  if (hint) {
+    if (rows.length) {
+      hint.textContent = `📅 顯示「${firstName}」在 history.json 中的所有異動紀錄（不限今日）`;
+      hint.style.display = 'block';
+    } else {
+      hint.textContent = `查無「${raw}」— 可能尚未累積歷史資料，或代號有誤`;
+      hint.style.display = 'block';
+      hint.style.borderLeftColor = 'var(--kobai)';
+      hint.style.background = 'var(--kobai-dim)';
+    }
+  }
+
+  // 切換 thead 為歷史模式（加「日期」欄，拿掉「ETF名稱」縮寫）
+  document.getElementById('changesThead').innerHTML = `<tr>
+    <th width="32">#</th>
+    <th>日期</th>
+    <th>ETF</th>
+    <th>動作</th>
+    <th>前次佔比</th><th>現在佔比</th><th>變化</th><th>金額</th>
+  </tr>`;
+
+  // 渲染歷史列
+  document.getElementById('changesTbody').innerHTML = rows.length
+    ? rows.map((r,i) => {
+        const diff = (r.weight_after||0) - (r.weight_before||0);
+        const isBuy  = r.action === 'NEW_BUY';
+        const isSell = r.action === 'FULL_SELL';
+        const amt = r.amount_change || 0;
+        const amtCell = amt !== 0
+          ? `<span class="${amt>0?'up':'down'}" style="font-family:var(--font-mono)">${fmtMoney(amt)}</span>`
+          : '<span class="flat">—</span>';
+        const etfName = ETF_META[r.etf_code] || r.etf_code || '';
+        return `<tr>
+          <td><span class="rn">${i+1}</span></td>
+          <td style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);white-space:nowrap;">${r.trade_date||'—'}</td>
+          <td><span class="etf-pill">${r.etf_code||''}</span><span class="etf-sub">${etfName}</span></td>
+          <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
+          <td style="font-family:var(--font-mono);color:var(--sumi-60)">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
+          <td style="font-family:var(--font-mono);font-weight:600;color:var(--sumi)">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
+          <td class="${colorCls(diff)}" style="font-family:var(--font-mono)">${isBuy?'<span class="tag buy">新增</span>':isSell?'<span class="tag sell">移除</span>':fmtPct(diff)}</td>
+          <td>${amtCell}</td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--sumi-45);font-size:12px;">此股票在近期無異動紀錄</td></tr>`;
+};
+
+window.clearStockHistory = function() {
+  const el = document.getElementById('stockHistorySearch');
+  if (el) { el.value = ''; el.focus(); }
+  // 重置提示條顏色（避免上次是錯誤色殘留）
+  const hint = document.getElementById('stockHistoryHint');
+  if (hint) {
+    hint.style.borderLeftColor = 'var(--aizumi)';
+    hint.style.background = 'var(--aizumi-dim)';
+  }
+  filterStockHistory();
 };
 function updateKpi() {
   const bc = APP.changes.filter(c => c.action==='NEW_BUY'||c.action==='INCREASE').length;
