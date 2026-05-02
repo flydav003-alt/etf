@@ -1552,9 +1552,9 @@ def export_etf_csv(trade_date: str, df_changes: pd.DataFrame) -> str | None:
         .reset_index()
     )
 
-    # composite_score 轉成「X.X億」字串格式
+    # composite_score 轉成「純數字」字串格式
     ranked['composite_score'] = (
-        (ranked['raw_score'] / 1e8).round(1).astype(str) + '億'
+        (ranked['raw_score'] / 1e8).round(1)
     )
 
     # 整理輸出欄位
