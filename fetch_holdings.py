@@ -1492,6 +1492,64 @@ def _wj(path: str, obj):
 
 
 # ══════════════════════════════════════════════════════════
+# 13. 匯出 CSV（共同加碼排行前10，供 BT repo 資料庫使用）
+# ══════════════════════════════════════════════════════════
+def export_etf_csv(trade_date: str, df_changes: pd.DataFrame) -> str | None:
+    """
+    從當日持股異動中，取出共同加碼排行前 10 檔，匯出 CSV。
+
+    規格：
+      - 欄位：stock_id, name, composite_score
+      - composite_score = 各 ETF 合計買入金額，以「億」為單位（例：5.8億）
+      - 只計入實際有股數變動的買入記錄（排除純權重漂移）
+      - 依 composite_score 降序排列，取前 10
+      - 檔名：data/etf_YYYYMMDD.csv（例：data/etf_20260430.csv）
+
+    無買入資料時（首日、非交易日）回傳 None 並跳過。
+    """
+    if df_changes.empty:
+        log.info("CSV 匯出：無變化資料，跳過")
+        return None
+
+    # 只取買入（金額 > 0）且有實際股數變動的記錄（排除純權重漂移）
+    df_buy = df_changes[
+        (df_changes['amount_change'] > 0) &
+        (df_changes['shares_change'].fillna(0) != 0)
+    ].copy()
+
+    if df_buy.empty:
+        log.info("CSV 匯出：無實際買入記錄，跳過")
+        return None
+
+    # 彙總：依股票分組，加總各 ETF 的買入金額
+    ranked = (
+        df_buy
+        .groupby(['stock_code', 'stock_name'])
+        .agg(raw_score=('amount_change', 'sum'))
+        .sort_values('raw_score', ascending=False)
+        .head(10)
+        .reset_index()
+    )
+
+    # composite_score 轉成「X.X億」字串格式
+    ranked['composite_score'] = (
+        (ranked['raw_score'] / 1e8).round(1).astype(str) + '億'
+    )
+
+    # 整理輸出欄位（stock_id = 股票代碼）
+    out = ranked[['stock_code', 'stock_name', 'composite_score']].copy()
+    out.columns = ['stock_id', 'name', 'composite_score']
+
+    # 存到 data/ 資料夾，檔名含日期（去掉連字號）
+    filename = f"data/etf_{trade_date.replace('-', '')}.csv"
+    out.to_csv(filename, index=False, encoding='utf-8-sig')  # utf-8-sig 讓 Excel 開啟不亂碼
+
+    log.info(f"✓ CSV 匯出完成 → {filename}（前 {len(out)} 檔）")
+    log.info(f"  排行：{', '.join(out['name'].tolist())}")
+    return filename
+
+
+# ══════════════════════════════════════════════════════════
 # MAIN
 # ══════════════════════════════════════════════════════════
 def run(target_date: str | None = None):
@@ -1618,6 +1676,9 @@ def run(target_date: str | None = None):
 
     # 匯出 JSON
     export_json(today_str, df_today, df_changes, etf_prices_today, nav_map, aum_map)
+
+    # 匯出 CSV（共同加碼排行前10，給 BT repo 資料庫使用）
+    export_etf_csv(today_str, df_changes)
 
     log.info(f"✅ 完成！{today_str} 共 {len(df_today)} 筆持股")
 
