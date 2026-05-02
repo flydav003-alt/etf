@@ -72,3 +72,140 @@ jobs:
           git add etf_tracker.db data/ etf_tracker.log
           git diff --staged --quiet || git commit -m "📊 自動更新 ETF 持股 $(date +'%Y-%m-%d')"
           git push
+
+      # ── 8. 確認 CSV 是否產出，記錄檔名供後續 step 使用 ──
+      - name: 確認 CSV 產出
+        id: check_csv
+        run: |
+          CSV_FILE=$(ls data/etf_*.csv 2>/dev/null | sort | tail -1)
+          if [ -z "$CSV_FILE" ]; then
+            echo "⚠ 今日無買入資料，CSV 未產出（首日或非交易日屬正常）"
+            echo "csv_found=false" >> $GITHUB_OUTPUT
+          else
+            echo "✓ 找到 CSV：$CSV_FILE"
+            echo "csv_found=true"              >> $GITHUB_OUTPUT
+            echo "csv_file=$CSV_FILE"          >> $GITHUB_OUTPUT
+            echo "csv_name=$(basename $CSV_FILE)" >> $GITHUB_OUTPUT
+            echo "--- CSV 內容 ---"
+            cat "$CSV_FILE"
+          fi
+
+      # ── 9. 把 CSV 推送到 BT repo（data/input/）───────────
+      # 只在 CSV 成功產出時執行
+      - name: 推送 CSV 到 BT repo
+        if: steps.check_csv.outputs.csv_found == 'true'
+        env:
+          BT_TOKEN: ${{ secrets.BT_REPO_TOKEN }}
+          CSV_FILE: ${{ steps.check_csv.outputs.csv_file }}
+          CSV_NAME: ${{ steps.check_csv.outputs.csv_name }}
+        run: |
+          echo "開始推送 $CSV_NAME 到 flydav003-alt/BT ..."
+
+          # Clone BT repo（用 token 認證）
+          git clone https://x-access-token:${BT_TOKEN}@github.com/flydav003-alt/BT.git bt_repo
+          cd bt_repo
+
+          # 確保目標資料夾存在
+          mkdir -p data/input
+
+          # 複製 CSV（同名日期才覆蓋，歷史檔案不影響）
+          cp ../$CSV_FILE data/input/$CSV_NAME
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "data/input/$CSV_NAME"
+          git diff --staged --quiet \
+            && echo "BT repo 無變更，跳過 push" \
+            || { git commit -m "📊 ETF加碼排行 $CSV_NAME"; git push; echo "✓ 推送完成"; }
+
+      # ── 10. Gmail 寄送每日排行（HTML 表格 + CSV 附件）───
+      # 只在 CSV 成功產出時執行
+      - name: 寄送每日排行 Email
+        if: steps.check_csv.outputs.csv_found == 'true'
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}      # 寄件人 Gmail（如 abc@gmail.com）
+          GMAIL_PASS: ${{ secrets.GMAIL_APP_PASS }}  # Gmail 應用程式密碼（非登入密碼）
+          TO_EMAIL:   ${{ secrets.NOTIFY_EMAIL }}    # 收件人（可與寄件人相同）
+          CSV_FILE:   ${{ steps.check_csv.outputs.csv_file }}
+          CSV_NAME:   ${{ steps.check_csv.outputs.csv_name }}
+        run: |
+          python3 - <<'PYEOF'
+          import os, csv, smtplib
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+          from email.mime.base import MIMEBase
+          from email import encoders
+          from datetime import date
+
+          csv_file  = os.environ['CSV_FILE']
+          csv_name  = os.environ['CSV_NAME']
+          from_addr = os.environ['GMAIL_USER']
+          to_addr   = os.environ['TO_EMAIL']
+          password  = os.environ['GMAIL_PASS']
+          today     = date.today().strftime('%Y/%m/%d')
+
+          # 讀取 CSV，產生 HTML 表格列
+          rows = []
+          with open(csv_file, encoding='utf-8-sig') as f:
+              for row in csv.DictReader(f):
+                  rows.append(row)
+
+          table_rows = ''
+          for i, r in enumerate(rows, 1):
+              bg = '#fff8e8' if i % 2 == 0 else '#ffffff'
+              table_rows += f"""
+              <tr style="background:{bg}">
+                <td style="padding:8px 14px;text-align:center;font-family:monospace;color:#4d7494">{i}</td>
+                <td style="padding:8px 14px;font-family:monospace;color:#3a3020">{r['stock_id']}</td>
+                <td style="padding:8px 14px;font-weight:600;color:#1c1209">{r['name']}</td>
+                <td style="padding:8px 14px;text-align:right;font-family:monospace;color:#c04455;font-weight:600">{r['composite_score']}</td>
+              </tr>"""
+
+          html = f"""
+          <html><body style="font-family:'Noto Sans TC',sans-serif;background:#f0ead2;margin:0;padding:20px">
+          <div style="max-width:540px;margin:0 auto;background:#fff8e8;border:1px solid rgba(200,181,96,0.4);border-top:3px solid #c8b560;border-radius:6px;overflow:hidden">
+            <div style="background:#c8b560;padding:14px 20px">
+              <div style="font-size:10px;letter-spacing:3px;color:rgba(28,18,9,0.6)">TAIWAN ACTIVE ETF TRACKER</div>
+              <div style="font-size:18px;font-weight:700;color:#1c1209;margin-top:2px">主動ETF 每日共同加碼排行</div>
+              <div style="font-size:11px;color:rgba(28,18,9,0.6);margin-top:4px">{today} · 前10檔（依買入金額降序）</div>
+            </div>
+            <div style="padding:16px 0">
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr style="background:#ede4c0">
+                    <th style="padding:8px 14px;font-size:10px;letter-spacing:1px;color:#7a6030;text-align:center">#</th>
+                    <th style="padding:8px 14px;font-size:10px;letter-spacing:1px;color:#7a6030;text-align:left">代號</th>
+                    <th style="padding:8px 14px;font-size:10px;letter-spacing:1px;color:#7a6030;text-align:left">名稱</th>
+                    <th style="padding:8px 14px;font-size:10px;letter-spacing:1px;color:#7a6030;text-align:right">合計買入</th>
+                  </tr>
+                </thead>
+                <tbody>{table_rows}</tbody>
+              </table>
+            </div>
+            <div style="padding:10px 20px 14px;font-size:10px;color:rgba(28,18,9,0.4);border-top:1px solid rgba(200,181,96,0.25)">
+              資料來源：Pocket.tw M722 · 金額為估算值，不構成投資建議
+            </div>
+          </div>
+          </body></html>"""
+
+          # 組合郵件
+          msg = MIMEMultipart('mixed')
+          msg['Subject'] = f'📊 主動ETF共同加碼排行 {today}'
+          msg['From']    = from_addr
+          msg['To']      = to_addr
+          msg.attach(MIMEText(html, 'html', 'utf-8'))
+
+          # 附加 CSV 檔案
+          with open(csv_file, 'rb') as f:
+              part = MIMEBase('application', 'octet-stream')
+              part.set_payload(f.read())
+          encoders.encode_base64(part)
+          part.add_header('Content-Disposition', f'attachment; filename="{csv_name}"')
+          msg.attach(part)
+
+          # 透過 Gmail SMTP SSL 寄出
+          with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+              smtp.login(from_addr, password)
+              smtp.sendmail(from_addr, to_addr, msg.as_string())
+          print(f'✓ Email 已寄出 → {to_addr}')
+          PYEOF
