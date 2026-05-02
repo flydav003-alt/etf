@@ -1500,28 +1500,49 @@ def export_etf_csv(trade_date: str, df_changes: pd.DataFrame) -> str | None:
 
     規格：
       - 欄位：stock_id, name, composite_score
-      - composite_score = 各 ETF 合計買入金額，以「億」為單位（例：5.8億）
+      - composite_score = 各 ETF「當日合計買入金額」（holdings_changes.amount_change 加總）
+        → 每天不同的實際買賣金額，不是累積持股的共識排行
       - 只計入實際有股數變動的買入記錄（排除純權重漂移）
       - 依 composite_score 降序排列，取前 10
-      - 檔名：data/etf_YYYYMMDD.csv（例：data/etf_20260430.csv）
+      - 檔名：data/etf_YYYYMMDD.csv（日期取 display_date，與前端一致）
 
-    無買入資料時（首日、非交易日）回傳 None 並跳過。
+    與 export_json 相同邏輯：
+      - 今日資料完整 → 用今日 df_changes
+      - 今日資料不完整（剛跑完/公告還沒更新）→ 從 DB 讀最近完整交易日
+      - 完全沒有歷史資料（系統首日）→ 回傳 None，不輸出
     """
-    if df_changes.empty:
-        log.info("CSV 匯出：無變化資料，跳過")
+    # ── 與 export_json 相同：找出有效的 display_date ──────
+    # 避免今日資料只有零星 FULL_SELL、買入排行空白的問題
+    display_date, is_fallback = find_display_date(trade_date)
+
+    if is_fallback:
+        # 今日資料不完整，從 DB 讀最近完整交易日的 holdings_changes
+        log.info(f"  CSV 匯出：今日資料不完整，改用 {display_date} 的資料")
+        conn = sqlite3.connect(DB_PATH)
+        df_src = pd.read_sql(
+            "SELECT * FROM holdings_changes WHERE trade_date = ?",
+            conn, params=[display_date]
+        )
+        conn.close()
+    else:
+        df_src = df_changes
+
+    if df_src.empty:
+        # 系統首日，DB 裡完全沒有異動資料，正常現象
+        log.info("CSV 匯出：無任何異動資料（系統首日），跳過")
         return None
 
-    # 只取買入（金額 > 0）且有實際股數變動的記錄（排除純權重漂移）
-    df_buy = df_changes[
-        (df_changes['amount_change'] > 0) &
-        (df_changes['shares_change'].fillna(0) != 0)
+    # 只取「實際買入」：金額 > 0 且有實際股數變動（排除純權重漂移）
+    df_buy = df_src[
+        (df_src['amount_change'] > 0) &
+        (df_src['shares_change'].fillna(0) != 0)
     ].copy()
 
     if df_buy.empty:
-        log.info("CSV 匯出：無實際買入記錄，跳過")
+        log.info(f"CSV 匯出：{display_date} 無實際買入記錄，跳過")
         return None
 
-    # 彙總：依股票分組，加總各 ETF 的買入金額
+    # 彙總：依股票分組，加總各 ETF 的買入金額（今日實際成交估算）
     ranked = (
         df_buy
         .groupby(['stock_code', 'stock_name'])
@@ -1536,15 +1557,16 @@ def export_etf_csv(trade_date: str, df_changes: pd.DataFrame) -> str | None:
         (ranked['raw_score'] / 1e8).round(1).astype(str) + '億'
     )
 
-    # 整理輸出欄位（stock_id = 股票代碼）
+    # 整理輸出欄位
     out = ranked[['stock_code', 'stock_name', 'composite_score']].copy()
     out.columns = ['stock_id', 'name', 'composite_score']
 
-    # 存到 data/ 資料夾，檔名含日期（去掉連字號）
-    filename = f"data/etf_{trade_date.replace('-', '')}.csv"
+    # 檔名用 display_date（與前端顯示日一致），去掉連字號
+    filename = f"data/etf_{display_date.replace('-', '')}.csv"
     out.to_csv(filename, index=False, encoding='utf-8-sig')  # utf-8-sig 讓 Excel 開啟不亂碼
 
-    log.info(f"✓ CSV 匯出完成 → {filename}（前 {len(out)} 檔）")
+    fallback_note = f"（回退自 {trade_date}）" if is_fallback else ""
+    log.info(f"✓ CSV 匯出完成 → {filename}（{display_date}{fallback_note}，前 {len(out)} 檔）")
     log.info(f"  排行：{', '.join(out['name'].tolist())}")
     return filename
 
