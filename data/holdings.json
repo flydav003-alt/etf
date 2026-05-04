@@ -4582,6 +4582,14 @@
         "shares": 9000.0,
         "close_price": 3780.0,
         "amount_est": 34020000.0
+      },
+      {
+        "stock_code": "CASH",
+        "stock_name": "現金部位",
+        "weight_pct": 0.0,
+        "shares": 0.0,
+        "close_price": 0.0,
+        "amount_est": 0.0
       }
     ]
   },
