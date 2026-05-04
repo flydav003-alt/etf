@@ -764,13 +764,22 @@ def save_etf_prices_today(trade_date: str,
     for code, p in prices.items():
         nav = nav_map.get(code, 0) or 0
         aum = aum_map.get(code, 0) or 0
-        # 優先用 Playwright 抓到的折溢價，沒有才用計算值
-        if code in prem_map and prem_map[code] is not None:
+        
+        # === 重點修改：優先用現價與 NAV 計算折溢價 ===
+        market_price = p.get('close', 0)
+        
+        if market_price > 0 and nav > 0:
+            # 直接計算（最準確）
+            premium_pct = round((market_price - nav) / nav * 100, 2)
+            calc_source = "計算"
+        elif code in prem_map and prem_map[code] is not None:
+            # 備用：使用爬蟲抓到的折溢價
             premium_pct = prem_map[code]
-        elif nav > 0:
-            premium_pct = round((p['close'] - nav) / nav * 100, 2)
+            calc_source = "爬蟲"
         else:
-            premium_pct = 0
+            premium_pct = 0.0
+            calc_source = "無資料"
+
         try:
             conn.execute("""
                 INSERT OR REPLACE INTO etf_prices
@@ -782,8 +791,13 @@ def save_etf_prices_today(trade_date: str,
                   p.get('low', 0),  p.get('volume', 0),
                   p.get('chg_amt', 0), p.get('chg_pct', 0),
                   nav, premium_pct, aum))
+            
+            log.info(f"  {code} | 現價 {market_price} | NAV {nav} | "
+                    f"折溢價 {premium_pct:+.2f}% ({calc_source})")
+            
         except sqlite3.Error as e:
             log.error(f"ETF價格存檔失敗 {code}: {e}")
+    
     conn.commit()
     conn.close()
     log.info(f"✓ ETF今日價格儲存 {len(prices)} 檔")
