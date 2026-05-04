@@ -16,6 +16,7 @@ import asyncio
 import re
 from datetime import date, timedelta
 from pathlib import Path
+from FinMind.data import DataLoader
 
 # ══════════════════════════════════════════════════════════
 # logging
@@ -330,77 +331,64 @@ def fetch_stock_close_prices(stock_codes: set) -> dict[str, float]:
 # ══════════════════════════════════════════════════════════
 def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
     """
-    從 TWSE + TPEx STOCK_DAY_ALL 抓取 ETF 今日收盤價
-    回傳 { etf_code: { close, open, high, low, volume, chg_amt, chg_pct } }
+    使用 FinMind 抓取指定日期的 ETF 收盤價
+    回傳格式與原本完全一致，方便後續程式使用
     """
     results = {}
+    dl = DataLoader()
+    # dl.login_by_token(api_token="你的_token")   # 有註冊可加上，提升額度與穩定度
 
-    def _parse_source(all_data):
-        for code in ALL_PRICE_ETFS:
-            if code in results:
-                continue
-            item = all_data.get(code) or all_data.get(code.rstrip('A'))
-            if not item:
-                continue
-            try:
-                def _f(key, fallback='0'):
-                    v = item.get(key, fallback) or fallback
-                    return float(str(v).replace(',', '').replace('+', '').strip() or '0')
-                close   = _f('ClosingPrice')
-                open_   = _f('OpeningPrice')
-                high    = _f('HighestPrice')
-                low     = _f('LowestPrice')
-                vol     = _f('TradeVolume')
-                chg_raw = str(item.get('Change', '0') or '0').replace(',', '').replace('+', '').strip()
-                try:
-                    chg_amt = float(chg_raw) if chg_raw and chg_raw not in ('--','X','除息','除權','除權息') else 0.0
-                except ValueError:
-                    chg_amt = 0.0
-                prev    = close - chg_amt
-                chg_pct = round(chg_amt / prev * 100, 2) if prev > 0 else 0.0
-                if close > 0:
-                    results[code] = {
-                        'close': close, 'open': open_, 'high': high,
-                        'low': low,     'volume': vol,
-                        'chg_amt': chg_amt, 'chg_pct': chg_pct,
-                    }
-            except (ValueError, TypeError) as e:
-                log.debug(f"ETF價格解析失敗 {code}: {e}")
+    # 抓取範圍：當天 + 前兩天保險
+    from datetime import datetime, timedelta
+    end_date = trade_date
+    start_date = (datetime.strptime(trade_date, '%Y-%m-%d') - timedelta(days=3)).strftime('%Y-%m-%d')
 
-    # TWSE 上市
-    try:
-        resp = requests.get(
-            'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
-            timeout=25
-        )
-        if resp.status_code == 200:
-            _parse_source({item.get('Code', ''): item for item in resp.json()})
-        else:
-            log.warning(f"TWSE STOCK_DAY_ALL 回傳 {resp.status_code}")
-    except Exception as e:
-        log.error(f"TWSE ETF收盤價抓取失敗: {e}")
+    log.info(f"🔍 FinMind 抓取 ETF 價格：{start_date} ~ {end_date}")
 
-    # TPEx 上櫃補充（備用 URL）
-    tpex_urls = [
-        'https://openapi.tpex.org.tw/v1/exchangeReport/STOCK_DAY_ALL',
-        'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes',
-    ]
-    for tpex_url in tpex_urls:
+    for code in ALL_PRICE_ETFS:
         try:
-            resp = requests.get(tpex_url, timeout=25)
-            if resp.status_code == 200:
-                before = len(results)
-                _parse_source({(item.get('Code','') or item.get('SecuritiesCompanyCode','')): item
-                               for item in resp.json()})
-                if len(results) > before:
-                    log.info(f"  TPEx 補充 {len(results)-before} 檔 ETF 收盤價")
-                break
-            else:
-                log.warning(f"  TPEx ETF {tpex_url.split('/')[2]} 回傳 {resp.status_code}，試備用...")
-        except Exception as e:
-            log.warning(f"  TPEx ETF {tpex_url.split('/')[2]} 失敗（{e.__class__.__name__}），試備用...")
+            df = dl.taiwan_stock_daily(
+                stock_id=code,
+                start_date=start_date,
+                end_date=end_date
+            )
+            
+            if df.empty:
+                log.warning(f"  FinMind 無 {code} 資料")
+                continue
 
-    log.info(f"✓ 今日ETF收盤價：{len(results)} 檔")
+            # 取最新一筆（最接近 trade_date 的資料）
+            latest = df.iloc[-1]
+
+            close = float(latest['close'])
+            if close <= 0:
+                continue
+
+            open_ = float(latest['open'])
+            high = float(latest['max'])
+            low = float(latest['min'])
+            volume = float(latest['Trading_Volume'])
+
+            # 漲跌計算
+            chg_amt = float(latest.get('change', 0))
+            prev = close - chg_amt
+            chg_pct = round(chg_amt / prev * 100, 2) if prev > 0 else 0.0
+
+            results[code] = {
+                'close': close,
+                'open': open_,
+                'high': high,
+                'low': low,
+                'volume': volume,
+                'chg_amt': chg_amt,
+                'chg_pct': chg_pct,
+            }
+            
+        except Exception as e:
+            log.error(f"FinMind 抓取 {code} 失敗: {e}")
+            continue
+
+    log.info(f"✓ FinMind 成功抓到 {len(results)} 檔 ETF 收盤價")
     return results
 
 
