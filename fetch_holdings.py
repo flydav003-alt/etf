@@ -330,15 +330,9 @@ def fetch_stock_close_prices(stock_codes: set) -> dict[str, float]:
 #           TPEx STOCK_DAY_ALL 補充上櫃掛牌的 ETF
 # ══════════════════════════════════════════════════════════
 def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
-    """
-    使用 FinMind 抓取指定日期的 ETF 收盤價
-    回傳格式與原本完全一致，方便後續程式使用
-    """
     results = {}
     dl = DataLoader()
-    # dl.login_by_token(api_token="你的_token")   # 有註冊可加上，提升額度與穩定度
 
-    # 抓取範圍：當天 + 前兩天保險
     from datetime import datetime, timedelta
     end_date = trade_date
     start_date = (datetime.strptime(trade_date, '%Y-%m-%d') - timedelta(days=3)).strftime('%Y-%m-%d')
@@ -354,25 +348,26 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
             )
             
             if df.empty:
-                log.warning(f"  FinMind 無 {code} 資料")
                 continue
 
-            # 取最新一筆（最接近 trade_date 的資料）
             latest = df.iloc[-1]
 
             close = float(latest['close'])
             if close <= 0:
                 continue
 
-            open_ = float(latest['open'])
-            high = float(latest['max'])
-            low = float(latest['min'])
-            volume = float(latest['Trading_Volume'])
+            open_ = float(latest.get('open', 0))
+            high = float(latest.get('max', 0))
+            low = float(latest.get('min', 0))
+            volume = float(latest.get('Trading_Volume', 0))
 
-            # 漲跌計算
+            # 修正漲跌計算（更穩健）
             chg_amt = float(latest.get('change', 0))
-            prev = close - chg_amt
-            chg_pct = round(chg_amt / prev * 100, 2) if prev > 0 else 0.0
+            if chg_amt == 0:  # 如果 change 為 0，改用 yesterday_close 計算
+                yesterday_close = float(latest.get('yesterday_close', close))
+                chg_amt = close - yesterday_close
+
+            chg_pct = round(chg_amt / (close - chg_amt) * 100, 2) if (close - chg_amt) > 0 else 0.0
 
             results[code] = {
                 'close': close,
@@ -384,9 +379,10 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
                 'chg_pct': chg_pct,
             }
             
+            log.info(f"  ✓ {code} 收盤 {close}  漲跌 {chg_amt:+.2f} ({chg_pct:+.2f}%)")
+            
         except Exception as e:
             log.error(f"FinMind 抓取 {code} 失敗: {e}")
-            continue
 
     log.info(f"✓ FinMind 成功抓到 {len(results)} 檔 ETF 收盤價")
     return results
