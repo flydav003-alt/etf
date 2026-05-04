@@ -33,7 +33,7 @@ jobs:
       - name: 安裝 Python 套件
         run: |
           python -m pip install --upgrade pip
-          pip install requests pandas beautifulsoup4 nest_asyncio playwright
+          pip install requests pandas beautifulsoup4 nest_asyncio playwright FinMind
 
       # ── 4. 安裝 Playwright Chromium 瀏覽器（拆兩步,最穩）
       #   --with-deps 在某些 ubuntu-latest 跑不出瀏覽器路徑
