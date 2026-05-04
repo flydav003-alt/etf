@@ -339,7 +339,7 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
         for code in ALL_PRICE_ETFS:
             if code in results:
                 continue
-            item = all_data.get(code)
+            item = all_data.get(code) or all_data.get(code.rstrip('A'))
             if not item:
                 continue
             try:
