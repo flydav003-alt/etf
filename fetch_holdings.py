@@ -330,14 +330,17 @@ def fetch_stock_close_prices(stock_codes: set) -> dict[str, float]:
 #           TPEx STOCK_DAY_ALL 補充上櫃掛牌的 ETF
 # ══════════════════════════════════════════════════════════
 def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
+    """
+    使用 FinMind 抓取 ETF 收盤價 + 漲跌
+    """
     results = {}
     dl = DataLoader()
 
     from datetime import datetime, timedelta
     end_date = trade_date
-    start_date = (datetime.strptime(trade_date, '%Y-%m-%d') - timedelta(days=3)).strftime('%Y-%m-%d')
+    start_date = (datetime.strptime(trade_date, '%Y-%m-%d') - timedelta(days=5)).strftime('%Y-%m-%d')
 
-    log.info(f"🔍 FinMind 抓取 ETF 價格：{start_date} ~ {end_date}")
+    log.info(f"🔍 FinMind 抓取 ETF 價格（含漲跌）：{start_date} ~ {end_date}")
 
     for code in ALL_PRICE_ETFS:
         try:
@@ -348,11 +351,12 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
             )
             
             if df.empty:
+                log.warning(f"  {code} 無資料")
                 continue
 
-            latest = df.iloc[-1]
+            latest = df.iloc[-1].to_dict()
 
-            close = float(latest['close'])
+            close = float(latest.get('close', 0))
             if close <= 0:
                 continue
 
@@ -361,11 +365,18 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
             low = float(latest.get('min', 0))
             volume = float(latest.get('Trading_Volume', 0))
 
-            # 修正漲跌計算（更穩健）
-            chg_amt = float(latest.get('change', 0))
-            if chg_amt == 0:  # 如果 change 為 0，改用 yesterday_close 計算
-                yesterday_close = float(latest.get('yesterday_close', close))
+            # === 重點修正：多種方式取得漲跌 ===
+            chg_amt = 0.0
+            if 'change' in latest and latest['change'] not in (None, '', 0):
+                chg_amt = float(latest['change'])
+            elif 'yesterday_close' in latest and latest['yesterday_close'] not in (None, 0):
+                yesterday_close = float(latest['yesterday_close'])
                 chg_amt = close - yesterday_close
+            else:
+                # 最後手段：從前一天資料計算
+                if len(df) >= 2:
+                    prev_close = float(df.iloc[-2]['close'])
+                    chg_amt = close - prev_close
 
             chg_pct = round(chg_amt / (close - chg_amt) * 100, 2) if (close - chg_amt) > 0 else 0.0
 
@@ -379,12 +390,12 @@ def fetch_etf_prices_today(trade_date: str) -> dict[str, dict]:
                 'chg_pct': chg_pct,
             }
             
-            log.info(f"  ✓ {code} 收盤 {close}  漲跌 {chg_amt:+.2f} ({chg_pct:+.2f}%)")
+            log.info(f"  ✓ {code} | 收盤 {close:.2f} | 漲跌 {chg_amt:+.2f} ({chg_pct:+.2f}%)")
             
         except Exception as e:
             log.error(f"FinMind 抓取 {code} 失敗: {e}")
 
-    log.info(f"✓ FinMind 成功抓到 {len(results)} 檔 ETF 收盤價")
+    log.info(f"✓ FinMind 成功抓到 {len(results)} 檔 ETF（含漲跌）")
     return results
 
 
