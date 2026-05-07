@@ -979,6 +979,13 @@ function fmtMoney(v){
   if(a>=1e4) return (v>0?'+':'')+(a/1e4).toFixed(0)+'萬';
   return v.toLocaleString();
 }
+// 金額絕對值版（顏色已由 class 決定，不需符號）
+function fmtMoneyAbs(v){
+  const a=Math.abs(v);
+  if(a>=1e8) return (a/1e8).toFixed(1)+'億';
+  if(a>=1e4) return (a/1e4).toFixed(0)+'萬';
+  return a.toLocaleString();
+}
 function fmtPct(v,d=1){ return (v>0?'+':'')+Number(v).toFixed(d)+'%'; }
 function colorCls(v){ return +v>0?'up':+v<0?'down':'flat'; }
 function rankCls(i){ return i===0?'gold':i===1?'silver':i===2?'bronze':''; }
@@ -1304,8 +1311,13 @@ function _renderChangeTable(data) {
     const sk = streakForEtfStock(r.etf_code, r.stock_code);
     const badge = sk ? streakBadge(sk.buy, sk.sell) : '';
     const amt = r.amount_change || 0;
+    // ── 金額顏色跟著 action 走，不跟金額正負走 ──
+    // 買入/加碼 → 紅（.up），賣出/減碼 → 綠（.down）
+    // 顯示絕對值（避免漂移時符號混淆）
+    const isBuyAction = r.action === 'NEW_BUY' || r.action === 'INCREASE';
+    const amtCls = isBuyAction ? 'up' : 'down';
     const amtCell = amt !== 0
-      ? `<span class="${amt>0?'up':'down'}" style="font-family:var(--font-mono)">${fmtMoney(amt)}</span>`
+      ? `<span class="${amtCls}" style="font-family:var(--font-mono)">${fmtMoneyAbs(amt)}</span>`
       : '<span class="flat">—</span>';
     const rowClick = `onclick="openHistoryModal('${r.etf_code}','${r.stock_code}','${(r.stock_name||'').replace(/'/g,"\\'")}')"`; 
     return `<tr style="cursor:pointer;" ${rowClick} onmouseover="this.style.background='rgba(77,116,148,0.06)'" onmouseout="this.style.background=''">
@@ -1446,8 +1458,11 @@ window.filterStockHistory = function() {
         const isBuy  = r.action === 'NEW_BUY';
         const isSell = r.action === 'FULL_SELL';
         const amt = r.amount_change || 0;
+        // 金額顏色跟 action 走：買入/加碼紅，賣出/減碼綠，顯示絕對值
+        const isBuyAction = r.action === 'NEW_BUY' || r.action === 'INCREASE';
+        const amtCls = isBuyAction ? 'up' : 'down';
         const amtCell = amt !== 0
-          ? `<span class="${amt>0?'up':'down'}" style="font-family:var(--font-mono)">${fmtMoney(amt)}</span>`
+          ? `<span class="${amtCls}" style="font-family:var(--font-mono)">${fmtMoneyAbs(amt)}</span>`
           : '<span class="flat">—</span>';
         const etfName = ETF_META[r.etf_code] || r.etf_code || '';
         return `<tr>
@@ -1710,13 +1725,16 @@ window.openHistoryModal = function(etfCode, stockCode, stockName) {
       if (isBuy)       changeCell = `<span class="tag buy" style="font-size:9px;">新增</span>`;
       else if (isSell) changeCell = `<span class="tag sell" style="font-size:9px;">移除</span>`;
       else             changeCell = `<span class="${colorCls(diff)}" style="font-family:var(--font-mono);font-size:11px;">${fmtPct(diff)}</span>`;
+      // 金額顏色跟 action 走：買入/加碼紅，賣出/減碼綠，顯示絕對值
+      const isBuyAction = r.action === 'NEW_BUY' || r.action === 'INCREASE';
+      const amtCls = isBuyAction ? 'up' : 'down';
       return `<tr>
         <td style="font-family:var(--font-mono);font-size:11px;color:var(--sumi-60);">${r.trade_date||'—'}</td>
         <td><span class="tag ${actionCls(r.action)}">${actionLabel(r.action)}</span></td>
         <td style="font-family:var(--font-mono);color:var(--sumi-60);font-size:11px;">${r.weight_before>0?r.weight_before.toFixed(1)+'%':'—'}</td>
         <td style="font-family:var(--font-mono);font-weight:600;font-size:11px;">${r.weight_after>0?r.weight_after.toFixed(1)+'%':'—'}</td>
         <td>${changeCell}</td>
-        <td style="font-family:var(--font-mono);font-size:11px;">${amt !== 0 ? `<span class="${amt>0?'up':'down'}">${fmtMoney(amt)}</span>` : '—'}</td>
+        <td style="font-family:var(--font-mono);font-size:11px;">${amt !== 0 ? `<span class="${amtCls}">${fmtMoneyAbs(amt)}</span>` : '—'}</td>
       </tr>`;
     }).join('');
   }
