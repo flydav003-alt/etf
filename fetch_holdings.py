@@ -1042,13 +1042,28 @@ def detect_changes(trade_date: str, yesterday: str,
     if zero_price_count > 0:
         log.warning(f"  ⚠ 仍有 {zero_price_count} 筆異動找不到任何收盤價（金額將為 0）")
 
+    # ── 【核心過濾】只保留有實際股數變動的記錄，排除純權重漂移 ──
+    # 權重漂移原因：ETF 沒有實際買賣，但其他成分股漲跌導致相對權重變化
+    # 例如台積電大漲 → 台積電以外所有成分股「權重下降」，但基金根本沒賣任何股票
+    # 只有 shares_change != 0 才是真正的買賣行為
+    before_n = len(df_c)
+    df_c = df_c[df_c['shares_change'] != 0].copy()
+    drift_n = before_n - len(df_c)
+    if drift_n > 0:
+        log.info(f"  🔍 過濾純權重漂移：{before_n} 筆中移除 {drift_n} 筆（股數未變動），"
+                 f"剩 {len(df_c)} 筆真實買賣")
+
+    if df_c.empty:
+        log.info("  ℹ 過濾後無真實交易記錄（今日持股股數與前日完全相同）")
+        return pd.DataFrame()
+
     # 先刪今天舊紀錄，避免重跑時 UNIQUE constraint 衝突
     conn = sqlite3.connect(DB_PATH)
     conn.execute("DELETE FROM holdings_changes WHERE trade_date = ?", (trade_date,))
     conn.commit()
     df_c.to_sql('holdings_changes', conn, if_exists='append', index=False, method='multi')
     conn.close()
-    log.info(f"✓ 偵測到 {len(df_c)} 筆持股變化")
+    log.info(f"✓ 偵測到 {len(df_c)} 筆真實持股變化（已排除權重漂移）")
     return df_c
 
 
