@@ -2,11 +2,11 @@
   "date": "2026-05-07",
   "display_date": "2026-05-07",
   "is_fallback": false,
-  "etf_count": 14,
-  "total_holdings": 771,
+  "etf_count": 15,
+  "total_holdings": 821,
   "has_changes": true,
-  "change_count": 57,
-  "updated_at": "2026-05-07 11:30:17",
+  "change_count": 106,
+  "updated_at": "2026-05-07 14:55:03",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
@@ -64,6 +64,10 @@
     {
       "code": "00401A",
       "name": "摩根台灣鑫收"
+    },
+    {
+      "code": "00999A",
+      "name": "主動野村臺灣高息"
     }
   ]
 }
