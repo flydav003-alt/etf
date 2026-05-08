@@ -437,6 +437,8 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
             content_html = await page.content()
             soup = BeautifulSoup(content_html, "html.parser")
             text = soup.get_text(separator=" ", strip=True)
+            if code == '009816':
+                log.info(f"[009816 RAW] {text[text.find('規模')-5:text.find('規模')+50]}")
 
             # ── 偵錯：印出含「淨值」的上下文 ──
             nav_idx = text.find("淨值")
