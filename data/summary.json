@@ -2,11 +2,11 @@
   "date": "2026-05-08",
   "display_date": "2026-05-08",
   "is_fallback": false,
-  "etf_count": 15,
-  "total_holdings": 816,
+  "etf_count": 16,
+  "total_holdings": 829,
   "has_changes": true,
-  "change_count": 88,
-  "updated_at": "2026-05-08 11:00:00",
+  "change_count": 113,
+  "updated_at": "2026-05-08 15:42:59",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
@@ -68,6 +68,10 @@
     {
       "code": "00999A",
       "name": "主動野村臺灣高息"
+    },
+    {
+      "code": "00988A",
+      "name": "主動統一全球創新"
     }
   ]
 }

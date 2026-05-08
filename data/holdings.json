@@ -418,15 +418,15 @@
       {
         "stock_code": "2330",
         "stock_name": "台積電",
-        "weight_pct": 8.43,
-        "shares": 1692000.0,
+        "weight_pct": 8.49,
+        "shares": 1728000.0,
         "close_price": 2310.0,
-        "amount_est": 3908520000.0
+        "amount_est": 3991680000.0
       },
       {
         "stock_code": "5536",
         "stock_name": "聖暉*",
-        "weight_pct": 6.5,
+        "weight_pct": 6.46,
         "shares": 3502000.0,
         "close_price": 860.0,
         "amount_est": 3011720000.0
@@ -434,7 +434,7 @@
       {
         "stock_code": "6669",
         "stock_name": "緯穎",
-        "weight_pct": 5.4,
+        "weight_pct": 5.73,
         "shares": 513000.0,
         "close_price": 4880.0,
         "amount_est": 2503440000.0
@@ -442,79 +442,79 @@
       {
         "stock_code": "2383",
         "stock_name": "台光電",
-        "weight_pct": 5.34,
-        "shares": 499000.0,
+        "weight_pct": 5.2,
+        "shares": 510000.0,
         "close_price": 4960.0,
-        "amount_est": 2475040000.0
-      },
-      {
-        "stock_code": "3105",
-        "stock_name": "穩懋",
-        "weight_pct": 4.44,
-        "shares": 4118000.0,
-        "close_price": 492.5,
-        "amount_est": 2028115000.0
-      },
-      {
-        "stock_code": "3264",
-        "stock_name": "欣銓",
-        "weight_pct": 4.43,
-        "shares": 8268000.0,
-        "close_price": 224.0,
-        "amount_est": 1852032000.0
-      },
-      {
-        "stock_code": "2345",
-        "stock_name": "智邦",
-        "weight_pct": 4.31,
-        "shares": 781000.0,
-        "close_price": 2560.0,
-        "amount_est": 1999360000.0
+        "amount_est": 2529600000.0
       },
       {
         "stock_code": "2454",
         "stock_name": "聯發科",
-        "weight_pct": 4.23,
+        "weight_pct": 4.46,
         "shares": 573000.0,
         "close_price": 3420.0,
         "amount_est": 1959660000.0
       },
       {
-        "stock_code": "2360",
-        "stock_name": "致茂",
-        "weight_pct": 3.94,
-        "shares": 785000.0,
-        "close_price": 2325.0,
-        "amount_est": 1825125000.0
+        "stock_code": "3105",
+        "stock_name": "穩懋",
+        "weight_pct": 4.35,
+        "shares": 4118000.0,
+        "close_price": 492.5,
+        "amount_est": 2028115000.0
+      },
+      {
+        "stock_code": "2345",
+        "stock_name": "智邦",
+        "weight_pct": 4.06,
+        "shares": 797000.0,
+        "close_price": 2560.0,
+        "amount_est": 2040320000.0
+      },
+      {
+        "stock_code": "3264",
+        "stock_name": "欣銓",
+        "weight_pct": 4.05,
+        "shares": 8430000.0,
+        "close_price": 224.0,
+        "amount_est": 1888320000.0
       },
       {
         "stock_code": "6139",
         "stock_name": "亞翔",
-        "weight_pct": 3.86,
-        "shares": 2483000.0,
+        "weight_pct": 3.88,
+        "shares": 2533000.0,
         "close_price": 721.0,
-        "amount_est": 1790243000.0
+        "amount_est": 1826293000.0
+      },
+      {
+        "stock_code": "2360",
+        "stock_name": "致茂",
+        "weight_pct": 3.82,
+        "shares": 799000.0,
+        "close_price": 2325.0,
+        "amount_est": 1857675000.0
       },
       {
         "stock_code": "2308",
         "stock_name": "台達電",
-        "weight_pct": 3.69,
-        "shares": 751000.0,
+        "weight_pct": 3.62,
+        "shares": 766000.0,
         "close_price": 2280.0,
-        "amount_est": 1712280000.0
+        "amount_est": 1746480000.0
       },
       {
         "stock_code": "6257",
         "stock_name": "矽格",
-        "weight_pct": 3.16,
-        "shares": 6886000.0,
+        "weight_pct": 3.17,
+        "shares": 7010000.0,
         "close_price": 213.0,
-        "amount_est": 1466718000.0
+        "amount_est": 1493130000.0
       },
       {
         "stock_code": "6223",
         "stock_name": "旺矽",
-        "weight_pct": 3.12,
+        "weight_pct": 3.11,
         "shares": 288000.0,
         "close_price": 5025.0,
         "amount_est": 1447200000.0
@@ -522,15 +522,23 @@
       {
         "stock_code": "6147",
         "stock_name": "頎邦",
-        "weight_pct": 2.89,
-        "shares": 6969000.0,
+        "weight_pct": 3.0,
+        "shares": 7068000.0,
         "close_price": 198.0,
-        "amount_est": 1379862000.0
+        "amount_est": 1399464000.0
+      },
+      {
+        "stock_code": "2059",
+        "stock_name": "川湖",
+        "weight_pct": 2.81,
+        "shares": 246000.0,
+        "close_price": 4840.0,
+        "amount_est": 1190640000.0
       },
       {
         "stock_code": "4958",
         "stock_name": "臻鼎-KY",
-        "weight_pct": 2.55,
+        "weight_pct": 2.38,
         "shares": 2770000.0,
         "close_price": 427.0,
         "amount_est": 1182790000.0
@@ -538,71 +546,71 @@
       {
         "stock_code": "6488",
         "stock_name": "環球晶",
-        "weight_pct": 2.09,
-        "shares": 1223000.0,
+        "weight_pct": 2.13,
+        "shares": 1235000.0,
         "close_price": 802.0,
-        "amount_est": 980846000.0
-      },
-      {
-        "stock_code": "1785",
-        "stock_name": "光洋科",
-        "weight_pct": 1.99,
-        "shares": 5000000.0,
-        "close_price": 167.0,
-        "amount_est": 835000000.0
+        "amount_est": 990470000.0
       },
       {
         "stock_code": "3491",
         "stock_name": "昇達科",
-        "weight_pct": 1.97,
+        "weight_pct": 2.0,
         "shares": 563000.0,
         "close_price": 1655.0,
         "amount_est": 931765000.0
       },
       {
-        "stock_code": "6285",
-        "stock_name": "啟碁",
-        "weight_pct": 1.8,
-        "shares": 3260000.0,
-        "close_price": 256.0,
-        "amount_est": 834560000.0
+        "stock_code": "1785",
+        "stock_name": "光洋科",
+        "weight_pct": 1.83,
+        "shares": 5096000.0,
+        "close_price": 167.0,
+        "amount_est": 851032000.0
       },
       {
         "stock_code": "3017",
         "stock_name": "奇鋐",
-        "weight_pct": 1.68,
-        "shares": 322000.0,
+        "weight_pct": 1.77,
+        "shares": 337000.0,
         "close_price": 2415.0,
-        "amount_est": 777630000.0
+        "amount_est": 813855000.0
+      },
+      {
+        "stock_code": "6285",
+        "stock_name": "啟碁",
+        "weight_pct": 1.76,
+        "shares": 3320000.0,
+        "close_price": 256.0,
+        "amount_est": 849920000.0
       },
       {
         "stock_code": "2303",
         "stock_name": "聯電",
-        "weight_pct": 1.65,
-        "shares": 7947000.0,
+        "weight_pct": 1.58,
+        "shares": 8040000.0,
         "close_price": 96.5,
-        "amount_est": 766885500.0
+        "amount_est": 775860000.0
       },
       {
         "stock_code": "2467",
         "stock_name": "志聖",
-        "weight_pct": 1.56,
-        "shares": 1303000.0,
+        "weight_pct": 1.53,
+        "shares": 1329000.0,
         "close_price": 554.0,
-        "amount_est": 721862000.0
+        "amount_est": 736266000.0
       },
       {
         "stock_code": "3583",
         "stock_name": "辛耘",
-        "weight_pct": 1.52,
-        "shares": 882000.0,
+        "weight_pct": 1.51,
+        "shares": 890000.0,
         "close_price": 797.0,
-        "amount_est": 702954000.0
+        "amount_est": 709330000.0
       },
       {
         "stock_code": "6805",
         "stock_name": "富世達",
-        "weight_pct": 1.35,
+        "weight_pct": 1.38,
         "shares": 325000.0,
         "close_price": 1920.0,
         "amount_est": 624000000.0
@@ -610,55 +618,47 @@
       {
         "stock_code": "3533",
         "stock_name": "嘉澤",
-        "weight_pct": 1.2,
-        "shares": 196000.0,
+        "weight_pct": 1.15,
+        "shares": 199000.0,
         "close_price": 2850.0,
-        "amount_est": 558600000.0
+        "amount_est": 567150000.0
       },
       {
-        "stock_code": "2059",
-        "stock_name": "川湖",
-        "weight_pct": 1.16,
-        "shares": 111000.0,
-        "close_price": 4840.0,
-        "amount_est": 537240000.0
+        "stock_code": "5289",
+        "stock_name": "宜鼎",
+        "weight_pct": 1.0,
+        "shares": 290000.0,
+        "close_price": 1600.0,
+        "amount_est": 464000000.0
       },
       {
         "stock_code": "3030",
         "stock_name": "德律",
-        "weight_pct": 1.06,
-        "shares": 1176000.0,
+        "weight_pct": 1.0,
+        "shares": 1197000.0,
         "close_price": 417.5,
-        "amount_est": 490980000.0
+        "amount_est": 499747500.0
       },
       {
         "stock_code": "6510",
         "stock_name": "精測",
-        "weight_pct": 1.01,
+        "weight_pct": 0.97,
         "shares": 126000.0,
         "close_price": 3580.0,
         "amount_est": 451080000.0
       },
       {
-        "stock_code": "5289",
-        "stock_name": "宜鼎",
-        "weight_pct": 0.97,
-        "shares": 285000.0,
-        "close_price": 1600.0,
-        "amount_est": 456000000.0
-      },
-      {
         "stock_code": "6274",
         "stock_name": "台燿",
-        "weight_pct": 0.93,
-        "shares": 297000.0,
+        "weight_pct": 0.89,
+        "shares": 301000.0,
         "close_price": 1370.0,
-        "amount_est": 406890000.0
+        "amount_est": 412370000.0
       },
       {
         "stock_code": "8996",
         "stock_name": "高力",
-        "weight_pct": 0.9,
+        "weight_pct": 0.85,
         "shares": 389000.0,
         "close_price": 1075.0,
         "amount_est": 418175000.0
@@ -666,7 +666,7 @@
       {
         "stock_code": "2404",
         "stock_name": "漢唐",
-        "weight_pct": 0.83,
+        "weight_pct": 0.84,
         "shares": 384000.0,
         "close_price": 997.0,
         "amount_est": 382848000.0
@@ -674,66 +674,66 @@
       {
         "stock_code": "2347",
         "stock_name": "聯強",
-        "weight_pct": 0.73,
-        "shares": 4026000.0,
+        "weight_pct": 0.72,
+        "shares": 4109000.0,
         "close_price": 83.9,
-        "amount_est": 337781400.0
+        "amount_est": 344745100.0
       },
       {
         "stock_code": "3211",
         "stock_name": "順達",
-        "weight_pct": 0.69,
-        "shares": 831000.0,
+        "weight_pct": 0.7,
+        "shares": 849000.0,
         "close_price": 381.5,
-        "amount_est": 317026500.0
-      },
-      {
-        "stock_code": "3131",
-        "stock_name": "弘塑",
-        "weight_pct": 0.64,
-        "shares": 95000.0,
-        "close_price": 2940.0,
-        "amount_est": 279300000.0
-      },
-      {
-        "stock_code": "2313",
-        "stock_name": "華通",
-        "weight_pct": 0.61,
-        "shares": 1126000.0,
-        "close_price": 249.5,
-        "amount_est": 280937000.0
+        "amount_est": 323893500.0
       },
       {
         "stock_code": "2472",
         "stock_name": "立隆電",
-        "weight_pct": 0.57,
+        "weight_pct": 0.63,
         "shares": 1315000.0,
         "close_price": 201.5,
         "amount_est": 264972500.0
       },
       {
+        "stock_code": "2313",
+        "stock_name": "華通",
+        "weight_pct": 0.62,
+        "shares": 1148000.0,
+        "close_price": 249.5,
+        "amount_est": 286426000.0
+      },
+      {
+        "stock_code": "3131",
+        "stock_name": "弘塑",
+        "weight_pct": 0.6,
+        "shares": 95000.0,
+        "close_price": 2940.0,
+        "amount_est": 279300000.0
+      },
+      {
         "stock_code": "2368",
         "stock_name": "金像電",
-        "weight_pct": 0.53,
-        "shares": 169000.0,
+        "weight_pct": 0.49,
+        "shares": 173000.0,
         "close_price": 1450.0,
-        "amount_est": 245050000.0
+        "amount_est": 250850000.0
       },
       {
         "stock_code": "3711",
         "stock_name": "日月光投控",
-        "weight_pct": 0.44,
-        "shares": 380000.0,
+        "weight_pct": 0.43,
+        "shares": 388000.0,
         "close_price": 540.0,
-        "amount_est": 205200000.0
+        "amount_est": 209520000.0
       },
       {
         "stock_code": "3665",
         "stock_name": "貿聯-KY",
         "weight_pct": 0.38,
-        "shares": 63136.0,
+        "shares": 64136.0,
         "close_price": 2780.0,
-        "amount_est": 175518080.0
+        "amount_est": 178298080.0
       },
       {
         "stock_code": "6691",
@@ -747,14 +747,14 @@
         "stock_code": "4938",
         "stock_name": "和碩",
         "weight_pct": 0.24,
-        "shares": 1317000.0,
+        "shares": 1345000.0,
         "close_price": 84.3,
-        "amount_est": 111023100.0
+        "amount_est": 113383500.0
       },
       {
         "stock_code": "5274",
         "stock_name": "信驊",
-        "weight_pct": 0.23,
+        "weight_pct": 0.22,
         "shares": 6000.0,
         "close_price": 16955.0,
         "amount_est": 101730000.0
@@ -762,7 +762,7 @@
       {
         "stock_code": "8046",
         "stock_name": "南電",
-        "weight_pct": 0.22,
+        "weight_pct": 0.2,
         "shares": 107000.0,
         "close_price": 947.0,
         "amount_est": 101329000.0
@@ -770,7 +770,7 @@
       {
         "stock_code": "6177",
         "stock_name": "達麗",
-        "weight_pct": 0.18,
+        "weight_pct": 0.19,
         "shares": 1862350.0,
         "close_price": 45.95,
         "amount_est": 85574982.5
@@ -778,7 +778,7 @@
       {
         "stock_code": "3376",
         "stock_name": "新日興",
-        "weight_pct": 0.17,
+        "weight_pct": 0.16,
         "shares": 371000.0,
         "close_price": 215.0,
         "amount_est": 79765000.0
@@ -794,7 +794,7 @@
       {
         "stock_code": "8464",
         "stock_name": "億豐",
-        "weight_pct": 0.1,
+        "weight_pct": 0.11,
         "shares": 148000.0,
         "close_price": 327.0,
         "amount_est": 48396000.0
@@ -6596,6 +6596,115 @@
         "stock_code": "CASH",
         "stock_name": "RECEIVABLES FOR DISPOSAL OF INVESTMENTS",
         "weight_pct": 0.0,
+        "shares": 0.0,
+        "close_price": 0.0,
+        "amount_est": 0.0
+      }
+    ]
+  },
+  "00988A": {
+    "name": "主動統一全球創新",
+    "holdings": [
+      {
+        "stock_code": "2383",
+        "stock_name": "台光電",
+        "weight_pct": 3.58,
+        "shares": 217000.0,
+        "close_price": 4960.0,
+        "amount_est": 1076320000.0
+      },
+      {
+        "stock_code": "2454",
+        "stock_name": "聯發科",
+        "weight_pct": 3.58,
+        "shares": 315000.0,
+        "close_price": 3420.0,
+        "amount_est": 1077300000.0
+      },
+      {
+        "stock_code": "3037",
+        "stock_name": "欣興",
+        "weight_pct": 2.67,
+        "shares": 897000.0,
+        "close_price": 896.0,
+        "amount_est": 803712000.0
+      },
+      {
+        "stock_code": "6515",
+        "stock_name": "穎崴",
+        "weight_pct": 2.2,
+        "shares": 67000.0,
+        "close_price": 9860.0,
+        "amount_est": 660620000.0
+      },
+      {
+        "stock_code": "2308",
+        "stock_name": "台達電",
+        "weight_pct": 2.11,
+        "shares": 279000.0,
+        "close_price": 2280.0,
+        "amount_est": 636120000.0
+      },
+      {
+        "stock_code": "2330",
+        "stock_name": "台積電",
+        "weight_pct": 2.07,
+        "shares": 270000.0,
+        "close_price": 2310.0,
+        "amount_est": 623700000.0
+      },
+      {
+        "stock_code": "5274",
+        "stock_name": "信驊",
+        "weight_pct": 1.78,
+        "shares": 30000.0,
+        "close_price": 16955.0,
+        "amount_est": 508650000.0
+      },
+      {
+        "stock_code": "3017",
+        "stock_name": "奇鋐",
+        "weight_pct": 1.73,
+        "shares": 215000.0,
+        "close_price": 2415.0,
+        "amount_est": 519225000.0
+      },
+      {
+        "stock_code": "3711",
+        "stock_name": "日月光投控",
+        "weight_pct": 1.53,
+        "shares": 850000.0,
+        "close_price": 540.0,
+        "amount_est": 459000000.0
+      },
+      {
+        "stock_code": "6223",
+        "stock_name": "旺矽",
+        "weight_pct": 0.84,
+        "shares": 50000.0,
+        "close_price": 5025.0,
+        "amount_est": 251250000.0
+      },
+      {
+        "stock_code": "6274",
+        "stock_name": "台燿",
+        "weight_pct": 0.72,
+        "shares": 150000.0,
+        "close_price": 1370.0,
+        "amount_est": 205500000.0
+      },
+      {
+        "stock_code": "2360",
+        "stock_name": "致茂",
+        "weight_pct": 0.46,
+        "shares": 60000.0,
+        "close_price": 2325.0,
+        "amount_est": 139500000.0
+      },
+      {
+        "stock_code": "CASH",
+        "stock_name": "RECEIVABLES FOR DISPOSAL OF INVESTMENTS",
+        "weight_pct": -4.16,
         "shares": 0.0,
         "close_price": 0.0,
         "amount_est": 0.0
