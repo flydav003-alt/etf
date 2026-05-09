@@ -1772,6 +1772,7 @@ function getPerfItems() {
   return [
     { ticker:'0050', name:'元大台灣50', cat:'bench' },
     { ticker:'009816', name:'凱基台灣TOP50', cat:'bench' },
+    { ticker:'00927',  name:'群益半導體收益',   cat:'bench' },
     ...watchlist.filter(t=>!BENCH_META[t] && !at.includes(t)).map(t=>({ ticker:t, name:`自選 ${t}`, cat:'watch' })),
     ...APP.etfs.map(e=>({ ticker:e.ticker, name:e.name, cat:'active' })),
   ];
