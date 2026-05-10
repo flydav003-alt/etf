@@ -23,8 +23,8 @@
           "weight_after": 0.69,
           "weight_change": -2.27,
           "shares_change": -183000.0,
-          "close_price": 2560.0,
-          "amount_change": -468480000.0
+          "close_price": 2375.0,
+          "amount_change": -434625000.0
         }
       ],
       "3037": [
@@ -38,8 +38,8 @@
           "weight_after": 2.98,
           "weight_change": -1.38,
           "shares_change": -261000.0,
-          "close_price": 896.0,
-          "amount_change": -233856000.0
+          "close_price": 818.0,
+          "amount_change": -213498000.0
         },
         {
           "trade_date": "2026-04-28",
@@ -66,8 +66,8 @@
           "weight_after": 0.0,
           "weight_change": -1.76,
           "shares_change": -96000.0,
-          "close_price": 3875.0,
-          "amount_change": -372000000.0
+          "close_price": 3650.0,
+          "amount_change": -350400000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -107,8 +107,8 @@
           "weight_after": 0.27,
           "weight_change": 0.27,
           "shares_change": 500000.0,
-          "close_price": 103.5,
-          "amount_change": 51750000.0
+          "close_price": 113.5,
+          "amount_change": 56750000.0
         }
       ],
       "6271": [
@@ -122,8 +122,8 @@
           "weight_after": 0.0,
           "weight_change": -0.91,
           "shares_change": -1028000.0,
-          "close_price": 180.0,
-          "amount_change": -185040000.0
+          "close_price": 181.5,
+          "amount_change": -186582000.0
         }
       ],
       "6274": [
@@ -657,8 +657,8 @@
           "weight_after": 0.0,
           "weight_change": -0.09,
           "shares_change": -17000.0,
-          "close_price": 203.5,
-          "amount_change": -3459500.0
+          "close_price": 204.0,
+          "amount_change": -3468000.0
         }
       ],
       "2382": [
@@ -672,8 +672,8 @@
           "weight_after": 2.51,
           "weight_change": 0.28,
           "shares_change": 30000.0,
-          "close_price": 344.0,
-          "amount_change": 10320000.0
+          "close_price": 340.5,
+          "amount_change": 10215000.0
         },
         {
           "trade_date": "2026-04-28",
@@ -700,8 +700,8 @@
           "weight_after": 0.3,
           "weight_change": -0.14,
           "shares_change": -9000.0,
-          "close_price": 554.0,
-          "amount_change": -4986000.0
+          "close_price": 537.0,
+          "amount_change": -4833000.0
         }
       ],
       "3131": [
@@ -1106,8 +1106,8 @@
           "weight_after": 0.53,
           "weight_change": 0.13,
           "shares_change": 301000.0,
-          "close_price": 997.0,
-          "amount_change": 300097000.0
+          "close_price": 1015.0,
+          "amount_change": 305515000.0
         }
       ],
       "3017": [
@@ -1121,8 +1121,8 @@
           "weight_after": 3.86,
           "weight_change": 0.25,
           "shares_change": 120000.0,
-          "close_price": 2415.0,
-          "amount_change": 289800000.0
+          "close_price": 2445.0,
+          "amount_change": 293400000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -1149,8 +1149,8 @@
           "weight_after": 0.64,
           "weight_change": -0.33,
           "shares_change": -1616000.0,
-          "close_price": 492.5,
-          "amount_change": -795880000.0
+          "close_price": 458.0,
+          "amount_change": -740128000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -1233,8 +1233,8 @@
           "weight_after": 4.0,
           "weight_change": 0.74,
           "shares_change": 228000.0,
-          "close_price": 4880.0,
-          "amount_change": 1112640000.0
+          "close_price": 5200.0,
+          "amount_change": 1185600000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -2306,8 +2306,8 @@
           "weight_after": 2.81,
           "weight_change": 1.65,
           "shares_change": 135000.0,
-          "close_price": 4840.0,
-          "amount_change": 653400000.0
+          "close_price": 5320.0,
+          "amount_change": 718200000.0
         }
       ],
       "2303": [
@@ -2321,8 +2321,8 @@
           "weight_after": 1.58,
           "weight_change": -0.07,
           "shares_change": 93000.0,
-          "close_price": 96.5,
-          "amount_change": 8974500.0
+          "close_price": 91.3,
+          "amount_change": 8490900.0
         },
         {
           "trade_date": "2026-05-06",
@@ -2349,8 +2349,8 @@
           "weight_after": 3.62,
           "weight_change": -0.07,
           "shares_change": 15000.0,
-          "close_price": 2280.0,
-          "amount_change": 34200000.0
+          "close_price": 2200.0,
+          "amount_change": 33000000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -2390,8 +2390,8 @@
           "weight_after": 8.49,
           "weight_change": 0.06,
           "shares_change": 36000.0,
-          "close_price": 2310.0,
-          "amount_change": 83160000.0
+          "close_price": 2290.0,
+          "amount_change": 82440000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -2431,8 +2431,8 @@
           "weight_after": 4.06,
           "weight_change": -0.25,
           "shares_change": 16000.0,
-          "close_price": 2560.0,
-          "amount_change": 40960000.0
+          "close_price": 2375.0,
+          "amount_change": 38000000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -2472,8 +2472,8 @@
           "weight_after": 3.82,
           "weight_change": -0.12,
           "shares_change": 14000.0,
-          "close_price": 2325.0,
-          "amount_change": 32550000.0
+          "close_price": 2230.0,
+          "amount_change": 31220000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -2526,8 +2526,8 @@
           "weight_after": 5.2,
           "weight_change": -0.14,
           "shares_change": 11000.0,
-          "close_price": 4960.0,
-          "amount_change": 54560000.0
+          "close_price": 4750.0,
+          "amount_change": 52250000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -2580,8 +2580,8 @@
           "weight_after": 1.77,
           "weight_change": 0.09,
           "shares_change": 15000.0,
-          "close_price": 2415.0,
-          "amount_change": 36225000.0
+          "close_price": 2445.0,
+          "amount_change": 36675000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -2621,8 +2621,8 @@
           "weight_after": 1.0,
           "weight_change": -0.06,
           "shares_change": 21000.0,
-          "close_price": 417.5,
-          "amount_change": 8767500.0
+          "close_price": 389.5,
+          "amount_change": 8179500.0
         }
       ],
       "3264": [
@@ -2664,8 +2664,8 @@
           "weight_after": 1.15,
           "weight_change": -0.05,
           "shares_change": 3000.0,
-          "close_price": 2850.0,
-          "amount_change": 8550000.0
+          "close_price": 2700.0,
+          "amount_change": 8100000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -3094,8 +3094,8 @@
           "weight_after": 2.03,
           "weight_change": 1.79,
           "shares_change": 2698000.0,
-          "close_price": 69.4,
-          "amount_change": 187241200.0
+          "close_price": 73.2,
+          "amount_change": 197493600.0
         }
       ],
       "1477": [
@@ -3109,8 +3109,8 @@
           "weight_after": 1.5,
           "weight_change": 0.64,
           "shares_change": 319000.0,
-          "close_price": 220.5,
-          "amount_change": 70339500.0
+          "close_price": 221.5,
+          "amount_change": 70658500.0
         }
       ],
       "2881": [
@@ -3124,8 +3124,8 @@
           "weight_after": 3.0,
           "weight_change": 0.49,
           "shares_change": 484000.0,
-          "close_price": 94.5,
-          "amount_change": 45738000.0
+          "close_price": 96.7,
+          "amount_change": 46802800.0
         },
         {
           "trade_date": "2026-05-07",
@@ -3165,8 +3165,8 @@
           "weight_after": 2.5,
           "weight_change": 0.48,
           "shares_change": 922000.0,
-          "close_price": 56.2,
-          "amount_change": 51816400.0
+          "close_price": 56.4,
+          "amount_change": 52000800.0
         },
         {
           "trade_date": "2026-05-07",
@@ -3206,8 +3206,8 @@
           "weight_after": 0.1,
           "weight_change": -0.82,
           "shares_change": -185000.0,
-          "close_price": 492.5,
-          "amount_change": -91112500.0
+          "close_price": 458.0,
+          "amount_change": -84730000.0
         }
       ],
       "3293": [
@@ -3236,8 +3236,8 @@
           "weight_after": 2.0,
           "weight_change": 1.54,
           "shares_change": 1781000.0,
-          "close_price": 95.4,
-          "amount_change": 169907400.0
+          "close_price": 95.9,
+          "amount_change": 170797900.0
         },
         {
           "trade_date": "2026-04-29",
@@ -3264,8 +3264,8 @@
           "weight_after": 0.09,
           "weight_change": -0.8,
           "shares_change": -9000.0,
-          "close_price": 9860.0,
-          "amount_change": -88740000.0
+          "close_price": 9630.0,
+          "amount_change": -86670000.0
         }
       ],
       "7769": [
@@ -3279,8 +3279,8 @@
           "weight_after": 1.93,
           "weight_change": -4.78,
           "shares_change": -91000.0,
-          "close_price": 5835.0,
-          "amount_change": -530985000.0
+          "close_price": 5800.0,
+          "amount_change": -527800000.0
         },
         {
           "trade_date": "2026-04-29",
@@ -3622,8 +3622,8 @@
           "weight_after": 4.39,
           "weight_change": 1.23,
           "shares_change": 18000.0,
-          "close_price": 1920.0,
-          "amount_change": 34560000.0
+          "close_price": 1980.0,
+          "amount_change": 35640000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -3663,8 +3663,8 @@
           "weight_after": 0.0,
           "weight_change": -3.04,
           "shares_change": -80000.0,
-          "close_price": 1290.0,
-          "amount_change": -103200000.0
+          "close_price": 1415.0,
+          "amount_change": -113200000.0
         }
       ],
       "3017": [
@@ -3921,8 +3921,8 @@
           "weight_after": 2.11,
           "weight_change": 2.11,
           "shares_change": 279000.0,
-          "close_price": 2280.0,
-          "amount_change": 636120000.0
+          "close_price": 2200.0,
+          "amount_change": 613800000.0
         }
       ],
       "2330": [
@@ -3936,8 +3936,8 @@
           "weight_after": 2.07,
           "weight_change": 2.07,
           "shares_change": 270000.0,
-          "close_price": 2310.0,
-          "amount_change": 623700000.0
+          "close_price": 2290.0,
+          "amount_change": 618300000.0
         }
       ],
       "2360": [
@@ -3951,8 +3951,8 @@
           "weight_after": 0.46,
           "weight_change": 0.46,
           "shares_change": 60000.0,
-          "close_price": 2325.0,
-          "amount_change": 139500000.0
+          "close_price": 2230.0,
+          "amount_change": 133800000.0
         }
       ],
       "2383": [
@@ -3966,8 +3966,8 @@
           "weight_after": 3.58,
           "weight_change": 3.58,
           "shares_change": 217000.0,
-          "close_price": 4960.0,
-          "amount_change": 1076320000.0
+          "close_price": 4750.0,
+          "amount_change": 1030750000.0
         }
       ],
       "2454": [
@@ -3981,8 +3981,8 @@
           "weight_after": 3.58,
           "weight_change": 3.58,
           "shares_change": 315000.0,
-          "close_price": 3420.0,
-          "amount_change": 1077300000.0
+          "close_price": 3630.0,
+          "amount_change": 1143450000.0
         }
       ],
       "3017": [
@@ -3996,8 +3996,8 @@
           "weight_after": 1.73,
           "weight_change": 1.73,
           "shares_change": 215000.0,
-          "close_price": 2415.0,
-          "amount_change": 519225000.0
+          "close_price": 2445.0,
+          "amount_change": 525675000.0
         }
       ],
       "3037": [
@@ -4011,8 +4011,8 @@
           "weight_after": 2.67,
           "weight_change": 2.67,
           "shares_change": 897000.0,
-          "close_price": 896.0,
-          "amount_change": 803712000.0
+          "close_price": 818.0,
+          "amount_change": 733746000.0
         }
       ],
       "3711": [
@@ -4026,8 +4026,8 @@
           "weight_after": 1.53,
           "weight_change": 1.53,
           "shares_change": 850000.0,
-          "close_price": 540.0,
-          "amount_change": 459000000.0
+          "close_price": 516.0,
+          "amount_change": 438600000.0
         }
       ],
       "5274": [
@@ -4086,8 +4086,8 @@
           "weight_after": 2.2,
           "weight_change": 2.2,
           "shares_change": 67000.0,
-          "close_price": 9860.0,
-          "amount_change": 660620000.0
+          "close_price": 9630.0,
+          "amount_change": 645210000.0
         }
       ]
     },
@@ -4103,8 +4103,8 @@
           "weight_after": 3.91,
           "weight_change": 0.65,
           "shares_change": 500000.0,
-          "close_price": 371.5,
-          "amount_change": 185750000.0
+          "close_price": 389.0,
+          "amount_change": 194500000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -4183,8 +4183,8 @@
           "weight_after": 20.02,
           "weight_change": 0.32,
           "shares_change": 50000.0,
-          "close_price": 2310.0,
-          "amount_change": 115500000.0
+          "close_price": 2290.0,
+          "amount_change": 114500000.0
         },
         {
           "trade_date": "2026-04-28",
@@ -4211,8 +4211,8 @@
           "weight_after": 4.27,
           "weight_change": 0.05,
           "shares_change": 300000.0,
-          "close_price": 287.0,
-          "amount_change": 86100000.0
+          "close_price": 274.0,
+          "amount_change": 82200000.0
         }
       ],
       "3189": [
@@ -4226,8 +4226,8 @@
           "weight_after": 1.37,
           "weight_change": -0.96,
           "shares_change": -750000.0,
-          "close_price": 492.5,
-          "amount_change": -369375000.0
+          "close_price": 458.0,
+          "amount_change": -343500000.0
         }
       ],
       "3653": [
@@ -4241,8 +4241,8 @@
           "weight_after": 1.4,
           "weight_change": -0.44,
           "shares_change": -40000.0,
-          "close_price": 3875.0,
-          "amount_change": -155000000.0
+          "close_price": 3650.0,
+          "amount_change": -146000000.0
         }
       ],
       "6669": [
@@ -4256,8 +4256,8 @@
           "weight_after": 3.36,
           "weight_change": 0.47,
           "shares_change": 20000.0,
-          "close_price": 4880.0,
-          "amount_change": 97600000.0
+          "close_price": 5200.0,
+          "amount_change": 104000000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -4488,8 +4488,8 @@
           "weight_after": 0.0,
           "weight_change": -0.34,
           "shares_change": -970000.0,
-          "close_price": 180.0,
-          "amount_change": -174600000.0
+          "close_price": 181.5,
+          "amount_change": -176055000.0
         },
         {
           "trade_date": "2026-05-05",
@@ -4516,8 +4516,8 @@
           "weight_after": 2.08,
           "weight_change": -1.09,
           "shares_change": -250000.0,
-          "close_price": 2095.0,
-          "amount_change": -523750000.0
+          "close_price": 1965.0,
+          "amount_change": -491250000.0
         }
       ],
       "3017": [
@@ -4752,8 +4752,8 @@
           "weight_after": 0.49,
           "weight_change": 0.49,
           "shares_change": 70000.0,
-          "close_price": 371.5,
-          "amount_change": 26005000.0
+          "close_price": 389.0,
+          "amount_change": 27230000.0
         }
       ],
       "2368": [
@@ -4767,8 +4767,8 @@
           "weight_after": 2.47,
           "weight_change": -1.05,
           "shares_change": -30000.0,
-          "close_price": 1450.0,
-          "amount_change": -43500000.0
+          "close_price": 1330.0,
+          "amount_change": -39900000.0
         }
       ],
       "2395": [
@@ -4782,8 +4782,8 @@
           "weight_after": 0.17,
           "weight_change": 0.17,
           "shares_change": 20000.0,
-          "close_price": 444.0,
-          "amount_change": 8880000.0
+          "close_price": 476.5,
+          "amount_change": 9530000.0
         }
       ],
       "3653": [
@@ -4797,8 +4797,8 @@
           "weight_after": 1.86,
           "weight_change": -0.63,
           "shares_change": -7000.0,
-          "close_price": 3875.0,
-          "amount_change": -27125000.0
+          "close_price": 3650.0,
+          "amount_change": -25550000.0
         }
       ],
       "4979": [
@@ -4827,8 +4827,8 @@
           "weight_after": 3.06,
           "weight_change": 1.03,
           "shares_change": 10000.0,
-          "close_price": 4880.0,
-          "amount_change": 48800000.0
+          "close_price": 5200.0,
+          "amount_change": 52000000.0
         },
         {
           "trade_date": "2026-05-05",
@@ -4855,8 +4855,8 @@
           "weight_after": 0.4,
           "weight_change": 0.4,
           "shares_change": 16000.0,
-          "close_price": 1290.0,
-          "amount_change": 20640000.0
+          "close_price": 1415.0,
+          "amount_change": 22640000.0
         }
       ],
       "8996": [
@@ -4870,8 +4870,8 @@
           "weight_after": 0.0,
           "weight_change": -0.06,
           "shares_change": -3000.0,
-          "close_price": 1075.0,
-          "amount_change": -3225000.0
+          "close_price": 1015.0,
+          "amount_change": -3045000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -5787,8 +5787,8 @@
           "weight_after": 4.54,
           "weight_change": -0.55,
           "shares_change": -10000.0,
-          "close_price": 1450.0,
-          "amount_change": -14500000.0
+          "close_price": 1330.0,
+          "amount_change": -13300000.0
         }
       ],
       "3443": [
@@ -5802,8 +5802,8 @@
           "weight_after": 1.73,
           "weight_change": 0.55,
           "shares_change": 6000.0,
-          "close_price": 5450.0,
-          "amount_change": 32700000.0
+          "close_price": 5210.0,
+          "amount_change": 31260000.0
         }
       ],
       "3665": [
@@ -5817,8 +5817,8 @@
           "weight_after": 5.02,
           "weight_change": -0.23,
           "shares_change": -6000.0,
-          "close_price": 2780.0,
-          "amount_change": -16680000.0
+          "close_price": 2750.0,
+          "amount_change": -16500000.0
         }
       ],
       "6831": [
@@ -5832,8 +5832,8 @@
           "weight_after": 0.48,
           "weight_change": 0.06,
           "shares_change": 6000.0,
-          "close_price": 559.0,
-          "amount_change": 3354000.0
+          "close_price": 540.0,
+          "amount_change": 3240000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -6314,8 +6314,8 @@
           "weight_after": 1.66,
           "weight_change": 0.37,
           "shares_change": 188000.0,
-          "close_price": 114.0,
-          "amount_change": 21432000.0
+          "close_price": 107.0,
+          "amount_change": 20116000.0
         }
       ],
       "2408": [
@@ -6329,8 +6329,8 @@
           "weight_after": 1.12,
           "weight_change": 0.42,
           "shares_change": 74000.0,
-          "close_price": 287.0,
-          "amount_change": 21238000.0
+          "close_price": 274.0,
+          "amount_change": 20276000.0
         }
       ],
       "3017": [
@@ -6344,8 +6344,8 @@
           "weight_after": 0.58,
           "weight_change": -0.55,
           "shares_change": -11000.0,
-          "close_price": 2415.0,
-          "amount_change": -26565000.0
+          "close_price": 2445.0,
+          "amount_change": -26895000.0
         },
         {
           "trade_date": "2026-05-06",
@@ -6927,8 +6927,8 @@
           "weight_after": 1.79,
           "weight_change": 0.07,
           "shares_change": 720000.0,
-          "close_price": 80.0,
-          "amount_change": 57600000.0
+          "close_price": 80.2,
+          "amount_change": 57744000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -6955,8 +6955,8 @@
           "weight_after": 2.68,
           "weight_change": 0.1,
           "shares_change": 392000.0,
-          "close_price": 220.5,
-          "amount_change": 86436000.0
+          "close_price": 221.5,
+          "amount_change": 86828000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -6983,8 +6983,8 @@
           "weight_after": 0.74,
           "weight_change": -0.09,
           "shares_change": 184000.0,
-          "close_price": 55.0,
-          "amount_change": 10120000.0
+          "close_price": 54.4,
+          "amount_change": 10009600.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7011,8 +7011,8 @@
           "weight_after": 2.73,
           "weight_change": 0.05,
           "shares_change": 354000.0,
-          "close_price": 253.5,
-          "amount_change": 89739000.0
+          "close_price": 250.0,
+          "amount_change": 88500000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7039,8 +7039,8 @@
           "weight_after": 7.58,
           "weight_change": 0.19,
           "shares_change": 107000.0,
-          "close_price": 2310.0,
-          "amount_change": 247170000.0
+          "close_price": 2290.0,
+          "amount_change": 245030000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7067,8 +7067,8 @@
           "weight_after": 2.43,
           "weight_change": -0.1,
           "shares_change": 33000.0,
-          "close_price": 2560.0,
-          "amount_change": 84480000.0
+          "close_price": 2375.0,
+          "amount_change": 78375000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7095,8 +7095,8 @@
           "weight_after": 2.92,
           "weight_change": 0.14,
           "shares_change": 146000.0,
-          "close_price": 639.0,
-          "amount_change": 93294000.0
+          "close_price": 650.0,
+          "amount_change": 94900000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7123,8 +7123,8 @@
           "weight_after": 2.21,
           "weight_change": -0.12,
           "shares_change": 54000.0,
-          "close_price": 1450.0,
-          "amount_change": 78300000.0
+          "close_price": 1330.0,
+          "amount_change": 71820000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7151,8 +7151,8 @@
           "weight_after": 2.45,
           "weight_change": 0.06,
           "shares_change": 233000.0,
-          "close_price": 344.0,
-          "amount_change": 80152000.0
+          "close_price": 340.5,
+          "amount_change": 79336500.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7179,8 +7179,8 @@
           "weight_after": 3.26,
           "weight_change": -0.05,
           "shares_change": 22000.0,
-          "close_price": 4960.0,
-          "amount_change": 109120000.0
+          "close_price": 4750.0,
+          "amount_change": 104500000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7207,8 +7207,8 @@
           "weight_after": 2.24,
           "weight_change": 0.13,
           "shares_change": 539000.0,
-          "close_price": 131.0,
-          "amount_change": 70609000.0
+          "close_price": 134.0,
+          "amount_change": 72226000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7235,8 +7235,8 @@
           "weight_after": 1.67,
           "weight_change": 0.08,
           "shares_change": 734000.0,
-          "close_price": 72.5,
-          "amount_change": 53215000.0
+          "close_price": 73.7,
+          "amount_change": 54095800.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7263,8 +7263,8 @@
           "weight_after": 2.31,
           "weight_change": 0.09,
           "shares_change": 2100000.0,
-          "close_price": 35.4,
-          "amount_change": 74340000.0
+          "close_price": 35.65,
+          "amount_change": 74865000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7291,8 +7291,8 @@
           "weight_after": 0.77,
           "weight_change": -0.07,
           "shares_change": 48000.0,
-          "close_price": 231.0,
-          "amount_change": 11088000.0
+          "close_price": 234.5,
+          "amount_change": 11256000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7319,8 +7319,8 @@
           "weight_after": 1.24,
           "weight_change": -0.13,
           "shares_change": 139000.0,
-          "close_price": 163.5,
-          "amount_change": 22726500.0
+          "close_price": 159.5,
+          "amount_change": 22170500.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7347,8 +7347,8 @@
           "weight_after": 2.31,
           "weight_change": 0.11,
           "shares_change": 31000.0,
-          "close_price": 2415.0,
-          "amount_change": 74865000.0
+          "close_price": 2445.0,
+          "amount_change": 75795000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7403,8 +7403,8 @@
           "weight_after": 1.68,
           "weight_change": 0.16,
           "shares_change": 210000.0,
-          "close_price": 242.5,
-          "amount_change": 50925000.0
+          "close_price": 258.5,
+          "amount_change": 54285000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7459,8 +7459,8 @@
           "weight_after": 0.58,
           "weight_change": -0.07,
           "shares_change": 161000.0,
-          "close_price": 54.8,
-          "amount_change": 8822800.0
+          "close_price": 54.3,
+          "amount_change": 8742300.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7515,8 +7515,8 @@
           "weight_after": 0.83,
           "weight_change": -0.09,
           "shares_change": 150000.0,
-          "close_price": 78.6,
-          "amount_change": 11790000.0
+          "close_price": 78.4,
+          "amount_change": 11760000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7599,8 +7599,8 @@
           "weight_after": 2.57,
           "weight_change": 0.24,
           "shares_change": 16000.0,
-          "close_price": 4880.0,
-          "amount_change": 78080000.0
+          "close_price": 5200.0,
+          "amount_change": 83200000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7627,8 +7627,8 @@
           "weight_after": 0.99,
           "weight_change": -0.1,
           "shares_change": 66000.0,
-          "close_price": 258.5,
-          "amount_change": 17061000.0
+          "close_price": 254.0,
+          "amount_change": 16764000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7655,8 +7655,8 @@
           "weight_after": 0.77,
           "weight_change": -0.05,
           "shares_change": 130000.0,
-          "close_price": 84.4,
-          "amount_change": 10972000.0
+          "close_price": 87.5,
+          "amount_change": 11375000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7683,8 +7683,8 @@
           "weight_after": 1.12,
           "weight_change": 0.07,
           "shares_change": 18000.0,
-          "close_price": 1920.0,
-          "amount_change": 34560000.0
+          "close_price": 1980.0,
+          "amount_change": 35640000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7711,8 +7711,8 @@
           "weight_after": 2.68,
           "weight_change": 0.07,
           "shares_change": 15000.0,
-          "close_price": 5835.0,
-          "amount_change": 87525000.0
+          "close_price": 5800.0,
+          "amount_change": 87000000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7739,8 +7739,8 @@
           "weight_after": 1.27,
           "weight_change": 0.08,
           "shares_change": 22000.0,
-          "close_price": 1290.0,
-          "amount_change": 28380000.0
+          "close_price": 1415.0,
+          "amount_change": 31130000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7795,8 +7795,8 @@
           "weight_after": 0.97,
           "weight_change": 0.06,
           "shares_change": 161000.0,
-          "close_price": 189.0,
-          "amount_change": 30429000.0
+          "close_price": 196.0,
+          "amount_change": 31556000.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7823,8 +7823,8 @@
           "weight_after": 0.96,
           "weight_change": -0.1,
           "shares_change": 184000.0,
-          "close_price": 81.0,
-          "amount_change": 14904000.0
+          "close_price": 80.4,
+          "amount_change": 14793600.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7851,8 +7851,8 @@
           "weight_after": 0.64,
           "weight_change": -0.07,
           "shares_change": 554000.0,
-          "close_price": 17.25,
-          "amount_change": 9556500.0
+          "close_price": 17.1,
+          "amount_change": 9473400.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7879,8 +7879,8 @@
           "weight_after": 1.35,
           "weight_change": 0.11,
           "shares_change": 592000.0,
-          "close_price": 70.1,
-          "amount_change": 41499200.0
+          "close_price": 73.8,
+          "amount_change": 43689600.0
         },
         {
           "trade_date": "2026-05-07",
@@ -7907,8 +7907,8 @@
           "weight_after": 0.85,
           "weight_change": -0.1,
           "shares_change": 294000.0,
-          "close_price": 45.6,
-          "amount_change": 13406400.0
+          "close_price": 44.8,
+          "amount_change": 13171200.0
         },
         {
           "trade_date": "2026-05-07",
@@ -12318,8 +12318,8 @@
         "weight_after": 0.69,
         "weight_change": -2.27,
         "shares_change": -183000.0,
-        "close_price": 2560.0,
-        "amount_change": -468480000.0
+        "close_price": 2375.0,
+        "amount_change": -434625000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -12331,8 +12331,8 @@
         "weight_after": 4.06,
         "weight_change": -0.25,
         "shares_change": 16000.0,
-        "close_price": 2560.0,
-        "amount_change": 40960000.0
+        "close_price": 2375.0,
+        "amount_change": 38000000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -12344,8 +12344,8 @@
         "weight_after": 2.43,
         "weight_change": -0.1,
         "shares_change": 33000.0,
-        "close_price": 2560.0,
-        "amount_change": 84480000.0
+        "close_price": 2375.0,
+        "amount_change": 78375000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -12541,8 +12541,8 @@
         "weight_after": 2.98,
         "weight_change": -1.38,
         "shares_change": -261000.0,
-        "close_price": 896.0,
-        "amount_change": -233856000.0
+        "close_price": 818.0,
+        "amount_change": -213498000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -12554,8 +12554,8 @@
         "weight_after": 2.67,
         "weight_change": 2.67,
         "shares_change": 897000.0,
-        "close_price": 896.0,
-        "amount_change": 803712000.0
+        "close_price": 818.0,
+        "amount_change": 733746000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -12803,8 +12803,8 @@
         "weight_after": 0.0,
         "weight_change": -1.76,
         "shares_change": -96000.0,
-        "close_price": 3875.0,
-        "amount_change": -372000000.0
+        "close_price": 3650.0,
+        "amount_change": -350400000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -12816,8 +12816,8 @@
         "weight_after": 1.4,
         "weight_change": -0.44,
         "shares_change": -40000.0,
-        "close_price": 3875.0,
-        "amount_change": -155000000.0
+        "close_price": 3650.0,
+        "amount_change": -146000000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -12829,8 +12829,8 @@
         "weight_after": 1.86,
         "weight_change": -0.63,
         "shares_change": -7000.0,
-        "close_price": 3875.0,
-        "amount_change": -27125000.0
+        "close_price": 3650.0,
+        "amount_change": -25550000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -12883,8 +12883,8 @@
         "weight_after": 0.27,
         "weight_change": 0.27,
         "shares_change": 500000.0,
-        "close_price": 103.5,
-        "amount_change": 51750000.0
+        "close_price": 113.5,
+        "amount_change": 56750000.0
       },
       {
         "trade_date": "2026-05-06",
@@ -12937,8 +12937,8 @@
         "weight_after": 0.0,
         "weight_change": -0.91,
         "shares_change": -1028000.0,
-        "close_price": 180.0,
-        "amount_change": -185040000.0
+        "close_price": 181.5,
+        "amount_change": -186582000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -12950,8 +12950,8 @@
         "weight_after": 0.0,
         "weight_change": -0.34,
         "shares_change": -970000.0,
-        "close_price": 180.0,
-        "amount_change": -174600000.0
+        "close_price": 181.5,
+        "amount_change": -176055000.0
       },
       {
         "trade_date": "2026-05-05",
@@ -13149,8 +13149,8 @@
         "weight_after": 0.0,
         "weight_change": -0.09,
         "shares_change": -17000.0,
-        "close_price": 203.5,
-        "amount_change": -3459500.0
+        "close_price": 204.0,
+        "amount_change": -3468000.0
       }
     ],
     "2382": [
@@ -13164,8 +13164,8 @@
         "weight_after": 2.51,
         "weight_change": 0.28,
         "shares_change": 30000.0,
-        "close_price": 344.0,
-        "amount_change": 10320000.0
+        "close_price": 340.5,
+        "amount_change": 10215000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13177,8 +13177,8 @@
         "weight_after": 2.45,
         "weight_change": 0.06,
         "shares_change": 233000.0,
-        "close_price": 344.0,
-        "amount_change": 80152000.0
+        "close_price": 340.5,
+        "amount_change": 79336500.0
       },
       {
         "trade_date": "2026-05-07",
@@ -13270,8 +13270,8 @@
         "weight_after": 0.3,
         "weight_change": -0.14,
         "shares_change": -9000.0,
-        "close_price": 554.0,
-        "amount_change": -4986000.0
+        "close_price": 537.0,
+        "amount_change": -4833000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -13456,8 +13456,8 @@
         "weight_after": 0.53,
         "weight_change": 0.13,
         "shares_change": 301000.0,
-        "close_price": 997.0,
-        "amount_change": 300097000.0
+        "close_price": 1015.0,
+        "amount_change": 305515000.0
       },
       {
         "trade_date": "2026-04-30",
@@ -13510,8 +13510,8 @@
         "weight_after": 3.86,
         "weight_change": 0.25,
         "shares_change": 120000.0,
-        "close_price": 2415.0,
-        "amount_change": 289800000.0
+        "close_price": 2445.0,
+        "amount_change": 293400000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13523,8 +13523,8 @@
         "weight_after": 1.77,
         "weight_change": 0.09,
         "shares_change": 15000.0,
-        "close_price": 2415.0,
-        "amount_change": 36225000.0
+        "close_price": 2445.0,
+        "amount_change": 36675000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13536,8 +13536,8 @@
         "weight_after": 1.73,
         "weight_change": 1.73,
         "shares_change": 215000.0,
-        "close_price": 2415.0,
-        "amount_change": 519225000.0
+        "close_price": 2445.0,
+        "amount_change": 525675000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13549,8 +13549,8 @@
         "weight_after": 0.58,
         "weight_change": -0.55,
         "shares_change": -11000.0,
-        "close_price": 2415.0,
-        "amount_change": -26565000.0
+        "close_price": 2445.0,
+        "amount_change": -26895000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13562,8 +13562,8 @@
         "weight_after": 2.31,
         "weight_change": 0.11,
         "shares_change": 31000.0,
-        "close_price": 2415.0,
-        "amount_change": 74865000.0
+        "close_price": 2445.0,
+        "amount_change": 75795000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -13850,8 +13850,8 @@
         "weight_after": 0.64,
         "weight_change": -0.33,
         "shares_change": -1616000.0,
-        "close_price": 492.5,
-        "amount_change": -795880000.0
+        "close_price": 458.0,
+        "amount_change": -740128000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13863,8 +13863,8 @@
         "weight_after": 0.1,
         "weight_change": -0.82,
         "shares_change": -185000.0,
-        "close_price": 492.5,
-        "amount_change": -91112500.0
+        "close_price": 458.0,
+        "amount_change": -84730000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -13876,8 +13876,8 @@
         "weight_after": 1.37,
         "weight_change": -0.96,
         "shares_change": -750000.0,
-        "close_price": 492.5,
-        "amount_change": -369375000.0
+        "close_price": 458.0,
+        "amount_change": -343500000.0
       },
       {
         "trade_date": "2026-05-06",
@@ -14285,8 +14285,8 @@
         "weight_after": 4.0,
         "weight_change": 0.74,
         "shares_change": 228000.0,
-        "close_price": 4880.0,
-        "amount_change": 1112640000.0
+        "close_price": 5200.0,
+        "amount_change": 1185600000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -14298,8 +14298,8 @@
         "weight_after": 3.36,
         "weight_change": 0.47,
         "shares_change": 20000.0,
-        "close_price": 4880.0,
-        "amount_change": 97600000.0
+        "close_price": 5200.0,
+        "amount_change": 104000000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -14311,8 +14311,8 @@
         "weight_after": 3.06,
         "weight_change": 1.03,
         "shares_change": 10000.0,
-        "close_price": 4880.0,
-        "amount_change": 48800000.0
+        "close_price": 5200.0,
+        "amount_change": 52000000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -14324,8 +14324,8 @@
         "weight_after": 2.57,
         "weight_change": 0.24,
         "shares_change": 16000.0,
-        "close_price": 4880.0,
-        "amount_change": 78080000.0
+        "close_price": 5200.0,
+        "amount_change": 83200000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -14694,8 +14694,8 @@
         "weight_after": 2.81,
         "weight_change": 1.65,
         "shares_change": 135000.0,
-        "close_price": 4840.0,
-        "amount_change": 653400000.0
+        "close_price": 5320.0,
+        "amount_change": 718200000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -14761,8 +14761,8 @@
         "weight_after": 1.58,
         "weight_change": -0.07,
         "shares_change": 93000.0,
-        "close_price": 96.5,
-        "amount_change": 8974500.0
+        "close_price": 91.3,
+        "amount_change": 8490900.0
       },
       {
         "trade_date": "2026-05-07",
@@ -14880,8 +14880,8 @@
         "weight_after": 3.62,
         "weight_change": -0.07,
         "shares_change": 15000.0,
-        "close_price": 2280.0,
-        "amount_change": 34200000.0
+        "close_price": 2200.0,
+        "amount_change": 33000000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -14893,8 +14893,8 @@
         "weight_after": 2.11,
         "weight_change": 2.11,
         "shares_change": 279000.0,
-        "close_price": 2280.0,
-        "amount_change": 636120000.0
+        "close_price": 2200.0,
+        "amount_change": 613800000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -15077,8 +15077,8 @@
         "weight_after": 8.49,
         "weight_change": 0.06,
         "shares_change": 36000.0,
-        "close_price": 2310.0,
-        "amount_change": 83160000.0
+        "close_price": 2290.0,
+        "amount_change": 82440000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -15090,8 +15090,8 @@
         "weight_after": 2.07,
         "weight_change": 2.07,
         "shares_change": 270000.0,
-        "close_price": 2310.0,
-        "amount_change": 623700000.0
+        "close_price": 2290.0,
+        "amount_change": 618300000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -15103,8 +15103,8 @@
         "weight_after": 20.02,
         "weight_change": 0.32,
         "shares_change": 50000.0,
-        "close_price": 2310.0,
-        "amount_change": 115500000.0
+        "close_price": 2290.0,
+        "amount_change": 114500000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -15116,8 +15116,8 @@
         "weight_after": 7.58,
         "weight_change": 0.19,
         "shares_change": 107000.0,
-        "close_price": 2310.0,
-        "amount_change": 247170000.0
+        "close_price": 2290.0,
+        "amount_change": 245030000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -15417,8 +15417,8 @@
         "weight_after": 3.82,
         "weight_change": -0.12,
         "shares_change": 14000.0,
-        "close_price": 2325.0,
-        "amount_change": 32550000.0
+        "close_price": 2230.0,
+        "amount_change": 31220000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -15430,8 +15430,8 @@
         "weight_after": 0.46,
         "weight_change": 0.46,
         "shares_change": 60000.0,
-        "close_price": 2325.0,
-        "amount_change": 139500000.0
+        "close_price": 2230.0,
+        "amount_change": 133800000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -15640,8 +15640,8 @@
         "weight_after": 5.2,
         "weight_change": -0.14,
         "shares_change": 11000.0,
-        "close_price": 4960.0,
-        "amount_change": 54560000.0
+        "close_price": 4750.0,
+        "amount_change": 52250000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -15653,8 +15653,8 @@
         "weight_after": 3.58,
         "weight_change": 3.58,
         "shares_change": 217000.0,
-        "close_price": 4960.0,
-        "amount_change": 1076320000.0
+        "close_price": 4750.0,
+        "amount_change": 1030750000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -15666,8 +15666,8 @@
         "weight_after": 3.26,
         "weight_change": -0.05,
         "shares_change": 22000.0,
-        "close_price": 4960.0,
-        "amount_change": 109120000.0
+        "close_price": 4750.0,
+        "amount_change": 104500000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -15889,8 +15889,8 @@
         "weight_after": 1.0,
         "weight_change": -0.06,
         "shares_change": 21000.0,
-        "close_price": 417.5,
-        "amount_change": 8767500.0
+        "close_price": 389.5,
+        "amount_change": 8179500.0
       }
     ],
     "3264": [
@@ -16049,8 +16049,8 @@
         "weight_after": 1.15,
         "weight_change": -0.05,
         "shares_change": 3000.0,
-        "close_price": 2850.0,
-        "amount_change": 8550000.0
+        "close_price": 2700.0,
+        "amount_change": 8100000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16116,8 +16116,8 @@
         "weight_after": 2.03,
         "weight_change": 1.79,
         "shares_change": 2698000.0,
-        "close_price": 69.4,
-        "amount_change": 187241200.0
+        "close_price": 73.2,
+        "amount_change": 197493600.0
       },
       {
         "trade_date": "2026-05-05",
@@ -16157,8 +16157,8 @@
         "weight_after": 1.5,
         "weight_change": 0.64,
         "shares_change": 319000.0,
-        "close_price": 220.5,
-        "amount_change": 70339500.0
+        "close_price": 221.5,
+        "amount_change": 70658500.0
       },
       {
         "trade_date": "2026-05-08",
@@ -16170,8 +16170,8 @@
         "weight_after": 2.68,
         "weight_change": 0.1,
         "shares_change": 392000.0,
-        "close_price": 220.5,
-        "amount_change": 86436000.0
+        "close_price": 221.5,
+        "amount_change": 86828000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16198,8 +16198,8 @@
         "weight_after": 3.0,
         "weight_change": 0.49,
         "shares_change": 484000.0,
-        "close_price": 94.5,
-        "amount_change": 45738000.0
+        "close_price": 96.7,
+        "amount_change": 46802800.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16278,8 +16278,8 @@
         "weight_after": 2.5,
         "weight_change": 0.48,
         "shares_change": 922000.0,
-        "close_price": 56.2,
-        "amount_change": 51816400.0
+        "close_price": 56.4,
+        "amount_change": 52000800.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16412,8 +16412,8 @@
         "weight_after": 2.0,
         "weight_change": 1.54,
         "shares_change": 1781000.0,
-        "close_price": 95.4,
-        "amount_change": 169907400.0
+        "close_price": 95.9,
+        "amount_change": 170797900.0
       },
       {
         "trade_date": "2026-05-05",
@@ -16479,8 +16479,8 @@
         "weight_after": 0.09,
         "weight_change": -0.8,
         "shares_change": -9000.0,
-        "close_price": 9860.0,
-        "amount_change": -88740000.0
+        "close_price": 9630.0,
+        "amount_change": -86670000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -16492,8 +16492,8 @@
         "weight_after": 2.2,
         "weight_change": 2.2,
         "shares_change": 67000.0,
-        "close_price": 9860.0,
-        "amount_change": 660620000.0
+        "close_price": 9630.0,
+        "amount_change": 645210000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16637,8 +16637,8 @@
         "weight_after": 1.93,
         "weight_change": -4.78,
         "shares_change": -91000.0,
-        "close_price": 5835.0,
-        "amount_change": -530985000.0
+        "close_price": 5800.0,
+        "amount_change": -527800000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -16650,8 +16650,8 @@
         "weight_after": 2.68,
         "weight_change": 0.07,
         "shares_change": 15000.0,
-        "close_price": 5835.0,
-        "amount_change": 87525000.0
+        "close_price": 5800.0,
+        "amount_change": 87000000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16782,8 +16782,8 @@
         "weight_after": 4.39,
         "weight_change": 1.23,
         "shares_change": 18000.0,
-        "close_price": 1920.0,
-        "amount_change": 34560000.0
+        "close_price": 1980.0,
+        "amount_change": 35640000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -16795,8 +16795,8 @@
         "weight_after": 1.12,
         "weight_change": 0.07,
         "shares_change": 18000.0,
-        "close_price": 1920.0,
-        "amount_change": 34560000.0
+        "close_price": 1980.0,
+        "amount_change": 35640000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -16992,8 +16992,8 @@
         "weight_after": 0.0,
         "weight_change": -3.04,
         "shares_change": -80000.0,
-        "close_price": 1290.0,
-        "amount_change": -103200000.0
+        "close_price": 1415.0,
+        "amount_change": -113200000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -17005,8 +17005,8 @@
         "weight_after": 0.4,
         "weight_change": 0.4,
         "shares_change": 16000.0,
-        "close_price": 1290.0,
-        "amount_change": 20640000.0
+        "close_price": 1415.0,
+        "amount_change": 22640000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -17018,8 +17018,8 @@
         "weight_after": 1.27,
         "weight_change": 0.08,
         "shares_change": 22000.0,
-        "close_price": 1290.0,
-        "amount_change": 28380000.0
+        "close_price": 1415.0,
+        "amount_change": 31130000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -17163,8 +17163,8 @@
         "weight_after": 3.58,
         "weight_change": 3.58,
         "shares_change": 315000.0,
-        "close_price": 3420.0,
-        "amount_change": 1077300000.0
+        "close_price": 3630.0,
+        "amount_change": 1143450000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -17334,8 +17334,8 @@
         "weight_after": 1.53,
         "weight_change": 1.53,
         "shares_change": 850000.0,
-        "close_price": 540.0,
-        "amount_change": 459000000.0
+        "close_price": 516.0,
+        "amount_change": 438600000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -17715,8 +17715,8 @@
         "weight_after": 3.91,
         "weight_change": 0.65,
         "shares_change": 500000.0,
-        "close_price": 371.5,
-        "amount_change": 185750000.0
+        "close_price": 389.0,
+        "amount_change": 194500000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -17728,8 +17728,8 @@
         "weight_after": 0.49,
         "weight_change": 0.49,
         "shares_change": 70000.0,
-        "close_price": 371.5,
-        "amount_change": 26005000.0
+        "close_price": 389.0,
+        "amount_change": 27230000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -17925,8 +17925,8 @@
         "weight_after": 4.27,
         "weight_change": 0.05,
         "shares_change": 300000.0,
-        "close_price": 287.0,
-        "amount_change": 86100000.0
+        "close_price": 274.0,
+        "amount_change": 82200000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -17938,8 +17938,8 @@
         "weight_after": 1.12,
         "weight_change": 0.42,
         "shares_change": 74000.0,
-        "close_price": 287.0,
-        "amount_change": 21238000.0
+        "close_price": 274.0,
+        "amount_change": 20276000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18137,8 +18137,8 @@
         "weight_after": 2.08,
         "weight_change": -1.09,
         "shares_change": -250000.0,
-        "close_price": 2095.0,
-        "amount_change": -523750000.0
+        "close_price": 1965.0,
+        "amount_change": -491250000.0
       }
     ],
     "2368": [
@@ -18152,8 +18152,8 @@
         "weight_after": 2.47,
         "weight_change": -1.05,
         "shares_change": -30000.0,
-        "close_price": 1450.0,
-        "amount_change": -43500000.0
+        "close_price": 1330.0,
+        "amount_change": -39900000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -18165,8 +18165,8 @@
         "weight_after": 4.54,
         "weight_change": -0.55,
         "shares_change": -10000.0,
-        "close_price": 1450.0,
-        "amount_change": -14500000.0
+        "close_price": 1330.0,
+        "amount_change": -13300000.0
       },
       {
         "trade_date": "2026-05-08",
@@ -18178,8 +18178,8 @@
         "weight_after": 2.21,
         "weight_change": -0.12,
         "shares_change": 54000.0,
-        "close_price": 1450.0,
-        "amount_change": 78300000.0
+        "close_price": 1330.0,
+        "amount_change": 71820000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18310,8 +18310,8 @@
         "weight_after": 0.17,
         "weight_change": 0.17,
         "shares_change": 20000.0,
-        "close_price": 444.0,
-        "amount_change": 8880000.0
+        "close_price": 476.5,
+        "amount_change": 9530000.0
       },
       {
         "trade_date": "2026-04-30",
@@ -18366,8 +18366,8 @@
         "weight_after": 0.0,
         "weight_change": -0.06,
         "shares_change": -3000.0,
-        "close_price": 1075.0,
-        "amount_change": -3225000.0
+        "close_price": 1015.0,
+        "amount_change": -3045000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18498,8 +18498,8 @@
         "weight_after": 1.73,
         "weight_change": 0.55,
         "shares_change": 6000.0,
-        "close_price": 5450.0,
-        "amount_change": 32700000.0
+        "close_price": 5210.0,
+        "amount_change": 31260000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18617,8 +18617,8 @@
         "weight_after": 5.02,
         "weight_change": -0.23,
         "shares_change": -6000.0,
-        "close_price": 2780.0,
-        "amount_change": -16680000.0
+        "close_price": 2750.0,
+        "amount_change": -16500000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18801,8 +18801,8 @@
         "weight_after": 0.48,
         "weight_change": 0.06,
         "shares_change": 6000.0,
-        "close_price": 559.0,
-        "amount_change": 3354000.0
+        "close_price": 540.0,
+        "amount_change": 3240000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18855,8 +18855,8 @@
         "weight_after": 1.66,
         "weight_change": 0.37,
         "shares_change": 188000.0,
-        "close_price": 114.0,
-        "amount_change": 21432000.0
+        "close_price": 107.0,
+        "amount_change": 20116000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18909,8 +18909,8 @@
         "weight_after": 1.79,
         "weight_change": 0.07,
         "shares_change": 720000.0,
-        "close_price": 80.0,
-        "amount_change": 57600000.0
+        "close_price": 80.2,
+        "amount_change": 57744000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18937,8 +18937,8 @@
         "weight_after": 0.74,
         "weight_change": -0.09,
         "shares_change": 184000.0,
-        "close_price": 55.0,
-        "amount_change": 10120000.0
+        "close_price": 54.4,
+        "amount_change": 10009600.0
       },
       {
         "trade_date": "2026-05-07",
@@ -18978,8 +18978,8 @@
         "weight_after": 2.73,
         "weight_change": 0.05,
         "shares_change": 354000.0,
-        "close_price": 253.5,
-        "amount_change": 89739000.0
+        "close_price": 250.0,
+        "amount_change": 88500000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19058,8 +19058,8 @@
         "weight_after": 2.92,
         "weight_change": 0.14,
         "shares_change": 146000.0,
-        "close_price": 639.0,
-        "amount_change": 93294000.0
+        "close_price": 650.0,
+        "amount_change": 94900000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19125,8 +19125,8 @@
         "weight_after": 2.24,
         "weight_change": 0.13,
         "shares_change": 539000.0,
-        "close_price": 131.0,
-        "amount_change": 70609000.0
+        "close_price": 134.0,
+        "amount_change": 72226000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19166,8 +19166,8 @@
         "weight_after": 1.67,
         "weight_change": 0.08,
         "shares_change": 734000.0,
-        "close_price": 72.5,
-        "amount_change": 53215000.0
+        "close_price": 73.7,
+        "amount_change": 54095800.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19194,8 +19194,8 @@
         "weight_after": 2.31,
         "weight_change": 0.09,
         "shares_change": 2100000.0,
-        "close_price": 35.4,
-        "amount_change": 74340000.0
+        "close_price": 35.65,
+        "amount_change": 74865000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19248,8 +19248,8 @@
         "weight_after": 0.77,
         "weight_change": -0.07,
         "shares_change": 48000.0,
-        "close_price": 231.0,
-        "amount_change": 11088000.0
+        "close_price": 234.5,
+        "amount_change": 11256000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19276,8 +19276,8 @@
         "weight_after": 1.24,
         "weight_change": -0.13,
         "shares_change": 139000.0,
-        "close_price": 163.5,
-        "amount_change": 22726500.0
+        "close_price": 159.5,
+        "amount_change": 22170500.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19332,8 +19332,8 @@
         "weight_after": 1.68,
         "weight_change": 0.16,
         "shares_change": 210000.0,
-        "close_price": 242.5,
-        "amount_change": 50925000.0
+        "close_price": 258.5,
+        "amount_change": 54285000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19388,8 +19388,8 @@
         "weight_after": 0.58,
         "weight_change": -0.07,
         "shares_change": 161000.0,
-        "close_price": 54.8,
-        "amount_change": 8822800.0
+        "close_price": 54.3,
+        "amount_change": 8742300.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19416,8 +19416,8 @@
         "weight_after": 0.83,
         "weight_change": -0.09,
         "shares_change": 150000.0,
-        "close_price": 78.6,
-        "amount_change": 11790000.0
+        "close_price": 78.4,
+        "amount_change": 11760000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19485,8 +19485,8 @@
         "weight_after": 0.99,
         "weight_change": -0.1,
         "shares_change": 66000.0,
-        "close_price": 258.5,
-        "amount_change": 17061000.0
+        "close_price": 254.0,
+        "amount_change": 16764000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19513,8 +19513,8 @@
         "weight_after": 0.77,
         "weight_change": -0.05,
         "shares_change": 130000.0,
-        "close_price": 84.4,
-        "amount_change": 10972000.0
+        "close_price": 87.5,
+        "amount_change": 11375000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19541,8 +19541,8 @@
         "weight_after": 0.97,
         "weight_change": 0.06,
         "shares_change": 161000.0,
-        "close_price": 189.0,
-        "amount_change": 30429000.0
+        "close_price": 196.0,
+        "amount_change": 31556000.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19569,8 +19569,8 @@
         "weight_after": 0.96,
         "weight_change": -0.1,
         "shares_change": 184000.0,
-        "close_price": 81.0,
-        "amount_change": 14904000.0
+        "close_price": 80.4,
+        "amount_change": 14793600.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19597,8 +19597,8 @@
         "weight_after": 0.64,
         "weight_change": -0.07,
         "shares_change": 554000.0,
-        "close_price": 17.25,
-        "amount_change": 9556500.0
+        "close_price": 17.1,
+        "amount_change": 9473400.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19625,8 +19625,8 @@
         "weight_after": 1.35,
         "weight_change": 0.11,
         "shares_change": 592000.0,
-        "close_price": 70.1,
-        "amount_change": 41499200.0
+        "close_price": 73.8,
+        "amount_change": 43689600.0
       },
       {
         "trade_date": "2026-05-07",
@@ -19666,8 +19666,8 @@
         "weight_after": 0.85,
         "weight_change": -0.1,
         "shares_change": 294000.0,
-        "close_price": 45.6,
-        "amount_change": 13406400.0
+        "close_price": 44.8,
+        "amount_change": 13171200.0
       },
       {
         "trade_date": "2026-05-07",

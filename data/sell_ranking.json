@@ -21,7 +21,7 @@
     "stock_code": "3189",
     "stock_name": "景碩",
     "etf_count": 1,
-    "value": -795880000.0,
+    "value": -740128000.0,
     "etf_list": [
       "00981A"
     ]
@@ -30,7 +30,7 @@
     "stock_code": "7769",
     "stock_name": "鴻勁精密",
     "etf_count": 1,
-    "value": -530985000.0,
+    "value": -527800000.0,
     "etf_list": [
       "00985A"
     ]
@@ -39,7 +39,7 @@
     "stock_code": "6442",
     "stock_name": "光聖",
     "etf_count": 1,
-    "value": -523750000.0,
+    "value": -491250000.0,
     "etf_list": [
       "00992A"
     ]
@@ -48,7 +48,7 @@
     "stock_code": "2345",
     "stock_name": "智邦",
     "etf_count": 1,
-    "value": -468480000.0,
+    "value": -434625000.0,
     "etf_list": [
       "00400A"
     ]
@@ -57,7 +57,7 @@
     "stock_code": "3189",
     "stock_name": "景碩科技",
     "etf_count": 2,
-    "value": -460487500.0,
+    "value": -428230000.0,
     "etf_list": [
       "00985A",
       "00991A"
@@ -67,7 +67,7 @@
     "stock_code": "3653",
     "stock_name": "健策",
     "etf_count": 2,
-    "value": -399125000.0,
+    "value": -375950000.0,
     "etf_list": [
       "00400A",
       "00994A"
@@ -77,7 +77,7 @@
     "stock_code": "6271",
     "stock_name": "同欣電",
     "etf_count": 2,
-    "value": -359640000.0,
+    "value": -362637000.0,
     "etf_list": [
       "00400A",
       "00992A"
@@ -87,18 +87,9 @@
     "stock_code": "3037",
     "stock_name": "欣興",
     "etf_count": 1,
-    "value": -233856000.0,
+    "value": -213498000.0,
     "etf_list": [
       "00400A"
-    ]
-  },
-  {
-    "stock_code": "3653",
-    "stock_name": "健策精密",
-    "etf_count": 1,
-    "value": -155000000.0,
-    "etf_list": [
-      "00991A"
     ]
   },
   {
@@ -111,10 +102,19 @@
     ]
   },
   {
+    "stock_code": "3653",
+    "stock_name": "健策精密",
+    "etf_count": 1,
+    "value": -146000000.0,
+    "etf_list": [
+      "00991A"
+    ]
+  },
+  {
     "stock_code": "8210",
     "stock_name": "勤誠",
     "etf_count": 1,
-    "value": -103200000.0,
+    "value": -113200000.0,
     "etf_list": [
       "00987A"
     ]
@@ -123,7 +123,7 @@
     "stock_code": "6515",
     "stock_name": "穎崴科技",
     "etf_count": 1,
-    "value": -88740000.0,
+    "value": -86670000.0,
     "etf_list": [
       "00985A"
     ]
@@ -132,7 +132,7 @@
     "stock_code": "2368",
     "stock_name": "金像電",
     "etf_count": 1,
-    "value": -43500000.0,
+    "value": -39900000.0,
     "etf_list": [
       "00994A"
     ]
@@ -141,7 +141,7 @@
     "stock_code": "3017",
     "stock_name": "奇鋐科技",
     "etf_count": 1,
-    "value": -26565000.0,
+    "value": -26895000.0,
     "etf_list": [
       "00996A"
     ]
@@ -159,7 +159,7 @@
     "stock_code": "3665",
     "stock_name": "貿聯控股",
     "etf_count": 1,
-    "value": -16680000.0,
+    "value": -16500000.0,
     "etf_list": [
       "00995A"
     ]
@@ -168,7 +168,7 @@
     "stock_code": "2368",
     "stock_name": "金像電子",
     "etf_count": 1,
-    "value": -14500000.0,
+    "value": -13300000.0,
     "etf_list": [
       "00995A"
     ]
@@ -177,7 +177,7 @@
     "stock_code": "2467",
     "stock_name": "C SUN MANUFACTURING LTD",
     "etf_count": 1,
-    "value": -4986000.0,
+    "value": -4833000.0,
     "etf_list": [
       "00401A"
     ]
