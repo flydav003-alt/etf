@@ -122,7 +122,7 @@
     "chg_pct": -0.61,
     "nav": 14.68,
     "premium_pct": 0.2,
-    "aum_billion": 100.0,
+    "aum_billion": 67.62,
     "is_benchmark": false
   },
   "00987A": {
@@ -248,7 +248,7 @@
     "chg_pct": -0.64,
     "nav": 13.99,
     "premium_pct": 0.43,
-    "aum_billion": 100.0,
+    "aum_billion": 1177.8,
     "is_benchmark": true
   },
   "00830": {
@@ -290,7 +290,7 @@
     "chg_pct": 0.16,
     "nav": 25.62,
     "premium_pct": -0.59,
-    "aum_billion": 100.0,
+    "aum_billion": 4706.66,
     "is_benchmark": true
   }
 }
