@@ -64,8 +64,8 @@
     "volume": 17053377.0,
     "chg_amt": -0.2400000000000002,
     "chg_pct": -1.83,
-    "nav": 12.91,
-    "premium_pct": -0.08,
+    "nav": 0,
+    "premium_pct": -1.83,
     "aum_billion": 122.17,
     "is_benchmark": false
   },
@@ -234,7 +234,7 @@
     "chg_pct": -0.72,
     "nav": 96.75,
     "premium_pct": 0.26,
-    "aum_billion": 18066.16,
+    "aum_billion": 1806.0,
     "is_benchmark": true
   },
   "009816": {
