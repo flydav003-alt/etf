@@ -456,7 +456,8 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
             # 規模（照 Grok）
             if not result["scale_billion"]:
                 s = re.search(r'規模.*?([\d,\.]+)\s*億', text) or \
-                    re.search(r'資產規模.*?([\d,\.]+)', text)
+                    re.search(r'資產規模[^。\n]{0,20}?([\d]{1,4}(?:,\d{3})*(?:\.\d+)?)', text) or \
+                    re.search(r'([\d]{1,4}(?:,\d{3})+(?:\.\d+)?)\s*億', text)
                 if s:
                     result["scale_billion"] = float(s.group(1).replace(",", ""))
 
