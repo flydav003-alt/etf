@@ -779,7 +779,7 @@ main {
       </div>
     </div>
     <div class="panel">
-      <div class="panel-header"><span>近6個月累積績效</span><span class="ph-sub">Top5 + 0050+00927</span></div>
+      <div class="panel-header"><span>近6個月累積績效</span><span class="ph-sub">Top5 + 0050</span></div>
       <div style="padding:16px"><canvas id="perfChart" height="300"></canvas></div>
     </div>
   </div>
@@ -926,7 +926,7 @@ const ETF_META = {
   '00994A': '第一金台股優', '00996A': '兆豐台灣豐收',
   '00400A': '國泰動能高息', '00401A': '摩根台灣鑫收',
 };
-const BENCH_META = { '0050': '元大台灣50', '009816': '凱基台灣TOP50', '00927': '群益半導體收益' };
+const BENCH_META = { '0050': '元大台灣50', '009816': '凱基台灣TOP50','00830': '國泰費城半導體','00878': '國泰永續高股息','00919': '群益台灣精選高息',  };
 
 const DONUT_COLORS = [
   '#4d7494','#c8b560','#7a9e52','#db5a6b','#c8a84b',
@@ -1772,7 +1772,10 @@ function getPerfItems() {
   return [
     { ticker:'0050', name:'元大台灣50', cat:'bench' },
     { ticker:'009816', name:'凱基台灣TOP50', cat:'bench' },
-    { ticker:'00927',  name:'群益半導體收益',   cat:'bench' },
+    { ticker:'00830',  name:'國泰費城半導體',   cat:'bench' }, 
+    { ticker:'00878',  name:'國泰永續高股息',   cat:'bench' },
+    { ticker:'00919',  name:'群益台灣精選高息',   cat:'bench' },
+
     ...watchlist.filter(t=>!BENCH_META[t] && !at.includes(t)).map(t=>({ ticker:t, name:`自選 ${t}`, cat:'watch' })),
     ...APP.etfs.map(e=>({ ticker:e.ticker, name:e.name, cat:'active' })),
   ];
