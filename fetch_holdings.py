@@ -455,13 +455,19 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
 
             # 規模（照 Grok）
             if not result["scale_billion"]:
-                s = re.search(r'資產規模[（(]億[)）][：:]?\s*([\d,\.]+)', text) or \
-                    re.search(r'規模[（(]億[)）][：:]?\s*([\d,\.]+)', text) or \
-                    re.search(r'規模.*?([\d,\.]+)\s*億', text) or \
-                    re.search(r'資產規模.*?([\d,\.]+)', text) 
-                if s:
-                    result["scale_billion"] = float(s.group(1).replace(",", ""))
-
+                patterns = [
+                    r'資產規模[（(]億[)）]\s*[：:]\s*([\d,\.]+)',
+                    r'規模[（(]億[)）]\s*[：:]\s*([\d,\.]+)',
+                    r'資產規模\s*[：:]\s*([\d,\.]+)\s*億',
+                    r'(?<![交成換手率基立年齡])規模[^排行]{0,5}?([\d]{3,}(?:[,\.]\d+)?)\s*億',
+                ] 
+                for pat in patterns:
+                    aum_m = re.search(pat, text)   # ← 改成 aum_m，不要用 m
+                    if aum_m:
+                        val = float(aum_m.group(1).replace(",", ""))
+                        if val > 1:  # 排除抓到 0.x 之類的垃圾值
+                            result["scale_billion"] = val
+                            break
             # 淨值 — 多種正規表達式，放寬位數限制
             if not result["nav"]:
                 nav_patterns = [
@@ -478,7 +484,6 @@ async def _fetch_one_etf_nav_aum(context, code: str) -> dict:
                         if 1 < val < 10000:
                             result["nav"] = val
                             break
-
             # 折溢價（照 Grok）
             if not result["premium_discount_pct"]:
                 pd_m = re.search(r'折溢價.*?([-\d\.]+)%', text)
