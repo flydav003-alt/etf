@@ -223,6 +223,20 @@
     "aum_billion": 317.52,
     "is_benchmark": false
   },
+  "00403A": {
+    "name": "主動統一升級50",
+    "close": 10.8,
+    "open": 10.93,
+    "high": 10.96,
+    "low": 10.51,
+    "volume": 4204257454.0,
+    "chg_amt": 0.0,
+    "chg_pct": 0.0,
+    "nav": 10.24,
+    "premium_pct": 5.47,
+    "aum_billion": 791.72,
+    "is_benchmark": false
+  },
   "0050": {
     "name": "元大台灣50",
     "close": 96.85,

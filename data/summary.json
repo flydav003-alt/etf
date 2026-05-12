@@ -2,11 +2,11 @@
   "date": "2026-05-12",
   "display_date": "2026-05-12",
   "is_fallback": false,
-  "etf_count": 16,
-  "total_holdings": 830,
+  "etf_count": 17,
+  "total_holdings": 880,
   "has_changes": true,
-  "change_count": 125,
-  "updated_at": "2026-05-12 13:43:04",
+  "change_count": 174,
+  "updated_at": "2026-05-12 14:12:54",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
@@ -72,6 +72,10 @@
     {
       "code": "00988A",
       "name": "主動統一全球創新"
+    },
+    {
+      "code": "00403A",
+      "name": "主動統一升級50"
     }
   ]
 }
