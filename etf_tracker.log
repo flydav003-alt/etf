@@ -8914,3 +8914,363 @@
 2026-06-02 13:06:30,516 [INFO] ✓ CSV 匯出完成 → data/etf_20260602.csv（2026-06-02，前 10 檔）
 2026-06-02 13:06:30,517 [INFO]   排行：廣達, 富世達股, 富世達, 健策, 台燿科技, 旺宏, 華邦電, 聯發科, 金居開發, 奇鋐
 2026-06-02 13:06:30,517 [INFO] ✅ 完成！2026-06-02 共 892 筆持股
+2026-06-03 12:52:33,165 [INFO] ============================================================
+2026-06-03 12:52:33,166 [INFO] === 開始執行 2026-06-03（昨日：2026-06-02）===
+2026-06-03 12:52:33,166 [INFO] ✓ 資料庫初始化完成
+2026-06-03 12:52:33,168 [INFO] 檢查並補抓 ETF 歷史收盤價...
+2026-06-03 12:52:33,169 [INFO]   00981A 已有 249 筆歷史，跳過補抓
+2026-06-03 12:52:33,169 [INFO]   00982A 已有 252 筆歷史，跳過補抓
+2026-06-03 12:52:33,170 [INFO]   補抓 00991A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 12:52:53,998 [WARNING]   00991A 202504 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:53:15,007 [WARNING]   00991A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:53:36,151 [WARNING]   00991A 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:53:57,567 [WARNING]   00991A 202507 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:54:01,425 [WARNING]   00991A 202508 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:54:22,580 [WARNING]   00991A 202509 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:54:43,578 [WARNING]   00991A 202510 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:54:47,359 [WARNING]   00991A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:55:08,368 [WARNING]   00991A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:55:29,212 [WARNING]   00991A 202601 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:55:50,514 [WARNING]   00991A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:55:52,678 [WARNING]   00991A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:56:13,522 [WARNING]   00991A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:56:34,830 [WARNING]   00991A 202605 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:56:37,971 [WARNING]   00991A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:56:38,471 [WARNING]   ✗ 00991A 無歷史資料
+2026-06-03 12:56:39,472 [INFO]   補抓 00992A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 12:56:41,625 [WARNING]   00992A 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:57:02,481 [WARNING]   00992A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:57:04,473 [WARNING]   00992A 202506 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:57:06,285 [WARNING]   00992A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:57:27,113 [WARNING]   00992A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:57:30,792 [WARNING]   00992A 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:57:51,635 [WARNING]   00992A 202510 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:58:12,791 [WARNING]   00992A 202511 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:58:33,628 [WARNING]   00992A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:58:36,732 [WARNING]   00992A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:58:57,735 [WARNING]   00992A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:59:01,025 [WARNING]   00992A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:59:03,418 [WARNING]   00992A 202604 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 12:59:24,562 [WARNING]   00992A 202605 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:59:45,560 [WARNING]   00992A 202606 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 12:59:46,060 [WARNING]   ✗ 00992A 無歷史資料
+2026-06-03 12:59:47,060 [INFO]   補抓 00993A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:00:07,713 [WARNING]   00993A 202504 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:00:28,705 [WARNING]   00993A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:00:30,926 [WARNING]   00993A 202506 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:00:51,785 [WARNING]   00993A 202507 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:00:53,460 [WARNING]   00993A 202508 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:00:55,883 [WARNING]   00993A 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:00:59,430 [WARNING]   00993A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:01:02,375 [WARNING]   00993A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:01:23,383 [WARNING]   00993A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:01:44,369 [WARNING]   00993A 202601 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:01:48,965 [WARNING]   00993A 202602 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:01:53,324 [WARNING]   00993A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:02:14,743 [WARNING]   00993A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:02:35,891 [WARNING]   00993A 202605 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:02:56,736 [WARNING]   00993A 202606 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:02:57,237 [WARNING]   ✗ 00993A 無歷史資料
+2026-06-03 13:02:58,237 [INFO]   00980A 已有 265 筆歷史，跳過補抓
+2026-06-03 13:02:58,237 [INFO]   00985A 已有 211 筆歷史，跳過補抓
+2026-06-03 13:02:58,237 [INFO]   補抓 00995A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:03:18,881 [WARNING]   00995A 202504 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:03:39,868 [WARNING]   00995A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:03:43,677 [WARNING]   00995A 202506 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:03:46,937 [WARNING]   00995A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:04:07,934 [WARNING]   00995A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:04:28,785 [WARNING]   00995A 202509 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:04:31,747 [WARNING]   00995A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:04:36,798 [WARNING]   00995A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:04:41,292 [WARNING]   00995A 202512 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:04:43,373 [WARNING]   00995A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:04:45,365 [WARNING]   00995A 202602 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:04:49,325 [WARNING]   00995A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:10,329 [WARNING]   00995A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:05:13,654 [WARNING]   00995A 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:15,688 [WARNING]   00995A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:16,188 [WARNING]   ✗ 00995A 無歷史資料
+2026-06-03 13:05:17,188 [INFO]   00984A 已有 216 筆歷史，跳過補抓
+2026-06-03 13:05:17,188 [INFO]   補抓 00987A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:05:22,261 [WARNING]   00987A 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:26,049 [WARNING]   00987A 202505 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:30,375 [WARNING]   00987A 202506 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:33,276 [WARNING]   00987A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:05:54,281 [WARNING]   00987A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:05:58,752 [WARNING]   00987A 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:06:03,105 [WARNING]   00987A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:06:24,092 [WARNING]   00987A 202511 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:06:45,277 [WARNING]   00987A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:06:47,329 [WARNING]   00987A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:07:08,751 [WARNING]   00987A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:07:29,906 [WARNING]   00987A 202603 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:07:50,910 [WARNING]   00987A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:08:12,056 [WARNING]   00987A 202605 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:08:14,284 [WARNING]   00987A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:08:14,785 [WARNING]   ✗ 00987A 無歷史資料
+2026-06-03 13:08:15,785 [INFO]   補抓 00994A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:08:36,288 [WARNING]   00994A 202504 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:08:38,622 [WARNING]   00994A 202505 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:08:59,481 [WARNING]   00994A 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:09:20,333 [WARNING]   00994A 202507 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:09:41,630 [WARNING]   00994A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:09:44,076 [WARNING]   00994A 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:09:47,892 [WARNING]   00994A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:10:08,747 [WARNING]   00994A 202511 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:10:30,251 [WARNING]   00994A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:10:33,112 [WARNING]   00994A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:10:54,100 [WARNING]   00994A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:11:15,254 [WARNING]   00994A 202603 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:11:36,107 [WARNING]   00994A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:11:57,258 [WARNING]   00994A 202605 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:12:18,260 [WARNING]   00994A 202606 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:12:18,760 [WARNING]   ✗ 00994A 無歷史資料
+2026-06-03 13:12:19,760 [INFO]   補抓 00996A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:12:40,556 [WARNING]   00996A 202504 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:13:01,548 [WARNING]   00996A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:13:22,706 [WARNING]   00996A 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:13:43,708 [WARNING]   00996A 202507 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:14:04,854 [WARNING]   00996A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:14:25,838 [WARNING]   00996A 202509 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:14:46,993 [WARNING]   00996A 202510 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:14:51,424 [WARNING]   00996A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:15:12,412 [WARNING]   00996A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:15:15,687 [WARNING]   00996A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:15:36,706 [WARNING]   00996A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:15:57,711 [WARNING]   00996A 202603 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:16:18,746 [WARNING]   00996A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:16:40,182 [WARNING]   00996A 202605 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:17:01,337 [WARNING]   00996A 202606 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:17:01,837 [WARNING]   ✗ 00996A 無歷史資料
+2026-06-03 13:17:02,838 [INFO]   補抓 00400A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:17:04,290 [WARNING]   00400A 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:17:06,484 [WARNING]   00400A 202505 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:17:27,489 [WARNING]   00400A 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:17:31,072 [WARNING]   00400A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:17:35,395 [WARNING]   00400A 202508 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:17:56,239 [WARNING]   00400A 202509 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:17:59,756 [WARNING]   00400A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:18:03,528 [WARNING]   00400A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:18:24,526 [WARNING]   00400A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:18:28,437 [WARNING]   00400A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:18:49,443 [WARNING]   00400A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:18:52,726 [WARNING]   00400A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:18:54,559 [WARNING]   00400A 202604 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:18:56,220 [WARNING]   00400A 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:19:17,078 [WARNING]   00400A 202606 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:19:17,579 [WARNING]   ✗ 00400A 無歷史資料
+2026-06-03 13:19:18,579 [INFO]   補抓 00401A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:19:19,881 [WARNING]   00401A 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:19:41,513 [WARNING]   00401A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:20:02,371 [WARNING]   00401A 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:20:23,591 [WARNING]   00401A 202507 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:20:44,444 [WARNING]   00401A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:20:47,823 [WARNING]   00401A 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:21:08,664 [WARNING]   00401A 202510 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:21:12,423 [WARNING]   00401A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:21:14,241 [WARNING]   00401A 202512 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:21:35,251 [WARNING]   00401A 202601 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:21:56,393 [WARNING]   00401A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:22:17,391 [WARNING]   00401A 202603 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:22:19,028 [WARNING]   00401A 202604 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:22:22,215 [WARNING]   00401A 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:22:26,116 [WARNING]   00401A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:22:26,617 [WARNING]   ✗ 00401A 無歷史資料
+2026-06-03 13:22:27,617 [INFO]   補抓 00999A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:22:47,970 [WARNING]   00999A 202504 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:22:50,840 [WARNING]   00999A 202505 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:23:11,836 [WARNING]   00999A 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:23:15,066 [WARNING]   00999A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:23:35,909 [WARNING]   00999A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:23:40,250 [WARNING]   00999A 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:23:43,953 [WARNING]   00999A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:23:48,077 [WARNING]   00999A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:23:52,015 [WARNING]   00999A 202512 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:24:12,874 [WARNING]   00999A 202601 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:24:16,212 [WARNING]   00999A 202602 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:24:37,059 [WARNING]   00999A 202603 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:24:40,988 [WARNING]   00999A 202604 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:24:45,045 [WARNING]   00999A 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:24:49,536 [WARNING]   00999A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:24:50,036 [WARNING]   ✗ 00999A 無歷史資料
+2026-06-03 13:24:51,037 [INFO]   補抓 00988A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:24:52,844 [WARNING]   00988A 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:25:13,696 [WARNING]   00988A 202505 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:25:15,526 [WARNING]   00988A 202506 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:25:17,874 [WARNING]   00988A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:25:39,300 [WARNING]   00988A 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:26:00,302 [WARNING]   00988A 202509 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:26:02,586 [WARNING]   00988A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:26:23,595 [WARNING]   00988A 202511 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:26:27,571 [WARNING]   00988A 202512 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:26:31,886 [WARNING]   00988A 202601 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:26:53,034 [WARNING]   00988A 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:26:56,119 [WARNING]   00988A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:00,655 [WARNING]   00988A 202604 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:04,665 [WARNING]   00988A 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:08,437 [WARNING]   00988A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:08,938 [WARNING]   ✗ 00988A 無歷史資料
+2026-06-03 13:27:09,938 [INFO]   補抓 00403A 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:27:12,576 [WARNING]   00403A 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:16,925 [WARNING]   00403A 202505 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:18,782 [WARNING]   00403A 202506 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:20,736 [WARNING]   00403A 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:24,936 [WARNING]   00403A 202508 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:45,789 [WARNING]   00403A 202509 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:27:49,663 [WARNING]   00403A 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:27:52,670 [WARNING]   00403A 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:28:13,683 [WARNING]   00403A 202512 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:28:34,544 [WARNING]   00403A 202601 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:28:38,812 [WARNING]   00403A 202602 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:28:42,953 [WARNING]   00403A 202603 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:29:03,797 [WARNING]   00403A 202604 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:29:07,642 [WARNING]   00403A 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:29:11,606 [WARNING]   00403A 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:29:12,107 [WARNING]   ✗ 00403A 無歷史資料
+2026-06-03 13:29:13,107 [INFO]   0050 已有 302 筆歷史，跳過補抓
+2026-06-03 13:29:13,107 [INFO]   補抓 009816 歷史收盤價（2025-04-29 ~ 2026-06-03）...
+2026-06-03 13:29:15,383 [WARNING]   009816 202504 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:29:19,702 [WARNING]   009816 202505 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:29:40,558 [WARNING]   009816 202506 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:29:44,009 [WARNING]   009816 202507 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:30:04,860 [WARNING]   009816 202508 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:30:08,802 [WARNING]   009816 202509 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:30:12,852 [WARNING]   009816 202510 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:30:16,847 [WARNING]   009816 202511 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:30:19,709 [WARNING]   009816 202512 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:30:40,714 [WARNING]   009816 202601 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:31:01,571 [WARNING]   009816 202602 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:31:22,882 [WARNING]   009816 202603 歷史價格抓取失敗: HTTPSConnectionPool(host='www.twse.com.tw', port=443): Read timed out. (read timeout=20)
+2026-06-03 13:31:26,646 [WARNING]   009816 202604 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:31:30,155 [WARNING]   009816 202605 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:31:31,947 [WARNING]   009816 202606 歷史價格抓取失敗: Expecting value: line 1 column 1 (char 0)
+2026-06-03 13:31:32,447 [WARNING]   ✗ 009816 無歷史資料
+2026-06-03 13:31:33,448 [INFO]   00830 已有 285 筆歷史，跳過補抓
+2026-06-03 13:31:33,448 [INFO]   00878 已有 285 筆歷史，跳過補抓
+2026-06-03 13:31:33,448 [INFO]   00919 已有 285 筆歷史，跳過補抓
+2026-06-03 13:31:34,156 [INFO]   [DEBUG] 00981A 原始回傳 Title: ['日期', '標的代號', '標的名稱', '權重(%)', '持有數', '單位']
+2026-06-03 13:31:34,156 [INFO]   [DEBUG] 00981A 原始回傳前 5 筆:
+2026-06-03 13:31:34,156 [INFO]     [0] ['20260603', '2330', '台積電', '9.97', '11960000', '股']
+2026-06-03 13:31:34,156 [INFO]     [1] ['20260603', '2383', '台光電', '7.45', '4486000', '股']
+2026-06-03 13:31:34,156 [INFO]     [2] ['20260603', '2454', '聯發科', '6.66', '4263000', '股']
+2026-06-03 13:31:34,156 [INFO]     [3] ['20260603', '2308', '台達電', '5.55', '6572000', '股']
+2026-06-03 13:31:34,156 [INFO]     [4] ['20260603', '2345', '智邦', '5.54', '6231000', '股']
+2026-06-03 13:31:34,156 [INFO]   [DEBUG] 00981A 單位種類統計: {'股': 51, '元': 4}
+2026-06-03 13:31:34,156 [INFO]   [DEBUG] 00981A 非股條目 (4 筆):
+2026-06-03 13:31:34,156 [INFO]     ['20260603', 'C_NTD', 'CASH', '0.90', '2632125335', '元']
+2026-06-03 13:31:34,156 [INFO]     ['20260603', 'RDI_NTD', 'RECEIVABLES FOR DISPOSAL OF INVESTMENTS', '0.53', '1555886587', '元']
+2026-06-03 13:31:34,156 [INFO]     ['20260603', 'M_NTD', 'MARGIN', '0.17', '500128241', '元']
+2026-06-03 13:31:34,157 [INFO]     ['20260603', 'PFUR_NTD', 'PAYABLES FOR UNITS REDEEMED', '-0.22', '-652649050', '元']
+2026-06-03 13:31:34,158 [INFO]   ✓ 00981A 統一台股增長: 55 筆 (含現金 4)
+2026-06-03 13:31:36,339 [INFO]   ✓ 00982A 群益台灣強棒: 70 筆 (含現金 15)
+2026-06-03 13:31:38,552 [INFO]   ✓ 00991A 復華未來50: 52 筆 (含現金 2)
+2026-06-03 13:31:40,766 [INFO]   ✓ 00992A 群益科技創新: 48 筆 (含現金 3)
+2026-06-03 13:31:42,972 [INFO]   ✓ 00993A 安聯台灣: 52 筆 
+2026-06-03 13:31:45,007 [INFO]   ✓ 00980A 野村臺灣優選: 48 筆 (含現金 4)
+2026-06-03 13:31:47,020 [INFO]   ✓ 00985A 野村台灣50: 54 筆 (含現金 4)
+2026-06-03 13:31:49,223 [INFO]   ✓ 00995A 中信台灣卓越: 62 筆 (含現金 3)
+2026-06-03 13:31:51,442 [INFO]   ✓ 00984A 安聯台灣高息: 109 筆 
+2026-06-03 13:31:53,664 [INFO]   ✓ 00987A 台新優勢成長: 29 筆 (含現金 1)
+2026-06-03 13:31:55,858 [INFO]   ✓ 00994A 第一金台股優: 43 筆 (含現金 1)
+2026-06-03 13:31:57,876 [INFO]   ✓ 00996A 兆豐台灣豐收: 54 筆 (含現金 3)
+2026-06-03 13:31:59,946 [INFO]   ✓ 00400A 國泰動能高息: 53 筆 (含現金 2)
+2026-06-03 13:32:01,970 [INFO]   ✓ 00401A 摩根台灣鑫收: 64 筆 (含現金 1)
+2026-06-03 13:32:03,989 [INFO]   ✓ 00999A 主動野村臺灣高息: 65 筆 (含現金 4)
+2026-06-03 13:32:06,184 [INFO]   ✓ 00988A 主動統一全球創新: 17 筆 (含現金 4)
+2026-06-03 13:32:08,383 [INFO]   ✓ 00403A 主動統一升級50: 54 筆 (含現金 4)
+2026-06-03 13:32:09,884 [INFO] 共抓取 929 筆持股（223 支股票）
+2026-06-03 13:32:09,886 [INFO]   合併前一交易日(2026-06-02)持股，新增 0 支可能完全賣出的股票
+2026-06-03 13:32:10,854 [INFO]   TWSE 上市：取得 177 支收盤價
+2026-06-03 13:32:10,913 [WARNING]   TPEx openapi.tpex.org.tw 失敗（ConnectionError），試備用...
+2026-06-03 13:32:22,958 [INFO]   TPEx 上櫃：補充 46 支收盤價（來源：www.tpex.org.tw）
+2026-06-03 13:32:22,959 [INFO] ✓ 取得 223 支個股收盤價（今日223支 + 前日新增）
+2026-06-03 13:32:22,982 [INFO] ✓ 儲存 929 筆持股
+2026-06-03 13:32:22,982 [INFO] 補抓缺收盤價的持股...
+2026-06-03 13:32:22,983 [INFO] ✓ 所有持股均有收盤價，無需補抓
+2026-06-03 13:32:23,456 [INFO] 🔍 FinMind 抓取 ETF 價格（含漲跌）：2026-05-29 ~ 2026-06-03
+2026-06-03 13:32:23,947 [INFO]   ✓ 00981A | 收盤 31.81 | 漲跌 +0.48 (+1.53%)
+2026-06-03 13:32:24,086 [INFO]   ✓ 00982A | 收盤 24.16 | 漲跌 +0.33 (+1.38%)
+2026-06-03 13:32:24,223 [INFO]   ✓ 00991A | 收盤 19.99 | 漲跌 +0.18 (+0.91%)
+2026-06-03 13:32:24,362 [INFO]   ✓ 00992A | 收盤 18.52 | 漲跌 +0.38 (+2.09%)
+2026-06-03 13:32:24,498 [INFO]   ✓ 00993A | 收盤 13.85 | 漲跌 +0.22 (+1.61%)
+2026-06-03 13:32:24,635 [INFO]   ✓ 00980A | 收盤 25.13 | 漲跌 +0.43 (+1.74%)
+2026-06-03 13:32:24,774 [INFO]   ✓ 00985A | 收盤 22.60 | 漲跌 +0.27 (+1.21%)
+2026-06-03 13:32:24,913 [INFO]   ✓ 00995A | 收盤 18.21 | 漲跌 +0.33 (+1.85%)
+2026-06-03 13:32:25,051 [INFO]   ✓ 00984A | 收盤 16.69 | 漲跌 +0.18 (+1.09%)
+2026-06-03 13:32:25,188 [INFO]   ✓ 00987A | 收盤 18.01 | 漲跌 +0.31 (+1.75%)
+2026-06-03 13:32:25,326 [INFO]   ✓ 00994A | 收盤 18.62 | 漲跌 +0.28 (+1.53%)
+2026-06-03 13:32:25,467 [INFO]   ✓ 00996A | 收盤 15.58 | 漲跌 +0.04 (+0.26%)
+2026-06-03 13:32:25,606 [INFO]   ✓ 00400A | 收盤 15.02 | 漲跌 +0.26 (+1.76%)
+2026-06-03 13:32:25,744 [INFO]   ✓ 00401A | 收盤 13.97 | 漲跌 +0.28 (+2.05%)
+2026-06-03 13:32:25,881 [INFO]   ✓ 00999A | 收盤 11.42 | 漲跌 +0.22 (+1.96%)
+2026-06-03 13:32:26,017 [INFO]   ✓ 00988A | 收盤 22.66 | 漲跌 +0.96 (+4.42%)
+2026-06-03 13:32:26,152 [INFO]   ✓ 00403A | 收盤 10.79 | 漲跌 +0.09 (+0.84%)
+2026-06-03 13:32:26,289 [INFO]   ✓ 0050 | 收盤 107.60 | 漲跌 +1.90 (+1.80%)
+2026-06-03 13:32:26,427 [INFO]   ✓ 009816 | 收盤 15.74 | 漲跌 +0.31 (+2.01%)
+2026-06-03 13:32:26,565 [INFO]   ✓ 00830 | 收盤 97.00 | 漲跌 +6.45 (+7.12%)
+2026-06-03 13:32:26,704 [INFO]   ✓ 00878 | 收盤 33.30 | 漲跌 +0.81 (+2.49%)
+2026-06-03 13:32:26,843 [INFO]   ✓ 00919 | 收盤 30.78 | 漲跌 +0.48 (+1.58%)
+2026-06-03 13:32:26,843 [INFO] ✓ FinMind 成功抓到 22 檔 ETF（含漲跌）
+2026-06-03 13:32:50,746 [INFO]   00981A: NAV=31.97, AUM=2854.8億, 折溢價=1.53%, 來源=Pocket_Discount
+2026-06-03 13:33:09,700 [INFO]   00982A: NAV=24.29, AUM=531.96億, 折溢價=1.38%, 來源=Pocket_Discount
+2026-06-03 13:33:29,143 [INFO]   00991A: NAV=20.03, AUM=590.74億, 折溢價=0.91%, 來源=Pocket_Discount
+2026-06-03 13:33:48,199 [INFO]   00992A: NAV=18.61, AUM=490.07億, 折溢價=2.09%, 來源=Pocket_Discount
+2026-06-03 13:34:07,256 [INFO]   00993A: NAV=13.91, AUM=115.18億, 折溢價=1.61%, 來源=Pocket_Discount
+2026-06-03 13:34:26,291 [INFO]   00980A: NAV=25.27, AUM=185.93億, 折溢價=1.74%, 來源=Pocket_Discount
+2026-06-03 13:34:45,321 [INFO]   00985A: NAV=22.73, AUM=112.78億, 折溢價=1.21%, 來源=Pocket_Discount
+2026-06-03 13:35:04,433 [INFO]   00995A: NAV=18.31, AUM=58.15億, 折溢價=1.85%, 來源=Pocket_Discount
+2026-06-03 13:35:23,414 [INFO]   00984A: NAV=16.7, AUM=75.07億, 折溢價=1.09%, 來源=Pocket_Discount
+2026-06-03 13:35:42,521 [INFO]   00987A: NAV=18.13, AUM=34.28億, 折溢價=1.75%, 來源=Pocket_Discount
+2026-06-03 13:36:01,763 [INFO]   00994A: NAV=18.68, AUM=56.96億, 折溢價=1.53%, 來源=Pocket_Discount
+2026-06-03 13:36:20,822 [INFO]   00996A: NAV=15.63, AUM=51.08億, 折溢價=0.26%, 來源=Pocket_Discount
+2026-06-03 13:36:40,096 [INFO]   00400A: NAV=15.08, AUM=221.73億, 折溢價=1.76%, 來源=Pocket_Discount
+2026-06-03 13:36:59,141 [INFO]   00401A: NAV=13.95, AUM=34.56億, 折溢價=2.05%, 來源=Pocket_Discount
+2026-06-03 13:37:18,392 [INFO]   00999A: NAV=11.44, AUM=164.84億, 折溢價=1.96%, 來源=Pocket_Discount
+2026-06-03 13:37:37,403 [INFO]   00988A: NAV=22.16, AUM=502.7億, 折溢價=4.42%, 來源=Pocket_Discount
+2026-06-03 13:37:56,537 [INFO]   00403A: NAV=10.87, AUM=1914.08億, 折溢價=0.84%, 來源=Pocket_Discount
+2026-06-03 13:38:15,822 [INFO]   0050: NAV=107.51, AUM=20176.56億, 折溢價=1.8%, 來源=Pocket_Discount
+2026-06-03 13:38:25,997 [INFO] [009816 RAW] 交易排行 規模排行 成交量排行 成交值排行 股數創造排行 股數贖回排行 換手率排行 基本資料排行 成立年齡排行
+2026-06-03 13:38:35,321 [INFO] [009816 RAW] 04 資產規模(億)：1401.63 成立時間：2026/02/03 折溢價 Created with Hig
+2026-06-03 13:38:35,346 [INFO]   009816: NAV=15.7, AUM=1401.63億, 折溢價=2.01%, 來源=Pocket_Discount
+2026-06-03 13:38:54,437 [INFO]   00830: NAV=95.85, AUM=586.8億, 折溢價=7.12%, 來源=Pocket_Discount
+2026-06-03 13:39:13,546 [INFO]   00878: NAV=33.38, AUM=6123.65億, 折溢價=2.49%, 來源=Pocket_Discount
+2026-06-03 13:39:32,675 [INFO]   00919: NAV=30.73, AUM=5327.88億, 折溢價=1.58%, 來源=Pocket_Discount
+2026-06-03 13:39:33,720 [INFO] ✓ ETF NAV：22 檔，規模：22 檔，折溢價：22 檔
+2026-06-03 13:39:33,721 [INFO]   00981A | 現價 31.81 | NAV 31.97 | 折溢價 -0.50% (計算)
+2026-06-03 13:39:33,721 [INFO]   00982A | 現價 24.16 | NAV 24.29 | 折溢價 -0.54% (計算)
+2026-06-03 13:39:33,721 [INFO]   00991A | 現價 19.99 | NAV 20.03 | 折溢價 -0.20% (計算)
+2026-06-03 13:39:33,721 [INFO]   00992A | 現價 18.52 | NAV 18.61 | 折溢價 -0.48% (計算)
+2026-06-03 13:39:33,721 [INFO]   00993A | 現價 13.85 | NAV 13.91 | 折溢價 -0.43% (計算)
+2026-06-03 13:39:33,721 [INFO]   00980A | 現價 25.13 | NAV 25.27 | 折溢價 -0.55% (計算)
+2026-06-03 13:39:33,721 [INFO]   00985A | 現價 22.6 | NAV 22.73 | 折溢價 -0.57% (計算)
+2026-06-03 13:39:33,721 [INFO]   00995A | 現價 18.21 | NAV 18.31 | 折溢價 -0.55% (計算)
+2026-06-03 13:39:33,721 [INFO]   00984A | 現價 16.69 | NAV 16.7 | 折溢價 -0.06% (計算)
+2026-06-03 13:39:33,722 [INFO]   00987A | 現價 18.01 | NAV 18.13 | 折溢價 -0.66% (計算)
+2026-06-03 13:39:33,722 [INFO]   00994A | 現價 18.62 | NAV 18.68 | 折溢價 -0.32% (計算)
+2026-06-03 13:39:33,722 [INFO]   00996A | 現價 15.58 | NAV 15.63 | 折溢價 -0.32% (計算)
+2026-06-03 13:39:33,722 [INFO]   00400A | 現價 15.02 | NAV 15.08 | 折溢價 -0.40% (計算)
+2026-06-03 13:39:33,722 [INFO]   00401A | 現價 13.97 | NAV 13.95 | 折溢價 +0.14% (計算)
+2026-06-03 13:39:33,722 [INFO]   00999A | 現價 11.42 | NAV 11.44 | 折溢價 -0.17% (計算)
+2026-06-03 13:39:33,722 [INFO]   00988A | 現價 22.66 | NAV 22.16 | 折溢價 +2.26% (計算)
+2026-06-03 13:39:33,722 [INFO]   00403A | 現價 10.79 | NAV 10.87 | 折溢價 -0.74% (計算)
+2026-06-03 13:39:33,722 [INFO]   0050 | 現價 107.6 | NAV 107.51 | 折溢價 +0.08% (計算)
+2026-06-03 13:39:33,722 [INFO]   009816 | 現價 15.74 | NAV 15.7 | 折溢價 +0.25% (計算)
+2026-06-03 13:39:33,722 [INFO]   00830 | 現價 97.0 | NAV 95.85 | 折溢價 +1.20% (計算)
+2026-06-03 13:39:33,722 [INFO]   00878 | 現價 33.3 | NAV 33.38 | 折溢價 -0.24% (計算)
+2026-06-03 13:39:33,722 [INFO]   00919 | 現價 30.78 | NAV 30.73 | 折溢價 +0.16% (計算)
+2026-06-03 13:39:33,725 [INFO] ✓ ETF今日價格儲存 22 檔
+2026-06-03 13:39:33,730 [INFO]   比對日期：今日=2026-06-03，前一交易日=2026-06-02
+2026-06-03 13:39:33,769 [INFO]   ✓ 使用昨日股票名稱救援 5 筆 FULL_SELL 記錄
+2026-06-03 13:39:33,769 [WARNING]   ⚠ 仍有 5 筆異動找不到任何收盤價（金額將為 0）
+2026-06-03 13:39:33,770 [INFO]   🔍 過濾純權重漂移：337 筆中移除 262 筆（股數未變動），剩 75 筆真實買賣
+2026-06-03 13:39:33,773 [INFO] ✓ 偵測到 75 筆真實持股變化（已排除權重漂移）
+2026-06-03 13:39:33,883 [INFO] ✓ Streak 計算完成：13 筆 ETF×股票連續紀錄,12 支股票有彙總 streak
+2026-06-03 13:39:33,884 [INFO] ✓ streaks.json 已匯出
+2026-06-03 13:39:33,901 [INFO]   📅 顯示日 = 2026-06-03(今日)
+2026-06-03 13:39:33,978 [INFO] ✓ 績效資料匯出：23 檔
+2026-06-03 13:39:34,100 [INFO] ✓ 價格歷史匯出：23 檔
+2026-06-03 13:39:34,193 [INFO] ✓ 異動歷史匯出：1083 筆，涵蓋 10 個交易日
+2026-06-03 13:39:34,208 [INFO] ✓ JSON 匯出完成 → data/
+2026-06-03 13:39:34,220 [INFO] ✓ CSV 匯出完成 → data/etf_20260603.csv（2026-06-03，前 10 檔）
+2026-06-03 13:39:34,220 [INFO]   排行：貿聯-KY, 鴻海, 南俊國際, 台燿, 旺矽, 智邦, 力旺電子, 嘉澤, 旺矽科技, 南亞電路板
+2026-06-03 13:39:34,220 [INFO] ✅ 完成！2026-06-03 共 889 筆持股
