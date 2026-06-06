@@ -576,10 +576,19 @@ def fetch_etf_aum() -> dict[str, float]:
 # ══════════════════════════════════════════════════════════
 def fetch_etf_price_history(etf_code: str, start_date: str, end_date: str) -> list[dict]:
     """
-    從 TWSE 月份行情API 抓取 ETF 歷史收盤價
-    按月份分批抓取，避免單次請求過大
+    抓取 ETF 歷史收盤價。
+    - 一般 ETF（純數字代碼）：用 TWSE 月份行情 API
+    - 槓桿/反向 ETF（代碼含英文字母，如 00631L、00632R）：改用 FinMind
+      原因：TWSE STOCK_DAY API 對含字母代碼回傳 stat != 'OK'，抓不到資料
     """
     from datetime import datetime
+
+    # ── 判斷是否為槓桿/反向 ETF（代碼含英文字母）──────────
+    has_letter = any(c.isalpha() for c in etf_code)
+    if has_letter:
+        return _fetch_etf_price_history_finmind(etf_code, start_date, end_date)
+
+    # ── 一般 ETF：TWSE 月份行情 API ────────────────────────
     records = []
     start = datetime.strptime(start_date, '%Y-%m-%d')
     end   = datetime.strptime(end_date,   '%Y-%m-%d')
@@ -628,6 +637,47 @@ def fetch_etf_price_history(etf_code: str, start_date: str, end_date: str) -> li
         time.sleep(0.5)
 
     return records
+
+
+def _fetch_etf_price_history_finmind(etf_code: str, start_date: str, end_date: str) -> list[dict]:
+    """
+    用 FinMind 抓含字母代碼的 ETF 歷史收盤價（如 00631L、00632R）。
+    TWSE STOCK_DAY API 對這類代碼回傳 stat != 'OK'，所以改走 FinMind。
+    """
+    try:
+        dl = DataLoader()
+        df = dl.taiwan_stock_daily(
+            stock_id=etf_code,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        if df.empty:
+            log.warning(f"  FinMind 歷史：{etf_code} 無資料")
+            return []
+
+        records = []
+        for _, row in df.iterrows():
+            try:
+                close = float(row.get('close', 0))
+                if close <= 0:
+                    continue
+                records.append({
+                    'trade_date': str(row['date'])[:10],
+                    'close':  close,
+                    'open':   float(row.get('open', 0)),
+                    'high':   float(row.get('max',  0)),
+                    'low':    float(row.get('min',  0)),
+                    'volume': float(row.get('Trading_Volume', 0)),
+                })
+            except (ValueError, TypeError):
+                continue
+
+        log.info(f"  FinMind 歷史：{etf_code} 抓到 {len(records)} 筆")
+        return records
+
+    except Exception as e:
+        log.error(f"  FinMind 歷史抓取失敗 {etf_code}: {e}")
+        return []
 
 
 def backfill_etf_prices():
