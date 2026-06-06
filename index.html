@@ -1600,11 +1600,7 @@ function getPerfData(ticker) {
 function getPerfItems() {
   const at = APP.etfs.map(e=>e.ticker);
   return [
-    { ticker:'0050',   name:'元大台灣50',        cat:'bench' },
-    { ticker:'009816', name:'凱基台灣TOP50',      cat:'bench' },
-    { ticker:'00830',  name:'國泰費城半導體',     cat:'bench' },
-    { ticker:'00878',  name:'國泰永續高股息',     cat:'bench' },
-    { ticker:'00919',  name:'群益台灣精選高息',   cat:'bench' },
+    ...Object.entries(BENCH_META).map(([ticker, name]) => ({ ticker, name, cat:'bench' })),
     ...watchlist.filter(t=>!BENCH_META[t] && !at.includes(t)).map(t=>({ ticker:t, name:`自選 ${t}`, cat:'watch' })),
     ...APP.etfs.map(e=>({ ticker:e.ticker, name:e.name, cat:'active' })),
   ];
