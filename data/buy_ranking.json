@@ -12,7 +12,7 @@
     "stock_code": "6669",
     "stock_name": "緯穎",
     "etf_count": 1,
-    "value": 306350000.0,
+    "value": 311300000.0,
     "etf_list": [
       "00981A"
     ]
@@ -21,7 +21,7 @@
     "stock_code": "2345",
     "stock_name": "智邦",
     "etf_count": 1,
-    "value": 258530000.0,
+    "value": 256470000.0,
     "etf_list": [
       "00981A"
     ]
@@ -57,7 +57,7 @@
     "stock_code": "6139",
     "stock_name": "亞翔",
     "etf_count": 1,
-    "value": 136950000.0,
+    "value": 134128000.0,
     "etf_list": [
       "00982A"
     ]
@@ -66,7 +66,7 @@
     "stock_code": "3665",
     "stock_name": "貿聯-KY",
     "etf_count": 2,
-    "value": 124990000.0,
+    "value": 127600000.0,
     "etf_list": [
       "00991A",
       "00994A"
@@ -85,7 +85,7 @@
     "stock_code": "2330",
     "stock_name": "台積電",
     "etf_count": 1,
-    "value": 71550000.0,
+    "value": 70950000.0,
     "etf_list": [
       "00982A"
     ]
@@ -94,7 +94,7 @@
     "stock_code": "2454",
     "stock_name": "聯發科",
     "etf_count": 1,
-    "value": 22150000.0,
+    "value": 21500000.0,
     "etf_list": [
       "00982A"
     ]
@@ -103,7 +103,7 @@
     "stock_code": "3665",
     "stock_name": "貿聯 -KY",
     "etf_count": 1,
-    "value": 17240000.0,
+    "value": 17600000.0,
     "etf_list": [
       "00987A"
     ]
@@ -121,7 +121,7 @@
     "stock_code": "6890",
     "stock_name": "來億-KY",
     "etf_count": 1,
-    "value": 7176500.0,
+    "value": 7517500.0,
     "etf_list": [
       "00984A"
     ]
@@ -130,7 +130,7 @@
     "stock_code": "2548",
     "stock_name": "華固",
     "etf_count": 1,
-    "value": 5389200.0,
+    "value": 5589000.0,
     "etf_list": [
       "00984A"
     ]

@@ -251,6 +251,20 @@
     "aum_billion": 20581.08,
     "is_benchmark": true
   },
+  "00631L": {
+    "name": "元大台灣50正2",
+    "close": 36.67,
+    "open": 37.43,
+    "high": 37.53,
+    "low": 35.91,
+    "volume": 455919015.0,
+    "chg_amt": -1.6299999999999955,
+    "chg_pct": -4.26,
+    "nav": 36.56,
+    "premium_pct": 0.3,
+    "aum_billion": 1889.29,
+    "is_benchmark": true
+  },
   "009816": {
     "name": "凱基台灣TOP50",
     "close": 15.19,
