@@ -2,7 +2,7 @@ name: 每日ETF持股抓取
 
 on:
   schedule:
-    - cron: '10 9 * * 1-5'   # 台灣時間 17:10（UTC 09:10）週一到週五
+    - cron: '47 7 * * 1-5'   # 台灣時間 15:47（UTC 09:10）週一到週五
   workflow_dispatch:
     inputs:
       target_date:
