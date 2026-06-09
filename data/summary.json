@@ -2,11 +2,11 @@
   "date": "2026-06-09",
   "display_date": "2026-06-09",
   "is_fallback": false,
-  "etf_count": 17,
-  "total_holdings": 877,
+  "etf_count": 18,
+  "total_holdings": 945,
   "has_changes": true,
-  "change_count": 38,
-  "updated_at": "2026-06-09 10:58:38",
+  "change_count": 157,
+  "updated_at": "2026-06-09 12:54:01",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
@@ -76,6 +76,10 @@
     {
       "code": "00403A",
       "name": "主動統一升級50"
+    },
+    {
+      "code": "00405A",
+      "name": "主動富邦台灣龍耀"
     }
   ]
 }

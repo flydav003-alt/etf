@@ -19,6 +19,12 @@
         "sell": 0
       }
     },
+    "00992A": {
+      "3665": {
+        "buy": 2,
+        "sell": 0
+      }
+    },
     "00994A": {
       "2368": {
         "buy": 2,
@@ -47,6 +53,12 @@
       "max_buy": 2,
       "max_sell": 0,
       "etf_count_buy": 2,
+      "etf_count_sell": 0
+    },
+    "3665": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
       "etf_count_sell": 0
     }
   }
