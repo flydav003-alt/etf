@@ -1,75 +1,129 @@
 [
   {
-    "stock_code": "3081",
-    "stock_name": "聯亞",
+    "stock_code": "2382",
+    "stock_name": "廣達",
     "etf_count": 2,
-    "value": -736025000.0,
+    "value": -1987254500.0,
     "etf_list": [
-      "00992A",
+      "00981A",
       "00994A"
     ]
   },
   {
-    "stock_code": "2351",
-    "stock_name": "順德",
+    "stock_code": "2360",
+    "stock_name": "致茂電子",
     "etf_count": 1,
-    "value": -90225000.0,
+    "value": -1151685000.0,
     "etf_list": [
-      "00982A"
+      "00991A"
     ]
   },
   {
-    "stock_code": "6739",
-    "stock_name": "竹陞科技",
+    "stock_code": "3044",
+    "stock_name": "健鼎",
     "etf_count": 1,
-    "value": -36600000.0,
+    "value": -398400000.0,
+    "etf_list": [
+      "00403A"
+    ]
+  },
+  {
+    "stock_code": "2481",
+    "stock_name": "強茂",
+    "etf_count": 1,
+    "value": -181335000.0,
+    "etf_list": [
+      "00403A"
+    ]
+  },
+  {
+    "stock_code": "2731",
+    "stock_name": "雄獅旅行社",
+    "etf_count": 1,
+    "value": -60725000.0,
+    "etf_list": [
+      "00999A"
+    ]
+  },
+  {
+    "stock_code": "2548",
+    "stock_name": "華固建設",
+    "etf_count": 1,
+    "value": -54855000.0,
+    "etf_list": [
+      "00999A"
+    ]
+  },
+  {
+    "stock_code": "2345",
+    "stock_name": "智邦",
+    "etf_count": 1,
+    "value": -34860000.0,
     "etf_list": [
       "00987A"
     ]
   },
   {
-    "stock_code": "3443",
-    "stock_name": "創意",
+    "stock_code": "7769",
+    "stock_name": "鴻勁",
     "etf_count": 1,
-    "value": -22050000.0,
+    "value": -29100000.0,
     "etf_list": [
       "00994A"
     ]
   },
   {
-    "stock_code": "8299",
-    "stock_name": "群聯",
+    "stock_code": "3526",
+    "stock_name": "凡甲科技",
     "etf_count": 1,
-    "value": -15750000.0,
+    "value": -18630000.0,
     "etf_list": [
-      "00994A"
+      "00999A"
     ]
   },
   {
-    "stock_code": "2303",
-    "stock_name": "聯華電子",
+    "stock_code": "9802",
+    "stock_name": "鈺齊國際",
     "etf_count": 1,
-    "value": -6443500.0,
+    "value": -17380000.0,
     "etf_list": [
-      "00401A"
+      "00999A"
     ]
   },
   {
-    "stock_code": "2383",
-    "stock_name": "台光電子材料",
+    "stock_code": "4105",
+    "stock_name": "台灣東洋藥品工業",
     "etf_count": 1,
-    "value": -6350500.0,
+    "value": -15190500.0,
     "etf_list": [
-      "00401A"
+      "00999A"
     ]
   },
   {
-    "stock_code": "8210",
-    "stock_name": "勤誠興業",
+    "stock_code": "1215",
+    "stock_name": "台灣卜蜂企業",
     "etf_count": 1,
-    "value": -2740000.0,
+    "value": -14280000.0,
     "etf_list": [
-      "00401A"
+      "00999A"
+    ]
+  },
+  {
+    "stock_code": "6442",
+    "stock_name": "光紅建聖",
+    "etf_count": 1,
+    "value": -12330000.0,
+    "etf_list": [
+      "00995A"
+    ]
+  },
+  {
+    "stock_code": "7769",
+    "stock_name": "鴻勁精密",
+    "etf_count": 1,
+    "value": -7275000.0,
+    "etf_list": [
+      "00999A"
     ]
   }
 ]
