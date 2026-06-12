@@ -1,155 +1,128 @@
 [
   {
-    "stock_code": "6274",
-    "stock_name": "台燿",
-    "etf_count": 1,
-    "value": -650475000.0,
-    "etf_list": [
-      "00992A"
-    ]
-  },
-  {
-    "stock_code": "6147",
-    "stock_name": "頎邦",
-    "etf_count": 1,
-    "value": -648810000.0,
-    "etf_list": [
-      "00982A"
-    ]
-  },
-  {
-    "stock_code": "5274",
-    "stock_name": "信驊",
-    "etf_count": 1,
-    "value": -510400000.0,
-    "etf_list": [
-      "00992A"
-    ]
-  },
-  {
-    "stock_code": "4958",
-    "stock_name": "臻鼎-KY",
-    "etf_count": 1,
-    "value": -150600000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "8069",
-    "stock_name": "元太",
-    "etf_count": 1,
-    "value": -134302500.0,
-    "etf_list": [
-      "00400A"
-    ]
-  },
-  {
     "stock_code": "3081",
-    "stock_name": "聯  亞",
+    "stock_name": "聯亞",
     "etf_count": 1,
-    "value": -129900000.0,
+    "value": -263400000.0,
     "etf_list": [
-      "00400A"
+      "00403A"
     ]
   },
   {
-    "stock_code": "8046",
-    "stock_name": "南亞電路",
+    "stock_code": "6669",
+    "stock_name": "緯穎科技",
     "etf_count": 1,
-    "value": -127050000.0,
+    "value": -245000000.0,
     "etf_list": [
       "00991A"
     ]
   },
   {
-    "stock_code": "6278",
-    "stock_name": "台表科",
+    "stock_code": "2891",
+    "stock_name": "中信金",
     "etf_count": 1,
-    "value": -89488000.0,
+    "value": -238477500.0,
     "etf_list": [
       "00400A"
     ]
   },
   {
-    "stock_code": "2337",
-    "stock_name": "旺宏",
+    "stock_code": "3702",
+    "stock_name": "大聯大",
     "etf_count": 1,
-    "value": -78300000.0,
+    "value": -153636000.0,
     "etf_list": [
-      "00996A"
-    ]
-  },
-  {
-    "stock_code": "4979",
-    "stock_name": "華星光",
-    "etf_count": 1,
-    "value": -73315000.0,
-    "etf_list": [
-      "00403A"
-    ]
-  },
-  {
-    "stock_code": "3081",
-    "stock_name": "聯亞",
-    "etf_count": 1,
-    "value": -64950000.0,
-    "etf_list": [
-      "00403A"
-    ]
-  },
-  {
-    "stock_code": "8358",
-    "stock_name": "金居",
-    "etf_count": 1,
-    "value": -46980000.0,
-    "etf_list": [
-      "00987A"
-    ]
-  },
-  {
-    "stock_code": "6669",
-    "stock_name": "緯穎",
-    "etf_count": 1,
-    "value": -35455000.0,
-    "etf_list": [
-      "00994A"
-    ]
-  },
-  {
-    "stock_code": "2455",
-    "stock_name": "全新",
-    "etf_count": 1,
-    "value": -27373500.0,
-    "etf_list": [
-      "00996A"
+      "00400A"
     ]
   },
   {
     "stock_code": "3189",
     "stock_name": "景碩科技",
     "etf_count": 1,
-    "value": -22440000.0,
+    "value": -123800000.0,
     "etf_list": [
-      "00984A"
+      "00991A"
+    ]
+  },
+  {
+    "stock_code": "8046",
+    "stock_name": "南亞電路",
+    "etf_count": 1,
+    "value": -121050000.0,
+    "etf_list": [
+      "00991A"
+    ]
+  },
+  {
+    "stock_code": "6239",
+    "stock_name": "力成",
+    "etf_count": 1,
+    "value": -56610000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "4958",
+    "stock_name": "臻鼎-KY",
+    "etf_count": 1,
+    "value": -48668000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "2455",
+    "stock_name": "全新",
+    "etf_count": 1,
+    "value": -32000000.0,
+    "etf_list": [
+      "00996A"
+    ]
+  },
+  {
+    "stock_code": "3037",
+    "stock_name": "欣興",
+    "etf_count": 1,
+    "value": -17934000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "2360",
+    "stock_name": "致茂",
+    "etf_count": 1,
+    "value": -15330000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "3017",
+    "stock_name": "奇鋐",
+    "etf_count": 1,
+    "value": -11675000.0,
+    "etf_list": [
+      "00993A"
     ]
   },
   {
     "stock_code": "3036",
     "stock_name": "文曄",
     "etf_count": 1,
-    "value": -21555000.0,
+    "value": -11625000.0,
     "etf_list": [
       "00994A"
     ]
   },
   {
-    "stock_code": "3661",
-    "stock_name": "世芯-KY",
+    "stock_code": "2408",
+    "stock_name": "南亞科",
     "etf_count": 1,
-    "value": -16160000.0,
+    "value": -9180000.0,
     "etf_list": [
-      "00994A"
+      "00993A"
     ]
   }
 ]
