@@ -1,53 +1,201 @@
 {
-  "date": "2026-07-16",
+  "date": "2026-07-17",
   "by_etf_stock": {
-    "00982A": {
-      "6531": {
+    "00400A": {
+      "6505": {
+        "buy": 2,
+        "sell": 0
+      }
+    },
+    "00403A": {
+      "2308": {
+        "buy": 2,
+        "sell": 0
+      },
+      "2360": {
+        "buy": 2,
+        "sell": 0
+      },
+      "3665": {
+        "buy": 2,
+        "sell": 0
+      },
+      "5274": {
+        "buy": 2,
+        "sell": 0
+      }
+    },
+    "00981A": {
+      "2449": {
+        "buy": 2,
+        "sell": 0
+      },
+      "3711": {
         "buy": 2,
         "sell": 0
       }
     },
     "00991A": {
-      "2408": {
-        "buy": 2,
-        "sell": 0
-      },
-      "8046": {
+      "2059": {
         "buy": 2,
         "sell": 0
       }
     },
-    "00992A": {
+    "00999A": {
+      "1319": {
+        "buy": 0,
+        "sell": 2
+      },
+      "2441": {
+        "buy": 2,
+        "sell": 0
+      },
+      "2880": {
+        "buy": 2,
+        "sell": 0
+      },
+      "2885": {
+        "buy": 2,
+        "sell": 0
+      },
+      "2887": {
+        "buy": 2,
+        "sell": 0
+      },
+      "2890": {
+        "buy": 2,
+        "sell": 0
+      },
       "3026": {
         "buy": 2,
         "sell": 0
       },
-      "7751": {
-        "buy": 0,
-        "sell": 2
-      }
-    },
-    "00996A": {
-      "1303": {
+      "3037": {
         "buy": 2,
         "sell": 0
+      },
+      "3592": {
+        "buy": 0,
+        "sell": 2
+      },
+      "3706": {
+        "buy": 2,
+        "sell": 0
+      },
+      "4551": {
+        "buy": 2,
+        "sell": 0
+      },
+      "4915": {
+        "buy": 0,
+        "sell": 2
+      },
+      "5439": {
+        "buy": 2,
+        "sell": 0
+      },
+      "6435": {
+        "buy": 2,
+        "sell": 0
+      },
+      "6768": {
+        "buy": 0,
+        "sell": 2
+      },
+      "8112": {
+        "buy": 0,
+        "sell": 2
+      },
+      "8299": {
+        "buy": 0,
+        "sell": 2
+      },
+      "9907": {
+        "buy": 0,
+        "sell": 2
       }
     }
   },
   "by_stock": {
-    "6531": {
+    "6505": {
       "max_buy": 2,
       "max_sell": 0,
       "etf_count_buy": 1,
       "etf_count_sell": 0
     },
-    "2408": {
+    "2308": {
       "max_buy": 2,
       "max_sell": 0,
       "etf_count_buy": 1,
       "etf_count_sell": 0
     },
-    "8046": {
+    "2360": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "3665": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "5274": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "2449": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "3711": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "2059": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "1319": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "2441": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "2880": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "2885": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "2887": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "2890": {
       "max_buy": 2,
       "max_sell": 0,
       "etf_count_buy": 1,
@@ -59,17 +207,71 @@
       "etf_count_buy": 1,
       "etf_count_sell": 0
     },
-    "7751": {
+    "3037": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "3592": {
       "max_buy": 0,
       "max_sell": 2,
       "etf_count_buy": 0,
       "etf_count_sell": 1
     },
-    "1303": {
+    "3706": {
       "max_buy": 2,
       "max_sell": 0,
       "etf_count_buy": 1,
       "etf_count_sell": 0
+    },
+    "4551": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "4915": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "5439": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "6435": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "6768": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "8112": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "8299": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "9907": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
     }
   }
 }
