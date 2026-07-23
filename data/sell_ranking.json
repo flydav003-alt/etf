@@ -1,84 +1,93 @@
 [
   {
-    "stock_code": "2492",
-    "stock_name": "華新科技",
+    "stock_code": "2330",
+    "stock_name": "台積電",
     "etf_count": 1,
-    "value": -982800000.0,
+    "value": -2880000000.0,
     "etf_list": [
-      "00991A"
+      "00403A"
     ]
   },
   {
-    "stock_code": "2344",
-    "stock_name": "華邦電子",
+    "stock_code": "6669",
+    "stock_name": "緯穎",
     "etf_count": 2,
-    "value": -748577000.0,
+    "value": -1116500000.0,
     "etf_list": [
-      "00401A",
-      "00991A"
-    ]
-  },
-  {
-    "stock_code": "6515",
-    "stock_name": "穎崴",
-    "etf_count": 2,
-    "value": -625570000.0,
-    "etf_list": [
-      "00981A",
-      "00992A"
-    ]
-  },
-  {
-    "stock_code": "2303",
-    "stock_name": "聯華電子",
-    "etf_count": 1,
-    "value": -538000000.0,
-    "etf_list": [
-      "00991A"
-    ]
-  },
-  {
-    "stock_code": "2327",
-    "stock_name": "國巨*",
-    "etf_count": 2,
-    "value": -482400000.0,
-    "etf_list": [
-      "00988A",
+      "00403A",
       "00993A"
     ]
   },
   {
-    "stock_code": "2330",
-    "stock_name": "台積電",
-    "etf_count": 1,
-    "value": -289200000.0,
+    "stock_code": "2368",
+    "stock_name": "金像電",
+    "etf_count": 2,
+    "value": -1031180000.0,
     "etf_list": [
+      "00400A",
       "00981A"
+    ]
+  },
+  {
+    "stock_code": "4958",
+    "stock_name": "臻鼎-KY",
+    "etf_count": 1,
+    "value": -436020000.0,
+    "etf_list": [
+      "00403A"
+    ]
+  },
+  {
+    "stock_code": "2337",
+    "stock_name": "旺宏",
+    "etf_count": 1,
+    "value": -378000000.0,
+    "etf_list": [
+      "00405A"
+    ]
+  },
+  {
+    "stock_code": "2330",
+    "stock_name": "台灣積體電路製造",
+    "etf_count": 1,
+    "value": -355200000.0,
+    "etf_list": [
+      "00985A"
+    ]
+  },
+  {
+    "stock_code": "6147",
+    "stock_name": "頎邦",
+    "etf_count": 2,
+    "value": -302386500.0,
+    "etf_list": [
+      "00981A",
+      "00982A"
+    ]
+  },
+  {
+    "stock_code": "8210",
+    "stock_name": "勤  誠",
+    "etf_count": 1,
+    "value": -287500000.0,
+    "etf_list": [
+      "00400A"
     ]
   },
   {
     "stock_code": "2330",
     "stock_name": "台灣積體",
     "etf_count": 1,
-    "value": -241000000.0,
+    "value": -240000000.0,
     "etf_list": [
       "00991A"
     ]
   },
   {
-    "stock_code": "2395",
-    "stock_name": "研華",
+    "stock_code": "2059",
+    "stock_name": "川湖科技",
     "etf_count": 1,
-    "value": -187677000.0,
-    "etf_list": [
-      "00985A"
-    ]
-  },
-  {
-    "stock_code": "3653",
-    "stock_name": "健策精密工業",
-    "etf_count": 1,
-    "value": -179520000.0,
+    "value": -154375000.0,
     "etf_list": [
       "00980A"
     ]
@@ -87,7 +96,7 @@
     "stock_code": "5536",
     "stock_name": "聖暉*",
     "etf_count": 1,
-    "value": -156000000.0,
+    "value": -125475000.0,
     "etf_list": [
       "00993A"
     ]
@@ -96,62 +105,43 @@
     "stock_code": "3665",
     "stock_name": "貿聯-KY",
     "etf_count": 1,
-    "value": -142000000.0,
+    "value": -120555000.0,
     "etf_list": [
       "00993A"
     ]
   },
   {
-    "stock_code": "6505",
-    "stock_name": "台塑石化",
+    "stock_code": "2481",
+    "stock_name": "強  茂",
     "etf_count": 1,
-    "value": -139031200.0,
+    "value": -88987500.0,
     "etf_list": [
-      "00985A"
-    ]
-  },
-  {
-    "stock_code": "3017",
-    "stock_name": "奇鋐",
-    "etf_count": 1,
-    "value": -125280000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "2308",
-    "stock_name": "台達電子工業",
-    "etf_count": 2,
-    "value": -119275000.0,
-    "etf_list": [
-      "00401A",
-      "00980A"
-    ]
-  },
-  {
-    "stock_code": "2345",
-    "stock_name": "智邦",
-    "etf_count": 1,
-    "value": -106560000.0,
-    "etf_list": [
-      "00993A"
+      "00400A"
     ]
   },
   {
     "stock_code": "2454",
     "stock_name": "聯發科",
     "etf_count": 1,
-    "value": -102760000.0,
+    "value": -84700000.0,
     "etf_list": [
       "00993A"
     ]
   },
   {
-    "stock_code": "2383",
-    "stock_name": "台光電子",
+    "stock_code": "2345",
+    "stock_name": "智邦",
     "etf_count": 1,
-    "value": -96600000.0,
+    "value": -84545000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "3017",
+    "stock_name": "奇鋐",
+    "etf_count": 1,
+    "value": -83805000.0,
     "etf_list": [
       "00993A"
     ]
@@ -160,26 +150,34 @@
     "stock_code": "3037",
     "stock_name": "欣興",
     "etf_count": 1,
-    "value": -90750000.0,
+    "value": -82537000.0,
     "etf_list": [
       "00993A"
     ]
   },
   {
-    "stock_code": "6669",
-    "stock_name": "緯穎",
-    "etf_count": 2,
-    "value": -85000000.0,
-    "etf_list": [
-      "00401A",
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "7769",
-    "stock_name": "鴻勁精密",
+    "stock_code": "2383",
+    "stock_name": "台光電子",
     "etf_count": 1,
-    "value": -84500000.0,
+    "value": -71750000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "2327",
+    "stock_name": "國巨*",
+    "etf_count": 1,
+    "value": -71706000.0,
+    "etf_list": [
+      "00993A"
+    ]
+  },
+  {
+    "stock_code": "3443",
+    "stock_name": "創意電子",
+    "etf_count": 1,
+    "value": -48070000.0,
     "etf_list": [
       "00980A"
     ]
