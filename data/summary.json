@@ -1,12 +1,12 @@
 {
-  "date": "2026-07-23",
-  "display_date": "2026-07-23",
+  "date": "2026-07-24",
+  "display_date": "2026-07-24",
   "is_fallback": false,
   "etf_count": 18,
-  "total_holdings": 943,
+  "total_holdings": 944,
   "has_changes": true,
-  "change_count": 136,
-  "updated_at": "2026-07-23 10:16:24",
+  "change_count": 62,
+  "updated_at": "2026-07-24 10:10:45",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
