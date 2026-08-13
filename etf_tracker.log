@@ -19506,3 +19506,170 @@
 2026-08-12 09:01:55,292 [INFO] ✓ CSV 匯出完成 → data/etf_20260812.csv（2026-08-12，前 10 檔）
 2026-08-12 09:01:55,292 [INFO]   排行：南亞, 台達電, 精測, 台光電, 穩懋半導體, 金像電, 富世達, 亞翔, 啟碁, 台達電子工業
 2026-08-12 09:01:55,292 [INFO] ✅ 完成！2026-08-12 共 934 筆持股
+2026-08-13 08:55:45,499 [INFO] ============================================================
+2026-08-13 08:55:45,499 [INFO] === 開始執行 2026-08-13（昨日：2026-08-12）===
+2026-08-13 08:55:45,500 [INFO] ✓ 資料庫初始化完成
+2026-08-13 08:55:45,503 [INFO] 檢查並補抓 ETF 歷史收盤價...
+2026-08-13 08:55:45,505 [INFO]   00981A 已有 300 筆歷史，跳過補抓
+2026-08-13 08:55:45,505 [INFO]   00982A 已有 303 筆歷史，跳過補抓
+2026-08-13 08:55:45,505 [INFO]   補抓 00991A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:46,219 [ERROR]   FinMind 歷史抓取失敗 00991A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:46,219 [WARNING]   ✗ 00991A 無歷史資料
+2026-08-13 08:55:47,219 [INFO]   補抓 00992A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:47,923 [ERROR]   FinMind 歷史抓取失敗 00992A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:47,923 [WARNING]   ✗ 00992A 無歷史資料
+2026-08-13 08:55:48,923 [INFO]   補抓 00993A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:49,607 [ERROR]   FinMind 歷史抓取失敗 00993A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:49,607 [WARNING]   ✗ 00993A 無歷史資料
+2026-08-13 08:55:50,607 [INFO]   00980A 已有 316 筆歷史，跳過補抓
+2026-08-13 08:55:50,608 [INFO]   00985A 已有 262 筆歷史，跳過補抓
+2026-08-13 08:55:50,608 [INFO]   補抓 00995A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:51,297 [ERROR]   FinMind 歷史抓取失敗 00995A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:51,297 [WARNING]   ✗ 00995A 無歷史資料
+2026-08-13 08:55:52,297 [INFO]   00984A 已有 267 筆歷史，跳過補抓
+2026-08-13 08:55:52,297 [INFO]   補抓 00987A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:52,981 [ERROR]   FinMind 歷史抓取失敗 00987A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:52,981 [WARNING]   ✗ 00987A 無歷史資料
+2026-08-13 08:55:53,981 [INFO]   補抓 00994A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:54,678 [ERROR]   FinMind 歷史抓取失敗 00994A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:54,679 [WARNING]   ✗ 00994A 無歷史資料
+2026-08-13 08:55:55,679 [INFO]   補抓 00996A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:56,351 [ERROR]   FinMind 歷史抓取失敗 00996A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:56,351 [WARNING]   ✗ 00996A 無歷史資料
+2026-08-13 08:55:57,351 [INFO]   補抓 00400A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:58,113 [ERROR]   FinMind 歷史抓取失敗 00400A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:58,113 [WARNING]   ✗ 00400A 無歷史資料
+2026-08-13 08:55:59,113 [INFO]   補抓 00401A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:55:59,853 [ERROR]   FinMind 歷史抓取失敗 00401A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:55:59,853 [WARNING]   ✗ 00401A 無歷史資料
+2026-08-13 08:56:00,853 [INFO]   補抓 00999A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:56:01,572 [ERROR]   FinMind 歷史抓取失敗 00999A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:56:01,572 [WARNING]   ✗ 00999A 無歷史資料
+2026-08-13 08:56:02,573 [INFO]   補抓 00988A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:56:03,286 [INFO]   FinMind 歷史：00988A 抓到 187 筆
+2026-08-13 08:56:03,297 [INFO]   ✓ 00988A 補抓 187 筆
+2026-08-13 08:56:04,298 [INFO]   補抓 00403A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:56:05,836 [ERROR]   FinMind 歷史抓取失敗 00403A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:56:05,836 [WARNING]   ✗ 00403A 無歷史資料
+2026-08-13 08:56:06,836 [INFO]   補抓 00405A 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:56:10,356 [ERROR]   FinMind 歷史抓取失敗 00405A: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:56:10,357 [WARNING]   ✗ 00405A 無歷史資料
+2026-08-13 08:56:11,357 [INFO]   0050 已有 353 筆歷史，跳過補抓
+2026-08-13 08:56:11,357 [INFO]   00631L 已有 312 筆歷史，跳過補抓
+2026-08-13 08:56:11,357 [INFO]   補抓 009816 歷史收盤價（2025-07-09 ~ 2026-08-13）...
+2026-08-13 08:56:41,691 [INFO]   ✓ 009816 補抓 125 筆
+2026-08-13 08:56:42,691 [INFO]   00830 已有 336 筆歷史，跳過補抓
+2026-08-13 08:56:42,692 [INFO]   00878 已有 336 筆歷史，跳過補抓
+2026-08-13 08:56:42,692 [INFO]   00919 已有 336 筆歷史，跳過補抓
+2026-08-13 08:56:43,333 [INFO]   [DEBUG] 00981A 原始回傳 Title: ['日期', '標的代號', '標的名稱', '權重(%)', '持有數', '單位']
+2026-08-13 08:56:43,334 [INFO]   [DEBUG] 00981A 原始回傳前 5 筆:
+2026-08-13 08:56:43,334 [INFO]     [0] ['20260812', '2330', '台積電', '9.54', '12134000', '股']
+2026-08-13 08:56:43,334 [INFO]     [1] ['20260812', '2383', '台光電', '9.07', '4863000', '股']
+2026-08-13 08:56:43,334 [INFO]     [2] ['20260812', '2454', '聯發科', '7.12', '5448000', '股']
+2026-08-13 08:56:43,334 [INFO]     [3] ['20260812', '3037', '欣興', '6.58', '20210000', '股']
+2026-08-13 08:56:43,334 [INFO]     [4] ['20260812', '3017', '奇鋐', '5.59', '5900000', '股']
+2026-08-13 08:56:43,334 [INFO]   [DEBUG] 00981A 單位種類統計: {'股': 50, '口': 1, '元': 3}
+2026-08-13 08:56:43,334 [INFO]   [DEBUG] 00981A 非股條目 (4 筆):
+2026-08-13 08:56:43,334 [INFO]     ['20260812', '202608TX', '台指期貨', '2.01', '679', '口']
+2026-08-13 08:56:43,334 [INFO]     ['20260812', 'C_NTD', 'CASH', '', '18687493543', '元']
+2026-08-13 08:56:43,334 [INFO]     ['20260812', 'M_NTD', 'MARGIN', '', '1824416742', '元']
+2026-08-13 08:56:43,334 [INFO]     ['20260812', 'RDI_NTD', 'RECEIVABLES FOR DISPOSAL OF INVESTMENTS', '', '-593864419', '元']
+2026-08-13 08:56:43,336 [INFO]   ✓ 00981A 統一台股增長: 53 筆 (含現金 3)
+2026-08-13 08:56:45,484 [INFO]   ✓ 00982A 群益台灣強棒: 67 筆 (含現金 11)
+2026-08-13 08:56:47,691 [INFO]   ✓ 00991A 復華未來50: 52 筆 (含現金 2)
+2026-08-13 08:56:49,835 [INFO]   ✓ 00992A 群益科技創新: 39 筆 (含現金 3)
+2026-08-13 08:56:52,027 [INFO]   ✓ 00993A 安聯台灣: 50 筆 
+2026-08-13 08:56:54,202 [INFO]   ✓ 00980A 野村臺灣優選: 53 筆 (含現金 3)
+2026-08-13 08:56:56,353 [INFO]   ✓ 00985A 野村台灣50: 54 筆 (含現金 4)
+2026-08-13 08:56:59,500 [INFO]   ✓ 00995A 中信台灣卓越: 55 筆 (含現金 3)
+2026-08-13 08:57:01,668 [INFO]   ✓ 00984A 安聯台灣高息: 122 筆 
+2026-08-13 08:57:03,836 [INFO]   ✓ 00987A 台新優勢成長: 27 筆 (含現金 1)
+2026-08-13 08:57:05,804 [INFO]   ✓ 00994A 第一金台股優: 40 筆 (含現金 1)
+2026-08-13 08:57:07,772 [INFO]   ✓ 00996A 兆豐台灣豐收: 54 筆 (含現金 3)
+2026-08-13 08:57:09,738 [INFO]   ✓ 00400A 國泰動能高息: 53 筆 (含現金 2)
+2026-08-13 08:57:11,697 [INFO]   ✓ 00401A 摩根台灣鑫收: 66 筆 (含現金 1)
+2026-08-13 08:57:13,923 [INFO]   ✓ 00999A 主動野村臺灣高息: 63 筆 (含現金 4)
+2026-08-13 08:57:15,889 [INFO]   ✓ 00988A 主動統一全球創新: 12 筆 (含現金 3)
+2026-08-13 08:57:17,861 [INFO]   ✓ 00403A 主動統一升級50: 53 筆 (含現金 3)
+2026-08-13 08:57:19,819 [INFO]   ✓ 00405A 主動富邦台灣龍耀: 53 筆 (含現金 3)
+2026-08-13 08:57:21,320 [INFO] 共抓取 966 筆持股（237 支股票）
+2026-08-13 08:57:21,322 [INFO]   合併前一交易日(2026-08-12)持股，新增 0 支可能完全賣出的股票
+2026-08-13 08:57:26,784 [INFO]   TWSE 上市：取得 185 支收盤價
+2026-08-13 08:57:27,196 [WARNING]   TPEx openapi.tpex.org.tw 失敗（ConnectionError），試備用...
+2026-08-13 08:57:34,211 [INFO]   TPEx 上櫃：補充 52 支收盤價（來源：www.tpex.org.tw）
+2026-08-13 08:57:34,212 [INFO] ✓ 取得 237 支個股收盤價（今日237支 + 前日新增）
+2026-08-13 08:57:34,243 [INFO] ✓ 儲存 966 筆持股
+2026-08-13 08:57:34,243 [INFO] 補抓缺收盤價的持股...
+2026-08-13 08:57:34,244 [INFO] ✓ 所有持股均有收盤價，無需補抓
+2026-08-13 08:57:34,572 [INFO] 🔍 FinMind 抓取 ETF 價格（含漲跌）：2026-08-08 ~ 2026-08-13
+2026-08-13 08:57:34,920 [INFO]   ✓ 00981A | 收盤 29.95 | 漲跌 +0.61 (+2.08%)
+2026-08-13 08:57:35,045 [INFO]   ✓ 00982A | 收盤 23.18 | 漲跌 +0.36 (+1.58%)
+2026-08-13 08:57:35,168 [INFO]   ✓ 00991A | 收盤 18.19 | 漲跌 +0.40 (+2.25%)
+2026-08-13 08:57:35,646 [ERROR] FinMind 抓取 00992A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:35,752 [ERROR] FinMind 抓取 00993A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:35,860 [ERROR] FinMind 抓取 00980A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:35,992 [ERROR] FinMind 抓取 00985A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,101 [ERROR] FinMind 抓取 00995A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,213 [ERROR] FinMind 抓取 00984A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,320 [ERROR] FinMind 抓取 00987A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,427 [ERROR] FinMind 抓取 00994A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,536 [ERROR] FinMind 抓取 00996A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,647 [ERROR] FinMind 抓取 00400A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,756 [ERROR] FinMind 抓取 00401A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,864 [ERROR] FinMind 抓取 00999A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:36,972 [ERROR] FinMind 抓取 00988A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,079 [ERROR] FinMind 抓取 00403A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,185 [ERROR] FinMind 抓取 00405A 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,335 [ERROR] FinMind 抓取 0050 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,441 [ERROR] FinMind 抓取 00631L 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,549 [ERROR] FinMind 抓取 009816 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,664 [ERROR] FinMind 抓取 00830 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,772 [ERROR] FinMind 抓取 00878 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,882 [ERROR] FinMind 抓取 00919 失敗: FinMind API unexpected response: Requests reach the upper limit. https://finmindtrade.com/
+2026-08-13 08:57:37,882 [INFO] ✓ FinMind 成功抓到 3 檔 ETF（含漲跌）
+2026-08-13 08:57:59,076 [INFO]   00981A: NAV=29.49, AUM=3070.67億, 折溢價=2.08%, 來源=Pocket_Discount
+2026-08-13 08:58:17,850 [INFO]   00982A: NAV=22.95, AUM=519.01億, 折溢價=1.58%, 來源=Pocket_Discount
+2026-08-13 08:58:36,650 [INFO]   00991A: NAV=17.91, AUM=907.29億, 折溢價=2.25%, 來源=Pocket_Discount
+2026-08-13 08:58:55,390 [INFO]   00992A: NAV=17.39, AUM=426.72億, 折溢價=2.83%, 來源=Pocket_Discount
+2026-08-13 08:59:14,111 [INFO]   00993A: NAV=13.46, AUM=101.58億, 折溢價=1.49%, 來源=Pocket_Discount
+2026-08-13 08:59:32,689 [INFO]   00980A: NAV=24.84, AUM=202.02億, 折溢價=1.9%, 來源=Pocket_Discount
+2026-08-13 08:59:51,401 [INFO]   00985A: NAV=22.35, AUM=102.2億, 折溢價=1.98%, 來源=Pocket_Discount
+2026-08-13 09:00:10,170 [INFO]   00995A: NAV=17.17, AUM=51.52億, 折溢價=1.64%, 來源=Pocket_Discount
+2026-08-13 09:00:28,903 [INFO]   00984A: NAV=15.38, AUM=100.6億, 折溢價=0.59%, 來源=Pocket_Discount
+2026-08-13 09:00:47,832 [INFO]   00987A: NAV=15.93, AUM=27.26億, 折溢價=1.96%, 來源=Pocket_Discount
+2026-08-13 09:01:06,713 [INFO]   00994A: NAV=17.15, AUM=52.17億, 折溢價=1.64%, 來源=Pocket_Discount
+2026-08-13 09:01:25,622 [INFO]   00996A: NAV=13.99, AUM=44.76億, 折溢價=2.3%, 來源=Pocket_Discount
+2026-08-13 09:01:44,605 [INFO]   00400A: NAV=14.45, AUM=298.99億, 折溢價=2.58%, 來源=Pocket_Discount
+2026-08-13 09:02:03,512 [INFO]   00401A: NAV=13.61, AUM=32.58億, 折溢價=1.77%, 來源=Pocket_Discount
+2026-08-13 09:02:22,206 [INFO]   00999A: NAV=11.25, AUM=126.47億, 折溢價=0.98%, 來源=Pocket_Discount
+2026-08-13 09:02:40,944 [INFO]   00988A: NAV=17.19, AUM=566.86億, 折溢價=5.37%, 來源=Pocket_Discount
+2026-08-13 09:02:59,887 [INFO]   00403A: NAV=10.17, AUM=1807.82億, 折溢價=1.98%, 來源=Pocket_Discount
+2026-08-13 09:03:27,797 [INFO]   00405A: NAV=8.45, AUM=306.88億, 折溢價=2.38%, 來源=None
+2026-08-13 09:03:46,525 [INFO]   0050: NAV=105.58, AUM=23676.57億, 折溢價=1.43%, 來源=Pocket_Discount
+2026-08-13 09:04:05,214 [INFO]   00631L: NAV=35.52, AUM=2776.02億, 折溢價=2.37%, 來源=Pocket_Discount
+2026-08-13 09:04:15,248 [INFO] [009816 RAW] 交易排行 規模排行 成交量排行 成交值排行 股數創造排行 股數贖回排行 換手率排行 基本資料排行 成立年齡排行
+2026-08-13 09:04:24,040 [INFO] [009816 RAW] 05 資產規模(億)：1860.2 成立時間：2026/02/03 折溢價 Created with High
+2026-08-13 09:04:24,066 [INFO]   009816: NAV=15.35, AUM=1860.2億, 折溢價=1.7%, 來源=Pocket_Discount
+2026-08-13 09:04:42,662 [INFO]   00830: NAV=88.59, AUM=714.08億, 折溢價=2.42%, 來源=Pocket_Discount
+2026-08-13 09:05:01,537 [INFO]   00878: NAV=33.55, AUM=6228.94億, 折溢價=0.78%, 來源=Pocket_Discount
+2026-08-13 09:05:20,175 [INFO]   00919: NAV=30.36, AUM=5520.97億, 折溢價=0.73%, 來源=Pocket_Discount
+2026-08-13 09:05:21,231 [INFO] ✓ ETF NAV：24 檔，規模：24 檔，折溢價：24 檔
+2026-08-13 09:05:21,232 [INFO]   00981A | 現價 29.95 | NAV 29.49 | 折溢價 +1.56% (計算)
+2026-08-13 09:05:21,232 [INFO]   00982A | 現價 23.18 | NAV 22.95 | 折溢價 +1.00% (計算)
+2026-08-13 09:05:21,232 [INFO]   00991A | 現價 18.19 | NAV 17.91 | 折溢價 +1.56% (計算)
+2026-08-13 09:05:21,233 [INFO] ✓ ETF今日價格儲存 3 檔
+2026-08-13 09:05:21,240 [INFO]   比對日期：今日=2026-08-13，前一交易日=2026-08-12
+2026-08-13 09:05:21,288 [INFO]   ✓ 使用昨日股票名稱救援 7 筆 FULL_SELL 記錄
+2026-08-13 09:05:21,288 [WARNING]   ⚠ 仍有 2 筆異動找不到任何收盤價（金額將為 0）
+2026-08-13 09:05:21,289 [INFO]   🔍 過濾純權重漂移：318 筆中移除 250 筆（股數未變動），剩 68 筆真實買賣
+2026-08-13 09:05:21,293 [INFO] ✓ 偵測到 68 筆真實持股變化（已排除權重漂移）
+2026-08-13 09:05:21,359 [INFO] ✓ Streak 計算完成：15 筆 ETF×股票連續紀錄,14 支股票有彙總 streak
+2026-08-13 09:05:21,360 [INFO] ✓ streaks.json 已匯出
+2026-08-13 09:05:21,379 [INFO]   📅 顯示日 = 2026-08-13(今日)
+2026-08-13 09:05:21,467 [INFO] ✓ 績效資料匯出：25 檔
+2026-08-13 09:05:21,673 [INFO] ✓ 價格歷史匯出：25 檔
+2026-08-13 09:05:21,780 [INFO] ✓ 異動歷史匯出：1128 筆，涵蓋 10 個交易日
+2026-08-13 09:05:21,794 [INFO] ✓ JSON 匯出完成 → data/
+2026-08-13 09:05:21,839 [INFO] ✓ CSV 匯出完成 → data/etf_20260813.csv（2026-08-13，前 10 檔）
+2026-08-13 09:05:21,839 [INFO]   排行：大立光, 信驊, 南電, 聯亞光電, 奇鋐, 創意, 環宇-KY, 精測, 台達電, 台光電
+2026-08-13 09:05:21,839 [INFO] ✅ 完成！2026-08-13 共 932 筆持股
