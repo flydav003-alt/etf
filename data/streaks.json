@@ -1,5 +1,39 @@
 {
-  "date": "2026-08-25",
-  "by_etf_stock": {},
-  "by_stock": {}
+  "date": "2026-08-26",
+  "by_etf_stock": {
+    "00996A": {
+      "6830": {
+        "buy": 2,
+        "sell": 0
+      },
+      "7751": {
+        "buy": 2,
+        "sell": 0
+      },
+      "8996": {
+        "buy": 2,
+        "sell": 0
+      }
+    }
+  },
+  "by_stock": {
+    "6830": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "7751": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    },
+    "8996": {
+      "max_buy": 2,
+      "max_sell": 0,
+      "etf_count_buy": 1,
+      "etf_count_sell": 0
+    }
+  }
 }
