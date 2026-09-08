@@ -1,63 +1,89 @@
 {
-  "date": "2026-09-07",
+  "date": "2026-09-08",
   "by_etf_stock": {
-    "00403A": {
-      "2481": {
-        "buy": 3,
-        "sell": 0
-      },
+    "00400A": {
       "3008": {
         "buy": 0,
         "sell": 2
       }
     },
-    "00988A": {
-      "6515": {
-        "buy": 2,
-        "sell": 0
+    "00403A": {
+      "3008": {
+        "buy": 0,
+        "sell": 3
       }
     },
-    "00996A": {
-      "6510": {
+    "00981A": {
+      "3665": {
+        "buy": 0,
+        "sell": 2
+      },
+      "8210": {
+        "buy": 0,
+        "sell": 2
+      },
+      "8996": {
+        "buy": 0,
+        "sell": 2
+      }
+    },
+    "00982A": {
+      "2059": {
+        "buy": 0,
+        "sell": 2
+      },
+      "2360": {
         "buy": 2,
         "sell": 0
       },
-      "7751": {
-        "buy": 2,
-        "sell": 0
+      "3017": {
+        "buy": 0,
+        "sell": 2
       }
     }
   },
   "by_stock": {
-    "2481": {
-      "max_buy": 3,
-      "max_sell": 0,
-      "etf_count_buy": 1,
-      "etf_count_sell": 0
-    },
     "3008": {
+      "max_buy": 0,
+      "max_sell": 3,
+      "etf_count_buy": 0,
+      "etf_count_sell": 2
+    },
+    "3665": {
       "max_buy": 0,
       "max_sell": 2,
       "etf_count_buy": 0,
       "etf_count_sell": 1
     },
-    "6515": {
+    "8210": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "8996": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "2059": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
+    },
+    "2360": {
       "max_buy": 2,
       "max_sell": 0,
       "etf_count_buy": 1,
       "etf_count_sell": 0
     },
-    "6510": {
-      "max_buy": 2,
-      "max_sell": 0,
-      "etf_count_buy": 1,
-      "etf_count_sell": 0
-    },
-    "7751": {
-      "max_buy": 2,
-      "max_sell": 0,
-      "etf_count_buy": 1,
-      "etf_count_sell": 0
+    "3017": {
+      "max_buy": 0,
+      "max_sell": 2,
+      "etf_count_buy": 0,
+      "etf_count_sell": 1
     }
   }
 }
