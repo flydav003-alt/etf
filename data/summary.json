@@ -1,12 +1,12 @@
 {
-  "date": "2026-09-23",
-  "display_date": "2026-09-23",
+  "date": "2026-09-24",
+  "display_date": "2026-09-24",
   "is_fallback": false,
-  "etf_count": 18,
-  "total_holdings": 899,
+  "etf_count": 23,
+  "total_holdings": 1148,
   "has_changes": true,
-  "change_count": 137,
-  "updated_at": "2026-09-23 13:11:02",
+  "change_count": 342,
+  "updated_at": "2026-09-24 13:06:53",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
@@ -80,6 +80,26 @@
     {
       "code": "00405A",
       "name": "主動富邦台灣龍耀"
+    },
+    {
+      "code": "00404A",
+      "name": "主動聯博動能50"
+    },
+    {
+      "code": "00406A",
+      "name": "主動中信台灣收益"
+    },
+    {
+      "code": "00407A",
+      "name": "主動凱基台灣"
+    },
+    {
+      "code": "00408A",
+      "name": "主動第一金優股息"
+    },
+    {
+      "code": "00410A",
+      "name": "主動永豐科技趨勢"
     }
   ]
 }

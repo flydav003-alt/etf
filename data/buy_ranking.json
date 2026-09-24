@@ -1,185 +1,215 @@
 [
   {
-    "stock_code": "6223",
-    "stock_name": "旺矽",
+    "stock_code": "2330",
+    "stock_name": "台灣積體電路製造",
     "etf_count": 2,
-    "value": 443980000.0,
+    "value": 5687500000.0,
     "etf_list": [
-      "00992A",
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "2454",
+    "stock_name": "聯發科技",
+    "etf_count": 2,
+    "value": 3497282500.0,
+    "etf_list": [
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "3017",
+    "stock_name": "奇鋐科技",
+    "etf_count": 2,
+    "value": 2939090000.0,
+    "etf_list": [
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "2383",
+    "stock_name": "台光電子材料",
+    "etf_count": 2,
+    "value": 2826260000.0,
+    "etf_list": [
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "3037",
+    "stock_name": "欣興電子",
+    "etf_count": 3,
+    "value": 2536920000.0,
+    "etf_list": [
+      "00404A",
+      "00406A",
+      "00999A"
+    ]
+  },
+  {
+    "stock_code": "3443",
+    "stock_name": "創意電子",
+    "etf_count": 4,
+    "value": 2381340000.0,
+    "etf_list": [
+      "00404A",
+      "00406A",
+      "00407A",
       "00993A"
     ]
   },
   {
-    "stock_code": "2408",
-    "stock_name": "南亞科",
-    "etf_count": 1,
-    "value": 397600000.0,
+    "stock_code": "2330",
+    "stock_name": "台積電",
+    "etf_count": 4,
+    "value": 2377497500.0,
     "etf_list": [
-      "00403A"
+      "00407A",
+      "00408A",
+      "00410A",
+      "00993A"
     ]
   },
   {
-    "stock_code": "6274",
-    "stock_name": "台燿",
-    "etf_count": 1,
-    "value": 350400000.0,
-    "etf_list": [
-      "00981A"
-    ]
-  },
-  {
-    "stock_code": "2368",
-    "stock_name": "金像電",
-    "etf_count": 1,
-    "value": 312000000.0,
-    "etf_list": [
-      "00981A"
-    ]
-  },
-  {
-    "stock_code": "2303",
-    "stock_name": "聯電",
+    "stock_code": "6223",
+    "stock_name": "旺矽科技",
     "etf_count": 2,
-    "value": 294080000.0,
+    "value": 1941277500.0,
     "etf_list": [
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "3653",
+    "stock_name": "健策精密工業",
+    "etf_count": 2,
+    "value": 1884540000.0,
+    "etf_list": [
+      "00406A",
+      "00995A"
+    ]
+  },
+  {
+    "stock_code": "2345",
+    "stock_name": "智邦科技",
+    "etf_count": 2,
+    "value": 1818180000.0,
+    "etf_list": [
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "3017",
+    "stock_name": "奇鋐",
+    "etf_count": 5,
+    "value": 1804400000.0,
+    "etf_list": [
+      "00407A",
+      "00408A",
+      "00410A",
       "00988A",
       "00993A"
     ]
   },
   {
-    "stock_code": "6669",
-    "stock_name": "緯穎",
-    "etf_count": 1,
-    "value": 224190000.0,
+    "stock_code": "2454",
+    "stock_name": "聯發科",
+    "etf_count": 3,
+    "value": 1635867500.0,
     "etf_list": [
+      "00407A",
+      "00408A",
+      "00410A"
+    ]
+  },
+  {
+    "stock_code": "6669",
+    "stock_name": "緯穎科技服務",
+    "etf_count": 2,
+    "value": 1517096655.0,
+    "etf_list": [
+      "00406A",
+      "00999A"
+    ]
+  },
+  {
+    "stock_code": "2308",
+    "stock_name": "台達電子工業",
+    "etf_count": 2,
+    "value": 1510500000.0,
+    "etf_list": [
+      "00404A",
+      "00406A"
+    ]
+  },
+  {
+    "stock_code": "2327",
+    "stock_name": "國巨*",
+    "etf_count": 3,
+    "value": 1489800000.0,
+    "etf_list": [
+      "00406A",
+      "00407A",
       "00993A"
     ]
   },
   {
     "stock_code": "3037",
     "stock_name": "欣興",
-    "etf_count": 2,
-    "value": 221760000.0,
+    "etf_count": 4,
+    "value": 1461600000.0,
     "etf_list": [
-      "00993A",
-      "00994A"
-    ]
-  },
-  {
-    "stock_code": "3017",
-    "stock_name": "奇鋐",
-    "etf_count": 1,
-    "value": 179670000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "3189",
-    "stock_name": "景碩科技",
-    "etf_count": 1,
-    "value": 147258000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "3443",
-    "stock_name": "創意電子",
-    "etf_count": 1,
-    "value": 125625000.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "6805",
-    "stock_name": "富世達",
-    "etf_count": 1,
-    "value": 125000000.0,
-    "etf_list": [
-      "00405A"
-    ]
-  },
-  {
-    "stock_code": "2327",
-    "stock_name": "國巨*",
-    "etf_count": 1,
-    "value": 115342000.0,
-    "etf_list": [
+      "00407A",
+      "00408A",
+      "00410A",
       "00993A"
     ]
   },
   {
     "stock_code": "5274",
     "stock_name": "信驊科技",
-    "etf_count": 1,
-    "value": 101400000.0,
+    "etf_count": 2,
+    "value": 1456682400.0,
     "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "3529",
-    "stock_name": "力旺電子",
-    "etf_count": 1,
-    "value": 89235000.0,
-    "etf_list": [
-      "00999A"
-    ]
-  },
-  {
-    "stock_code": "1560",
-    "stock_name": "中砂",
-    "etf_count": 1,
-    "value": 88350000.0,
-    "etf_list": [
-      "00993A"
+      "00404A",
+      "00406A"
     ]
   },
   {
     "stock_code": "8046",
-    "stock_name": "南電",
+    "stock_name": "南亞電路板",
     "etf_count": 1,
-    "value": 76890000.0,
+    "value": 1309220000.0,
     "etf_list": [
-      "00993A"
+      "00406A"
     ]
   },
   {
-    "stock_code": "3037",
-    "stock_name": "欣興電子",
-    "etf_count": 1,
-    "value": 56000000.0,
+    "stock_code": "2383",
+    "stock_name": "台光電",
+    "etf_count": 3,
+    "value": 1285120000.0,
     "etf_list": [
-      "00999A"
+      "00407A",
+      "00408A",
+      "00410A"
     ]
   },
   {
-    "stock_code": "3324",
-    "stock_name": "雙鴻科技",
-    "etf_count": 1,
-    "value": 55825000.0,
+    "stock_code": "2303",
+    "stock_name": "聯華電子",
+    "etf_count": 3,
+    "value": 1074080000.0,
     "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "2006",
-    "stock_name": "東和鋼鐵",
-    "etf_count": 1,
-    "value": 54070800.0,
-    "etf_list": [
-      "00993A"
-    ]
-  },
-  {
-    "stock_code": "2395",
-    "stock_name": "研華",
-    "etf_count": 1,
-    "value": 53428000.0,
-    "etf_list": [
-      "00993A"
+      "00404A",
+      "00406A",
+      "00995A"
     ]
   }
 ]
