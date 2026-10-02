@@ -181,99 +181,196 @@ def init_db():
 # ══════════════════════════════════════════════════════════
 # 2. 抓取持股（Pocket.tw M722）
 # ══════════════════════════════════════════════════════════
-def fetch_pocket_holdings(etf_code: str, debug: bool = False) -> list[dict]:
+def _parse_pocket_holdings_html(html: str, etf_code: str, debug: bool = False) -> list[dict]:
+    """解析 Pocket.tw 現行 fundholding 頁面渲染出的持股表格。
+
+    不再依賴舊版 MobileService/GetDtnoData M722 私有 API。
+    只保留一般股票與現金部位；期貨/其他單位維持原本邏輯直接略過。
     """
-    抓取 ETF 持股清單。
-    - debug=True：印出 raw response 的前 5 筆,以及所有被過濾掉的條目
-                  （用來確認 M722 是否包含現金部位、現金欄位長什麼樣）
-    - 回傳結構含股票持股 + 一筆特殊 stock_code='CASH' 的現金部位（若 API 有提供）
-    """
-    param = (
-        f"AssignID%3D{etf_code}%3B"
-        "MTPeriod%3D0%3BDTMode%3D0%3BDTRange%3D1%3BDTOrder%3D1%3BMajorTable%3DM722%3B"
-    )
-    url = (
-        "https://www.pocket.tw/api/cm/MobileService/ashx/GetDtnoData.ashx"
-        f"?action=getdtnodata&DtNo=59449513&ParamStr={param}&FilterNo=0"
-    )
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=20)
-        resp.raise_for_status()
-        json_resp = resp.json()
-        raw = json_resp.get('Data', [])
+    from bs4 import BeautifulSoup
 
-        # ── DEBUG：印出原始格式,協助確認現金欄位 ──────────
-        if debug:
-            log.info(f"  [DEBUG] {etf_code} 原始回傳 Title: {json_resp.get('Title')}")
-            log.info(f"  [DEBUG] {etf_code} 原始回傳前 5 筆:")
-            for i, row in enumerate(raw[:5]):
-                log.info(f"    [{i}] {row}")
-            units = {}
-            for row in raw:
-                if len(row) > 5:
-                    u = row[5] if row[5] else '(空字串)'
-                    units[u] = units.get(u, 0) + 1
-            log.info(f"  [DEBUG] {etf_code} 單位種類統計: {units}")
-            non_stock = [r for r in raw if len(r) > 5 and r[5] != '股']
-            if non_stock:
-                log.info(f"  [DEBUG] {etf_code} 非股條目 ({len(non_stock)} 筆):")
-                for row in non_stock[:10]:
-                    log.info(f"    {row}")
+    soup = BeautifulSoup(html, "html.parser")
+    rows = soup.select("table tbody tr")
+    if not rows:
+        rows = soup.select("tr")
 
-        holdings = []
-        for row in raw:
-            if len(row) < 5:
-                continue
-            unit = row[5] if len(row) > 5 else ''
-            stock_code_raw = str(row[1]).strip() if len(row) > 1 else ''
-            stock_name_raw = str(row[2]).strip() if len(row) > 2 else ''
+    holdings: list[dict] = []
+    seen: set[str] = set()
+    code_re = re.compile(r"^\d{4,6}$")
+    special_re = re.compile(r"^[A-Z]_[A-Z]+$")
 
-            # ── 嘗試擷取現金部位 ─────────────────────────
-            # M722 現金欄位實測：
-            #   stock_code='C_NTD', stock_name='CASH', unit='元'
-            #   stock_code='C_USD', stock_name='CASH', unit='元' 等
-            # 判斷條件：unit 是「元」，或 stock_name=='CASH'，或 stock_code 非純數字
-            cash_keywords = ('現金', '銀行', '存款', '活存', 'CASH', 'TWD', '新台幣')
-            is_cash = (
-                unit != '股' and (
-                    stock_name_raw == 'CASH' or
-                    unit == '元' or
-                    any(kw in stock_name_raw for kw in cash_keywords) or
-                    (stock_code_raw and not stock_code_raw.isdigit() and
-                     stock_code_raw.startswith('C_'))
-                )
-            )
-            if is_cash:
-                try:
-                    holdings.append({
-                        'stock_code': 'CASH',
-                        'stock_name': stock_name_raw or '現金部位',
-                        'weight_pct': float(row[3]) if row[3] not in (None, '') else 0,
-                        'shares':     0,
-                    })
-                    log.debug(f"  {etf_code} 偵測到現金部位: {stock_name_raw} = {row[3]}%")
-                except (ValueError, TypeError):
-                    pass
-                continue
+    for tr in rows:
+        cells = [c.get_text(" ", strip=True) for c in tr.find_all(["th", "td"])]
+        cells = [re.sub(r"\s+", " ", c).strip() for c in cells if c.strip()]
+        if len(cells) < 4:
+            continue
 
-            # ── 一般股票持股 ──────────────────────────────
-            if unit != '股':
-                continue
-            if not stock_code_raw.isdigit():
-                continue
+        # 找代號：一般股票 4~6 碼，現金使用 C_NTD / C_USD 等。
+        code_idx = None
+        stock_code = ""
+        for i, cell in enumerate(cells[:3]):
+            c = cell.replace("\u00a0", " ").strip()
+            if code_re.fullmatch(c) or special_re.fullmatch(c):
+                code_idx = i
+                stock_code = c
+                break
+        if code_idx is None:
+            continue
+
+        # Pocket 現行表格通常是：代號 / 名稱 / 權重 / 持有數 / 單位。
+        stock_name = cells[code_idx + 1] if len(cells) > code_idx + 1 else ""
+        rest = cells[code_idx + 2:]
+        row_text = " | ".join(cells)
+
+        wm = re.search(r"([-+]?\d+(?:,\d{3})*(?:\.\d+)?)\s*%", row_text)
+        try:
+            weight = float(wm.group(1).replace(",", "")) if wm else 0.0
+        except ValueError:
+            weight = 0.0
+
+        unit = next((u for u in ("股", "元", "張", "口") if u in cells), "")
+        sm = None
+        for cell in rest:
+            if re.fullmatch(r"[-+]?\d[\d,]*(?:\.\d+)?", cell.replace(" ", "")):
+                sm = cell.replace(" ", "")
+                break
+        shares = 0.0
+        if sm is not None:
             try:
-                holdings.append({
-                    'stock_code': stock_code_raw,
-                    'stock_name': stock_name_raw,
-                    'weight_pct': float(row[3]),
-                    'shares':     float(str(row[4]).replace(',', '')),
-                })
-            except (ValueError, TypeError):
-                continue
+                shares = float(sm.replace(",", ""))
+            except ValueError:
+                shares = 0.0
+
+        # 保留原程式的現金辨識邏輯。
+        is_cash = (
+            stock_code.startswith("C_")
+            or stock_name.upper() == "CASH"
+            or any(k in stock_name for k in ("現金", "銀行", "存款", "活存", "新台幣"))
+        )
+
+        if is_cash:
+            holdings.append({
+                "stock_code": "CASH",
+                "stock_name": stock_name or "現金部位",
+                "weight_pct": weight,
+                "shares": 0,
+            })
+            continue
+
+        # 維持原本只收股票的規則；期貨等「口」不納入股票持股。
+        if unit != "股" or not code_re.fullmatch(stock_code):
+            continue
+        if stock_code in seen:
+            continue
+        seen.add(stock_code)
+        holdings.append({
+            "stock_code": stock_code,
+            "stock_name": stock_name,
+            "weight_pct": weight,
+            "shares": shares,
+        })
+
+    if debug:
+        log.info(f"  [DEBUG] {etf_code} Pocket DOM table rows={len(rows)}, parsed={len(holdings)}")
+        log.info(f"  [DEBUG] {etf_code} parsed 前5筆: {holdings[:5]}")
+
+    return holdings
+
+
+async def _fetch_one_pocket_holdings(context, etf_code: str, debug: bool = False) -> list[dict]:
+    """使用 Playwright 讀取 Pocket.tw 現行持股頁面並解析 DOM。"""
+    page = None
+    try:
+        page = await context.new_page()
+        url = f"https://www.pocket.tw/etf/tw/{etf_code}/fundholding/"
+        await page.goto(url, timeout=60000, wait_until="domcontentloaded")
+
+        # 等待前端把持股表格真正渲染出來；比固定 sleep 8 秒更穩定。
+        for _ in range(20):
+            if await page.locator("table tbody tr").count() > 0:
+                break
+            await page.wait_for_timeout(500)
+
+        # 再給前端少量時間完成最後欄位更新。
+        await page.wait_for_timeout(1000)
+        html = await page.content()
+        holdings = _parse_pocket_holdings_html(html, etf_code, debug=debug)
+
+        if not holdings:
+            text = await page.locator("body").inner_text()
+            log.warning(
+                f"  ✗ {etf_code} Pocket DOM 仍無持股；body 前1000字：{text[:1000]!r}"
+            )
         return holdings
     except Exception as e:
-        log.error(f"  ✗ {etf_code} 持股抓取失敗: {e}")
+        log.error(f"  ✗ {etf_code} Pocket DOM 抓取失敗: {e}")
         return []
+    finally:
+        if page and not page.is_closed():
+            try:
+                await page.close()
+            except Exception:
+                pass
+
+
+def fetch_pocket_holdings_batch(debug_target: str = "00981A") -> dict[str, list[dict]]:
+    """一次啟動 Chromium，依序抓全部 ACTIVE_ETFS，避免每檔都重新啟動瀏覽器。"""
+    result: dict[str, list[dict]] = {}
+
+    try:
+        from playwright.async_api import async_playwright
+    except ImportError as e:
+        log.error(f"缺少 Playwright，無法抓 Pocket 持股：{e}")
+        return result
+
+    async def _run():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(headless=True)
+            ctx = await browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/153.0.0.0 Safari/537.36"
+                ),
+                locale="zh-TW",
+            )
+            try:
+                for code in ACTIVE_ETFS:
+                    is_debug = code == debug_target
+                    h = await _fetch_one_pocket_holdings(ctx, code, debug=is_debug)
+                    result[code] = h
+                    if h:
+                        cash_count = sum(1 for x in h if x["stock_code"] == "CASH")
+                        log.info(
+                            f"  ✓ {code} {ACTIVE_ETFS[code]}: {len(h)} 筆"
+                            f"{f'（含現金 {cash_count}）' if cash_count else ''}"
+                        )
+                    else:
+                        log.warning(f"  ✗ {code} {ACTIVE_ETFS[code]}: 無資料")
+                    await asyncio.sleep(0.8)
+            finally:
+                await browser.close()
+
+    try:
+        asyncio.run(_run())
+    except RuntimeError:
+        try:
+            import nest_asyncio
+            nest_asyncio.apply()
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(_run())
+        except Exception as e:
+            log.error(f"Pocket Playwright 執行失敗: {e}")
+    except Exception as e:
+        log.error(f"Pocket Playwright 執行失敗: {e}")
+
+    return result
+
+
+# 相容舊名稱：若其他程式仍直接呼叫 fetch_pocket_holdings，就抓單一 ETF 的現行 DOM。
+def fetch_pocket_holdings(etf_code: str, debug: bool = False) -> list[dict]:
+    data = fetch_pocket_holdings_batch(debug_target=etf_code)
+    return data.get(etf_code, [])
 
 
 # ══════════════════════════════════════════════════════════
@@ -1697,26 +1794,31 @@ def run(target_date: str | None = None):
     log.info("檢查並補抓 ETF 歷史收盤價...")
     backfill_etf_prices()
 
-    # 批次抓取 14 檔持股
-    # 第一檔（00981A）開 debug,印出原始 raw response 與被過濾條目
-    # 想看其他檔請在 Actions 設環境變數 DEBUG_HOLDINGS_ETF=00982A
+    # ── Pocket 持股：改用現行 fundholding 頁面 DOM，不再依賴已失效/空回傳的 M722 私有 API ──
     import os
     debug_target = os.environ.get('DEBUG_HOLDINGS_ETF', '00981A')
+    pocket_map = fetch_pocket_holdings_batch(debug_target=debug_target)
+
     all_holdings, all_codes = [], set()
+    failed_etfs = []
     for etf_code, etf_name in ACTIVE_ETFS.items():
-        is_debug = (etf_code == debug_target)
-        h = fetch_pocket_holdings(etf_code, debug=is_debug)
+        h = pocket_map.get(etf_code, [])
         if h:
             for item in h:
                 item['etf_code'] = etf_code
             all_holdings.extend(h)
             all_codes.update(item['stock_code'] for item in h if item['stock_code'] != 'CASH')
-            cash_count = sum(1 for item in h if item['stock_code'] == 'CASH')
-            cash_note  = f"(含現金 {cash_count})" if cash_count else ""
-            log.info(f"  ✓ {etf_code} {etf_name}: {len(h)} 筆 {cash_note}")
         else:
-            log.warning(f"  ✗ {etf_code} {etf_name}: 無資料")
-        time.sleep(1.5)
+            failed_etfs.append(etf_code)
+
+    # ★ 重要防呆：任何 ETF 持股抓取失敗時，本次停止，不得把「今天空資料」誤判成 FULL_SELL。
+    if failed_etfs:
+        log.error(
+            f"❌ Pocket 持股資料不完整：失敗 {len(failed_etfs)} 檔 / {len(ACTIVE_ETFS)} 檔："
+            f"{', '.join(failed_etfs)}"
+        )
+        log.error("❌ 為避免誤判全數賣出，本次停止後續持股寫入與異動計算。")
+        return
 
     log.info(f"共抓取 {len(all_holdings)} 筆持股（{len(all_codes)} 支股票）")
 
