@@ -13170,8 +13170,8 @@
           "weight_after": 0.0,
           "weight_change": -0.73,
           "shares_change": -420000.0,
-          "close_price": 182.0,
-          "amount_change": -76440000.0
+          "close_price": 188.5,
+          "amount_change": -79170000.0
         },
         {
           "trade_date": "2026-10-16",
@@ -30080,8 +30080,8 @@
         "weight_after": 0.0,
         "weight_change": -0.73,
         "shares_change": -420000.0,
-        "close_price": 182.0,
-        "amount_change": -76440000.0
+        "close_price": 188.5,
+        "amount_change": -79170000.0
       },
       {
         "trade_date": "2026-10-16",
