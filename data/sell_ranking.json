@@ -1,186 +1,111 @@
 [
   {
-    "stock_code": "2454",
-    "stock_name": "聯發科",
+    "stock_code": "2303",
+    "stock_name": "聯電",
     "etf_count": 1,
-    "value": -850000000.0,
+    "value": -657500000.0,
     "etf_list": [
       "00403A"
     ]
   },
   {
-    "stock_code": "3231",
-    "stock_name": "緯創",
+    "stock_code": "3090",
+    "stock_name": "日電貿",
     "etf_count": 1,
-    "value": -498407500.0,
+    "value": -266500000.0,
     "etf_list": [
-      "00992A"
+      "00982A"
     ]
   },
   {
-    "stock_code": "2383",
-    "stock_name": "台光電",
+    "stock_code": "2478",
+    "stock_name": "大毅",
     "etf_count": 1,
-    "value": -284075000.0,
+    "value": -264130000.0,
     "etf_list": [
-      "00992A"
+      "00982A"
     ]
   },
   {
-    "stock_code": "2327",
-    "stock_name": "國巨股份",
+    "stock_code": "6505",
+    "stock_name": "台塑化",
     "etf_count": 1,
-    "value": -226800000.0,
+    "value": -211120000.0,
     "etf_list": [
-      "00991A"
-    ]
-  },
-  {
-    "stock_code": "4904",
-    "stock_name": "遠傳電信",
-    "etf_count": 1,
-    "value": -222006000.0,
-    "etf_list": [
-      "00985A"
+      "00400A"
     ]
   },
   {
     "stock_code": "1216",
     "stock_name": "統一企業",
     "etf_count": 1,
-    "value": -216034400.0,
+    "value": -197806000.0,
     "etf_list": [
       "00985A"
     ]
   },
   {
-    "stock_code": "2344",
-    "stock_name": "華邦電子",
+    "stock_code": "2603",
+    "stock_name": "長榮海運",
     "etf_count": 1,
-    "value": -96900000.0,
+    "value": -128380000.0,
     "etf_list": [
-      "00406A"
+      "00985A"
     ]
   },
   {
-    "stock_code": "3227",
-    "stock_name": "原相科技",
+    "stock_code": "2609",
+    "stock_name": "陽明海運",
     "etf_count": 1,
-    "value": -79170000.0,
+    "value": -123380500.0,
     "etf_list": [
-      "00999A"
+      "00985A"
     ]
   },
   {
-    "stock_code": "2360",
-    "stock_name": "致茂電子",
+    "stock_code": "6223",
+    "stock_name": "旺矽",
     "etf_count": 1,
-    "value": -70000000.0,
+    "value": -98000000.0,
     "etf_list": [
-      "00999A"
+      "00407A"
     ]
   },
   {
-    "stock_code": "3081",
-    "stock_name": "聯亞光電工業",
-    "etf_count": 2,
-    "value": -66820000.0,
-    "etf_list": [
-      "00985A",
-      "00999A"
-    ]
-  },
-  {
-    "stock_code": "6187",
-    "stock_name": "萬 潤",
+    "stock_code": "5289",
+    "stock_name": "宜鼎",
     "etf_count": 1,
-    "value": -64630000.0,
+    "value": -60823400.0,
     "etf_list": [
-      "00400A"
+      "00407A"
     ]
   },
   {
     "stock_code": "3374",
     "stock_name": "精 材",
     "etf_count": 1,
-    "value": -36792000.0,
+    "value": -42800000.0,
     "etf_list": [
       "00400A"
-    ]
-  },
-  {
-    "stock_code": "6488",
-    "stock_name": "環球晶圓",
-    "etf_count": 1,
-    "value": -35280000.0,
-    "etf_list": [
-      "00995A"
     ]
   },
   {
     "stock_code": "6239",
     "stock_name": "力成",
     "etf_count": 2,
-    "value": -32880000.0,
+    "value": -32086000.0,
     "etf_list": [
       "00408A",
       "00994A"
     ]
   },
   {
-    "stock_code": "9958",
-    "stock_name": "世紀鋼鐵結構",
+    "stock_code": "2330",
+    "stock_name": "台灣積體電路製造",
     "etf_count": 1,
-    "value": -32775000.0,
+    "value": -26620000.0,
     "etf_list": [
-      "00999A"
-    ]
-  },
-  {
-    "stock_code": "6515",
-    "stock_name": "穎崴科技",
-    "etf_count": 1,
-    "value": -30960000.0,
-    "etf_list": [
-      "00406A"
-    ]
-  },
-  {
-    "stock_code": "2303",
-    "stock_name": "聯電",
-    "etf_count": 2,
-    "value": -24605000.0,
-    "etf_list": [
-      "00408A",
-      "00994A"
-    ]
-  },
-  {
-    "stock_code": "2327",
-    "stock_name": "國巨*",
-    "etf_count": 2,
-    "value": -13608000.0,
-    "etf_list": [
-      "00408A",
-      "00994A"
-    ]
-  },
-  {
-    "stock_code": "5534",
-    "stock_name": "長虹建設",
-    "etf_count": 1,
-    "value": -12232200.0,
-    "etf_list": [
-      "00999A"
-    ]
-  },
-  {
-    "stock_code": "4746",
-    "stock_name": "台耀化學",
-    "etf_count": 1,
-    "value": -8492000.0,
-    "etf_list": [
-      "00999A"
+      "00995A"
     ]
   }
 ]
