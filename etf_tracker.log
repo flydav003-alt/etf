@@ -30530,3 +30530,175 @@
 2026-10-22 13:26:29,784 [INFO] ✓ CSV 匯出完成 → data/etf_20261022.csv（2026-10-22，前 10 檔）
 2026-10-22 13:26:29,784 [INFO]   排行：台灣積體電路製造, 聯茂電子, 台 燿, 日月光投控, 玉晶光, 南亞塑膠工業, 奇鋐科技, 富世達股份有限公司, 聯發科技, 聯茂
 2026-10-22 13:26:29,785 [INFO] ✅ 完成！2026-10-22 共 1136 筆持股
+2026-10-23 12:52:45,112 [INFO] ============================================================
+2026-10-23 12:52:45,112 [INFO] === 開始執行 2026-10-23（昨日：2026-10-22）===
+2026-10-23 12:52:45,113 [INFO] ✓ 資料庫初始化完成
+2026-10-23 12:52:45,117 [INFO] 檢查並補抓 ETF 歷史收盤價...
+2026-10-23 12:52:45,119 [INFO]   00981A 已有 350 筆歷史，跳過補抓
+2026-10-23 12:52:45,119 [INFO]   00982A 已有 353 筆歷史，跳過補抓
+2026-10-23 12:52:45,119 [INFO]   00991A 已有 209 筆歷史，跳過補抓
+2026-10-23 12:52:45,120 [INFO]   00992A 已有 202 筆歷史，跳過補抓
+2026-10-23 12:52:45,120 [INFO]   補抓 00993A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:46,190 [ERROR]   FinMind 歷史抓取失敗 00993A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:46,190 [WARNING]   ✗ 00993A 無歷史資料
+2026-10-23 12:52:47,190 [INFO]   00980A 已有 365 筆歷史，跳過補抓
+2026-10-23 12:52:47,190 [INFO]   00985A 已有 311 筆歷史，跳過補抓
+2026-10-23 12:52:47,191 [INFO]   補抓 00995A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:48,271 [ERROR]   FinMind 歷史抓取失敗 00995A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:48,272 [WARNING]   ✗ 00995A 無歷史資料
+2026-10-23 12:52:49,272 [INFO]   00984A 已有 316 筆歷史，跳過補抓
+2026-10-23 12:52:49,272 [INFO]   00987A 已有 202 筆歷史，跳過補抓
+2026-10-23 12:52:49,272 [INFO]   補抓 00994A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:50,295 [ERROR]   FinMind 歷史抓取失敗 00994A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:50,295 [WARNING]   ✗ 00994A 無歷史資料
+2026-10-23 12:52:51,295 [INFO]   補抓 00996A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:52,352 [ERROR]   FinMind 歷史抓取失敗 00996A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:52,352 [WARNING]   ✗ 00996A 無歷史資料
+2026-10-23 12:52:53,353 [INFO]   補抓 00400A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:54,389 [ERROR]   FinMind 歷史抓取失敗 00400A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:54,389 [WARNING]   ✗ 00400A 無歷史資料
+2026-10-23 12:52:55,390 [INFO]   補抓 00401A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:56,419 [ERROR]   FinMind 歷史抓取失敗 00401A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:56,419 [WARNING]   ✗ 00401A 無歷史資料
+2026-10-23 12:52:57,420 [INFO]   補抓 00999A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:52:58,520 [ERROR]   FinMind 歷史抓取失敗 00999A: FinMind API unexpected response: ip banned
+2026-10-23 12:52:58,520 [WARNING]   ✗ 00999A 無歷史資料
+2026-10-23 12:52:59,520 [INFO]   00988A 已有 239 筆歷史，跳過補抓
+2026-10-23 12:52:59,520 [INFO]   補抓 00403A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:00,550 [ERROR]   FinMind 歷史抓取失敗 00403A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:00,551 [WARNING]   ✗ 00403A 無歷史資料
+2026-10-23 12:53:01,551 [INFO]   補抓 00405A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:02,577 [ERROR]   FinMind 歷史抓取失敗 00405A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:02,577 [WARNING]   ✗ 00405A 無歷史資料
+2026-10-23 12:53:03,578 [INFO]   補抓 00404A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:04,629 [ERROR]   FinMind 歷史抓取失敗 00404A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:04,629 [WARNING]   ✗ 00404A 無歷史資料
+2026-10-23 12:53:05,629 [INFO]   補抓 00406A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:06,675 [ERROR]   FinMind 歷史抓取失敗 00406A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:06,675 [WARNING]   ✗ 00406A 無歷史資料
+2026-10-23 12:53:07,675 [INFO]   補抓 00407A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:08,699 [ERROR]   FinMind 歷史抓取失敗 00407A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:08,699 [WARNING]   ✗ 00407A 無歷史資料
+2026-10-23 12:53:09,699 [INFO]   補抓 00408A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:10,746 [ERROR]   FinMind 歷史抓取失敗 00408A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:10,746 [WARNING]   ✗ 00408A 無歷史資料
+2026-10-23 12:53:11,746 [INFO]   補抓 00410A 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:12,768 [ERROR]   FinMind 歷史抓取失敗 00410A: FinMind API unexpected response: ip banned
+2026-10-23 12:53:12,768 [WARNING]   ✗ 00410A 無歷史資料
+2026-10-23 12:53:13,769 [INFO]   0050 已有 402 筆歷史，跳過補抓
+2026-10-23 12:53:13,769 [INFO]   00631L 已有 361 筆歷史，跳過補抓
+2026-10-23 12:53:13,769 [INFO]   補抓 009816 歷史收盤價（2025-09-18 ~ 2026-10-23）...
+2026-10-23 12:53:34,489 [INFO]   ✓ 009816 補抓 172 筆
+2026-10-23 12:53:35,489 [INFO]   00830 已有 385 筆歷史，跳過補抓
+2026-10-23 12:53:35,489 [INFO]   00878 已有 385 筆歷史，跳過補抓
+2026-10-23 12:53:35,489 [INFO]   00919 已有 385 筆歷史，跳過補抓
+2026-10-23 12:53:41,531 [INFO]   [DEBUG] 00981A Pocket DOM table rows=60, parsed=51
+2026-10-23 12:53:41,531 [INFO]   [DEBUG] 00981A parsed 前5筆: [{'stock_code': 'CASH', 'stock_name': 'CASH', 'weight_pct': 0.0, 'shares': 0}, {'stock_code': '2303', 'stock_name': '聯電', 'weight_pct': 3.75, 'shares': 79618000.0}, {'stock_code': '2327', 'stock_name': '國巨*', 'weight_pct': 4.47, 'shares': 23519000.0}, {'stock_code': '3037', 'stock_name': '欣興', 'weight_pct': 8.01, 'shares': 19689000.0}, {'stock_code': '2330', 'stock_name': '台積電', 'weight_pct': 11.34, 'shares': 12671000.0}]
+2026-10-23 12:53:41,537 [INFO]   ✓ 00981A 統一台股增長: 51 筆（含現金 1）
+2026-10-23 12:53:44,817 [INFO]   ✓ 00982A 群益台灣強棒: 58 筆（含現金 1）
+2026-10-23 12:53:48,193 [INFO]   ✓ 00991A 復華未來50: 50 筆
+2026-10-23 12:53:51,571 [INFO]   ✓ 00992A 群益科技創新: 44 筆（含現金 1）
+2026-10-23 12:53:54,862 [INFO]   ✓ 00993A 安聯台灣: 50 筆
+2026-10-23 12:53:58,194 [INFO]   ✓ 00980A 野村臺灣優選: 51 筆（含現金 1）
+2026-10-23 12:54:01,436 [INFO]   ✓ 00985A 野村台灣50: 51 筆（含現金 1）
+2026-10-23 12:54:04,685 [INFO]   ✓ 00995A 中信台灣卓越: 56 筆（含現金 1）
+2026-10-23 12:54:08,061 [INFO]   ✓ 00984A 安聯台灣高息: 80 筆
+2026-10-23 12:54:11,279 [INFO]   ✓ 00987A 台新優勢成長: 29 筆（含現金 1）
+2026-10-23 12:54:14,455 [INFO]   ✓ 00994A 第一金台股優: 41 筆（含現金 1）
+2026-10-23 12:54:17,710 [INFO]   ✓ 00996A 兆豐台灣豐收: 54 筆（含現金 1）
+2026-10-23 12:54:21,059 [INFO]   ✓ 00400A 國泰動能高息: 54 筆（含現金 1）
+2026-10-23 12:54:24,348 [INFO]   ✓ 00401A 摩根台灣鑫收: 57 筆（含現金 1）
+2026-10-23 12:54:27,562 [INFO]   ✓ 00999A 主動野村臺灣高息: 55 筆（含現金 1）
+2026-10-23 12:54:30,717 [INFO]   ✓ 00988A 主動統一全球創新: 10 筆（含現金 1）
+2026-10-23 12:54:34,025 [INFO]   ✓ 00403A 主動統一升級50: 51 筆（含現金 1）
+2026-10-23 12:54:37,203 [INFO]   ✓ 00405A 主動富邦台灣龍耀: 48 筆（含現金 1）
+2026-10-23 12:54:40,448 [INFO]   ✓ 00404A 主動聯博動能50: 51 筆
+2026-10-23 12:54:43,676 [INFO]   ✓ 00406A 主動中信台灣收益: 63 筆（含現金 1）
+2026-10-23 12:54:47,533 [INFO]   ✓ 00407A 主動凱基台灣: 51 筆（含現金 1）
+2026-10-23 12:54:50,781 [INFO]   ✓ 00408A 主動第一金優股息: 53 筆（含現金 1）
+2026-10-23 12:54:54,011 [INFO]   ✓ 00410A 主動永豐科技趨勢: 28 筆
+2026-10-23 12:54:54,865 [INFO] 共抓取 1136 筆持股（221 支股票）
+2026-10-23 12:54:54,867 [INFO]   合併前一交易日(2026-10-22)持股，新增 0 支可能完全賣出的股票
+2026-10-23 12:54:56,583 [INFO]   TWSE 上市：取得 177 支收盤價
+2026-10-23 12:54:56,615 [WARNING]   TPEx openapi.tpex.org.tw 失敗（ConnectionError），試備用...
+2026-10-23 12:55:08,654 [INFO]   TPEx 上櫃：補充 44 支收盤價（來源：www.tpex.org.tw）
+2026-10-23 12:55:08,655 [INFO] ✓ 取得 221 支個股收盤價（今日221支 + 前日新增）
+2026-10-23 12:55:08,692 [INFO] ✓ 儲存 1136 筆持股
+2026-10-23 12:55:08,692 [INFO] 補抓缺收盤價的持股...
+2026-10-23 12:55:08,694 [INFO] ✓ 所有持股均有收盤價，無需補抓
+2026-10-23 12:55:09,206 [INFO] 🔍 FinMind 抓取 ETF 價格（含漲跌）：2026-10-18 ~ 2026-10-23
+2026-10-23 12:55:09,740 [ERROR] FinMind 抓取 00981A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:09,900 [ERROR] FinMind 抓取 00982A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:10,059 [ERROR] FinMind 抓取 00991A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:10,218 [ERROR] FinMind 抓取 00992A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:10,377 [ERROR] FinMind 抓取 00993A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:10,536 [ERROR] FinMind 抓取 00980A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:10,695 [ERROR] FinMind 抓取 00985A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:10,855 [ERROR] FinMind 抓取 00995A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,026 [ERROR] FinMind 抓取 00984A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,185 [ERROR] FinMind 抓取 00987A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,345 [ERROR] FinMind 抓取 00994A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,505 [ERROR] FinMind 抓取 00996A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,664 [ERROR] FinMind 抓取 00400A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,824 [ERROR] FinMind 抓取 00401A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:11,983 [ERROR] FinMind 抓取 00999A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:12,143 [ERROR] FinMind 抓取 00988A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:12,303 [ERROR] FinMind 抓取 00403A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:12,462 [ERROR] FinMind 抓取 00405A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:12,621 [ERROR] FinMind 抓取 00404A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:12,780 [ERROR] FinMind 抓取 00406A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:12,940 [ERROR] FinMind 抓取 00407A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:13,100 [ERROR] FinMind 抓取 00408A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:13,260 [ERROR] FinMind 抓取 00410A 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:13,420 [ERROR] FinMind 抓取 0050 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:13,579 [ERROR] FinMind 抓取 00631L 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:13,740 [ERROR] FinMind 抓取 009816 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:13,899 [ERROR] FinMind 抓取 00830 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:14,059 [ERROR] FinMind 抓取 00878 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:14,219 [ERROR] FinMind 抓取 00919 失敗: FinMind API unexpected response: ip banned
+2026-10-23 12:55:14,219 [INFO] ✓ FinMind 成功抓到 0 檔 ETF（含漲跌）
+2026-10-23 12:55:36,518 [INFO]   00981A: NAV=27.88, AUM=2746.75億, 折溢價=-2.39%, 來源=Pocket_Discount
+2026-10-23 12:55:56,094 [INFO]   00982A: NAV=21.32, AUM=474.7億, 折溢價=-2.85%, 來源=Pocket_Discount
+2026-10-23 12:56:15,334 [INFO]   00991A: NAV=16.59, AUM=704.1億, 折溢價=-2.86%, 來源=Pocket_Discount
+2026-10-23 12:56:34,390 [INFO]   00992A: NAV=16.86, AUM=463.3億, 折溢價=-3.2%, 來源=Pocket_Discount
+2026-10-23 12:56:53,498 [INFO]   00993A: NAV=12.83, AUM=96.31億, 折溢價=-2.8%, 來源=Pocket_Discount
+2026-10-23 12:57:12,524 [INFO]   00980A: NAV=23.65, AUM=188.41億, 折溢價=-2.74%, 來源=Pocket_Discount
+2026-10-23 12:57:31,507 [INFO]   00985A: NAV=20.18, AUM=294.46億, 折溢價=-1.56%, 來源=Pocket_Discount
+2026-10-23 12:57:50,524 [INFO]   00995A: NAV=15.73, AUM=43.63億, 折溢價=-2.83%, 來源=Pocket_Discount
+2026-10-23 12:58:10,120 [INFO]   00984A: NAV=15.0, AUM=104.64億, 折溢價=-1.38%, 來源=Pocket_Discount
+2026-10-23 12:58:29,257 [INFO]   00987A: NAV=15.68, AUM=22.73億, 折溢價=-3.43%, 來源=Pocket_Discount
+2026-10-23 12:58:48,306 [INFO]   00994A: NAV=15.8, AUM=39.54億, 折溢價=-2.41%, 來源=Pocket_Discount
+2026-10-23 12:59:07,697 [INFO]   00996A: NAV=12.86, AUM=56.62億, 折溢價=-3.79%, 來源=Pocket_Discount
+2026-10-23 12:59:26,628 [INFO]   00400A: NAV=14.33, AUM=307.39億, 折溢價=-2.9%, 來源=Pocket_Discount
+2026-10-23 12:59:45,781 [INFO]   00401A: NAV=13.43, AUM=39.06億, 折溢價=-1.82%, 來源=Pocket_Discount
+2026-10-23 13:00:04,856 [INFO]   00999A: NAV=10.53, AUM=107.25億, 折溢價=-1.95%, 來源=Pocket_Discount
+2026-10-23 13:00:23,909 [INFO]   00988A: NAV=15.46, AUM=459.8億, 折溢價=-1.37%, 來源=Pocket_Discount
+2026-10-23 13:00:44,476 [INFO]   00403A: NAV=9.99, AUM=1304.56億, 折溢價=-2.71%, 來源=Pocket_Discount
+2026-10-23 13:01:12,700 [INFO]   00405A: NAV=8.45, AUM=223.28億, 折溢價=-3.53%, 來源=None
+2026-10-23 13:01:40,836 [INFO]   00404A: NAV=9.35, AUM=39.65億, 折溢價=-1.58%, 來源=None
+2026-10-23 13:02:08,992 [INFO]   00406A: NAV=8.94, AUM=1066.62億, 折溢價=-1.74%, 來源=None
+2026-10-23 13:02:37,120 [INFO]   00407A: NAV=9.3, AUM=209.57億, 折溢價=-2.91%, 來源=None
+2026-10-23 13:03:05,664 [INFO]   00408A: NAV=9.57, AUM=13.79億, 折溢價=-2.53%, 來源=None
+2026-10-23 13:03:25,221 [INFO]   00410A: NAV=11.47, AUM=21.7億, 折溢價=-3.11%, 來源=Pocket_Discount
+2026-10-23 13:03:44,275 [INFO]   0050: NAV=106.41, AUM=25018.58億, 折溢價=-1.16%, 來源=Pocket_Discount
+2026-10-23 13:04:04,681 [INFO]   00631L: NAV=35.38, AUM=2856.52億, 折溢價=-2.73%, 來源=Pocket_Discount
+2026-10-23 13:04:14,928 [INFO] [009816 RAW] 交易排行 規模排行 成交量排行 成交值排行 股數創造排行 股數贖回排行 換手率排行 基本資料排行 成立年齡排行
+2026-10-23 13:04:23,788 [INFO] [009816 RAW] 93 資產規模(億)：2138.38 成立時間：2026/02/03 折溢價 Created with Hig
+2026-10-23 13:04:23,819 [INFO]   009816: NAV=15.86, AUM=2138.38億, 折溢價=-0.93%, 來源=Pocket_Discount
+2026-10-23 13:04:42,924 [INFO]   00830: NAV=82.55, AUM=754.32億, 折溢價=-2.06%, 來源=Pocket_Discount
+2026-10-23 13:05:02,040 [INFO]   00878: NAV=35.2, AUM=6732.28億, 折溢價=-0.34%, 來源=Pocket_Discount
+2026-10-23 13:05:21,120 [INFO]   00919: NAV=32.48, AUM=6339.69億, 折溢價=-0.34%, 來源=Pocket_Discount
+2026-10-23 13:05:22,175 [INFO] ✓ ETF NAV：29 檔，規模：29 檔，折溢價：29 檔
+2026-10-23 13:05:22,175 [INFO] ✓ ETF今日價格儲存 0 檔
+2026-10-23 13:05:22,181 [INFO]   比對日期：今日=2026-10-23，前一交易日=2026-10-22
+2026-10-23 13:05:22,320 [INFO] ✓ Streak 計算完成：30 筆 ETF×股票連續紀錄,26 支股票有彙總 streak
+2026-10-23 13:05:22,321 [INFO] ✓ streaks.json 已匯出
+2026-10-23 13:05:22,342 [INFO]   📅 今日(2026-10-23)資料不完整,顯示日回退到 2026-10-22
+2026-10-23 13:05:22,450 [INFO] ✓ 績效資料匯出：30 檔
+2026-10-23 13:05:22,718 [INFO] ✓ 價格歷史匯出：30 檔
+2026-10-23 13:05:22,830 [INFO] ✓ 異動歷史匯出：1186 筆，涵蓋 10 個交易日
+2026-10-23 13:05:22,845 [INFO] ✓ JSON 匯出完成 → data/
+2026-10-23 13:05:22,897 [INFO]   CSV 匯出：今日資料不完整，改用 2026-10-22 的資料
+2026-10-23 13:05:22,930 [INFO] ✓ CSV 匯出完成 → data/etf_20261022.csv（2026-10-22（回退自 2026-10-23），前 10 檔）
+2026-10-23 13:05:22,930 [INFO]   排行：台灣積體電路製造, 聯茂電子, 台 燿, 日月光投控, 玉晶光, 南亞塑膠工業, 奇鋐科技, 富世達股份有限公司, 聯發科技, 聯茂
+2026-10-23 13:05:22,930 [INFO] ✅ 完成！2026-10-23 共 1136 筆持股
