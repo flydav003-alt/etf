@@ -321,6 +321,48 @@
     "aum_billion": 19.0,
     "is_benchmark": false
   },
+  "00415A": {
+    "name": "主動永豐科技趨勢",
+    "close": 7.0,
+    "open": 7.23,
+    "high": 7.29,
+    "low": 6.93,
+    "volume": 55714122.0,
+    "chg_amt": -0.41000000000000014,
+    "chg_pct": -5.53,
+    "nav": 6.97,
+    "premium_pct": 0.43,
+    "aum_billion": 113.74,
+    "is_benchmark": false
+  },
+  "00416A": {
+    "name": "主動永豐科技趨勢",
+    "close": 7.91,
+    "open": 7.98,
+    "high": 8.27,
+    "low": 7.86,
+    "volume": 26787789.0,
+    "chg_amt": -0.5500000000000007,
+    "chg_pct": -6.5,
+    "nav": 7.94,
+    "premium_pct": -0.38,
+    "aum_billion": 68.54,
+    "is_benchmark": false
+  },
+  "00418A": {
+    "name": "主動永豐科技趨勢",
+    "close": 8.6,
+    "open": 8.8,
+    "high": 9.0,
+    "low": 8.53,
+    "volume": 56519474.0,
+    "chg_amt": -0.5099999999999998,
+    "chg_pct": -5.6,
+    "nav": 8.6,
+    "premium_pct": 0,
+    "aum_billion": 79.46,
+    "is_benchmark": false
+  },
   "0050": {
     "name": "元大台灣50",
     "close": 94.0,

@@ -2,11 +2,11 @@
   "date": "2026-11-17",
   "display_date": "2026-11-17",
   "is_fallback": false,
-  "etf_count": 23,
-  "total_holdings": 1110,
+  "etf_count": 26,
+  "total_holdings": 1224,
   "has_changes": true,
-  "change_count": 114,
-  "updated_at": "2026-11-17 17:18:26",
+  "change_count": 202,
+  "updated_at": "2026-11-17 18:36:57",
   "source": "Pocket.tw M722 API",
   "active_etfs": [
     {
@@ -99,6 +99,18 @@
     },
     {
       "code": "00410A",
+      "name": "主動永豐科技趨勢"
+    },
+    {
+      "code": "00415A",
+      "name": "主動永豐科技趨勢"
+    },
+    {
+      "code": "00416A",
+      "name": "主動永豐科技趨勢"
+    },
+    {
+      "code": "00418A",
       "name": "主動永豐科技趨勢"
     }
   ]
