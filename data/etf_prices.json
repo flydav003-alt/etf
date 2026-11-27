@@ -8,9 +8,9 @@
     "volume": 284233672.0,
     "chg_amt": -0.3100000000000023,
     "chg_pct": -1.42,
-    "nav": 21.8,
-    "premium_pct": -1.01,
-    "aum_billion": 0,
+    "nav": 21.69,
+    "premium_pct": -0.51,
+    "aum_billion": 2815.33,
     "is_benchmark": false
   },
   "00982A": {
@@ -22,9 +22,9 @@
     "volume": 30151508.0,
     "chg_amt": -0.20000000000000107,
     "chg_pct": -1.25,
-    "nav": 15.88,
-    "premium_pct": -0.76,
-    "aum_billion": 0,
+    "nav": 15.77,
+    "premium_pct": -0.06,
+    "aum_billion": 389.35,
     "is_benchmark": false
   },
   "00991A": {
@@ -36,9 +36,9 @@
     "volume": 115164198.0,
     "chg_amt": -0.129999999999999,
     "chg_pct": -1.04,
-    "nav": 12.4,
-    "premium_pct": -0.65,
-    "aum_billion": 0,
+    "nav": 12.35,
+    "premium_pct": -0.24,
+    "aum_billion": 680.0,
     "is_benchmark": false
   },
   "00992A": {
@@ -50,9 +50,9 @@
     "volume": 52614565.0,
     "chg_amt": -0.33999999999999986,
     "chg_pct": -2.67,
-    "nav": 12.59,
-    "premium_pct": -1.59,
-    "aum_billion": 0,
+    "nav": 12.33,
+    "premium_pct": 0.49,
+    "aum_billion": 396.76,
     "is_benchmark": false
   },
   "00993A": {
@@ -64,9 +64,9 @@
     "volume": 5701510.0,
     "chg_amt": -0.15000000000000036,
     "chg_pct": -1.6,
-    "nav": 9.32,
-    "premium_pct": -0.86,
-    "aum_billion": 0,
+    "nav": 9.27,
+    "premium_pct": -0.32,
+    "aum_billion": 70.17,
     "is_benchmark": false
   },
   "00980A": {
@@ -78,9 +78,9 @@
     "volume": 7964542.0,
     "chg_amt": -0.240000000000002,
     "chg_pct": -1.34,
-    "nav": 17.88,
-    "premium_pct": -1.01,
-    "aum_billion": 0,
+    "nav": 17.73,
+    "premium_pct": -0.17,
+    "aum_billion": 157.16,
     "is_benchmark": false
   },
   "00985A": {
@@ -92,9 +92,9 @@
     "volume": 16185348.0,
     "chg_amt": -0.23999999999999844,
     "chg_pct": -1.41,
-    "nav": 16.97,
-    "premium_pct": -0.77,
-    "aum_billion": 0,
+    "nav": 16.91,
+    "premium_pct": -0.41,
+    "aum_billion": 252.82,
     "is_benchmark": false
   },
   "00995A": {
@@ -108,7 +108,7 @@
     "chg_pct": -1.56,
     "nav": 12.0,
     "premium_pct": 0,
-    "aum_billion": 0,
+    "aum_billion": 35.41,
     "is_benchmark": false
   },
   "00984A": {
@@ -120,9 +120,9 @@
     "volume": 3089318.0,
     "chg_amt": -0.13000000000000078,
     "chg_pct": -1.08,
-    "nav": 11.95,
-    "premium_pct": -0.75,
-    "aum_billion": 0,
+    "nav": 11.86,
+    "premium_pct": 0,
+    "aum_billion": 87.16,
     "is_benchmark": false
   },
   "00987A": {
@@ -136,7 +136,7 @@
     "chg_pct": -2.01,
     "nav": 11.71,
     "premium_pct": 0.09,
-    "aum_billion": 0,
+    "aum_billion": 18.66,
     "is_benchmark": false
   },
   "00994A": {
@@ -148,9 +148,9 @@
     "volume": 3399916.0,
     "chg_amt": -0.15000000000000036,
     "chg_pct": -1.23,
-    "nav": 12.1,
-    "premium_pct": -0.74,
-    "aum_billion": 0,
+    "nav": 12.02,
+    "premium_pct": -0.08,
+    "aum_billion": 28.1,
     "is_benchmark": false
   },
   "00996A": {
@@ -164,7 +164,7 @@
     "chg_pct": -1.78,
     "nav": 9.37,
     "premium_pct": 0.11,
-    "aum_billion": 0,
+    "aum_billion": 45.45,
     "is_benchmark": false
   },
   "00400A": {
@@ -178,7 +178,7 @@
     "chg_pct": -1.25,
     "nav": 11.06,
     "premium_pct": -0.27,
-    "aum_billion": 0,
+    "aum_billion": 289.63,
     "is_benchmark": false
   },
   "00401A": {
@@ -192,7 +192,7 @@
     "chg_pct": -0.27,
     "nav": 11.03,
     "premium_pct": -0.27,
-    "aum_billion": 0,
+    "aum_billion": 41.52,
     "is_benchmark": false
   },
   "00999A": {
@@ -204,9 +204,9 @@
     "volume": 11425081.0,
     "chg_amt": -0.1399999999999988,
     "chg_pct": -1.64,
-    "nav": 8.51,
-    "premium_pct": -1.29,
-    "aum_billion": 0,
+    "nav": 8.43,
+    "premium_pct": -0.36,
+    "aum_billion": 91.19,
     "is_benchmark": false
   },
   "00988A": {
@@ -220,7 +220,7 @@
     "chg_pct": 0.83,
     "nav": 11.82,
     "premium_pct": 2.45,
-    "aum_billion": 0,
+    "aum_billion": 341.95,
     "is_benchmark": false
   },
   "00403A": {
@@ -234,7 +234,7 @@
     "chg_pct": -0.88,
     "nav": 7.89,
     "premium_pct": -0.51,
-    "aum_billion": 0,
+    "aum_billion": 1191.06,
     "is_benchmark": false
   },
   "00405A": {
@@ -248,7 +248,7 @@
     "chg_pct": -2.3,
     "nav": 6.42,
     "premium_pct": -0.62,
-    "aum_billion": 0,
+    "aum_billion": 195.0,
     "is_benchmark": false
   },
   "00404A": {
@@ -262,7 +262,7 @@
     "chg_pct": -0.13,
     "nav": 7.68,
     "premium_pct": 0.13,
-    "aum_billion": 0,
+    "aum_billion": 33.91,
     "is_benchmark": false
   },
   "00406A": {
@@ -276,7 +276,7 @@
     "chg_pct": -1.63,
     "nav": 6.62,
     "premium_pct": 0,
-    "aum_billion": 0,
+    "aum_billion": 1747.92,
     "is_benchmark": false
   },
   "00407A": {
@@ -288,9 +288,9 @@
     "volume": 32976774.0,
     "chg_amt": -0.1200000000000001,
     "chg_pct": -1.66,
-    "nav": 7.23,
-    "premium_pct": -1.38,
-    "aum_billion": 0,
+    "nav": 7.16,
+    "premium_pct": -0.42,
+    "aum_billion": 193.25,
     "is_benchmark": false
   },
   "00408A": {
@@ -302,9 +302,9 @@
     "volume": 456227.0,
     "chg_amt": -0.10000000000000053,
     "chg_pct": -1.33,
-    "nav": 7.55,
-    "premium_pct": -1.59,
-    "aum_billion": 0,
+    "nav": 7.47,
+    "premium_pct": -0.54,
+    "aum_billion": 12.47,
     "is_benchmark": false
   },
   "00410A": {
@@ -318,7 +318,7 @@
     "chg_pct": -1.52,
     "nav": 9.1,
     "premium_pct": -0.22,
-    "aum_billion": 0,
+    "aum_billion": 17.55,
     "is_benchmark": false
   },
   "00415A": {
@@ -332,7 +332,7 @@
     "chg_pct": -1.61,
     "nav": 6.73,
     "premium_pct": -0.15,
-    "aum_billion": 0,
+    "aum_billion": 107.2,
     "is_benchmark": false
   },
   "00416A": {
@@ -344,9 +344,9 @@
     "volume": 12446389.0,
     "chg_amt": -0.1800000000000006,
     "chg_pct": -2.33,
-    "nav": 7.71,
-    "premium_pct": -2.08,
-    "aum_billion": 0,
+    "nav": 7.59,
+    "premium_pct": -0.53,
+    "aum_billion": 64.97,
     "is_benchmark": false
   },
   "00418A": {
@@ -360,7 +360,7 @@
     "chg_pct": -1.63,
     "nav": 8.45,
     "premium_pct": 0,
-    "aum_billion": 0,
+    "aum_billion": 81.63,
     "is_benchmark": false
   },
   "0050": {
@@ -372,9 +372,9 @@
     "volume": 111385656.0,
     "chg_amt": -0.44999999999998863,
     "chg_pct": -0.48,
-    "nav": 92.09,
-    "premium_pct": 0.34,
-    "aum_billion": 0,
+    "nav": 92.72,
+    "premium_pct": -0.35,
+    "aum_billion": 24442.83,
     "is_benchmark": true
   },
   "00631L": {
@@ -386,9 +386,9 @@
     "volume": 448380986.0,
     "chg_amt": -0.10000000000000142,
     "chg_pct": -0.39,
-    "nav": 25.46,
-    "premium_pct": -0.24,
-    "aum_billion": 0,
+    "nav": 25.45,
+    "premium_pct": -0.2,
+    "aum_billion": 2876.54,
     "is_benchmark": true
   },
   "009816": {
@@ -402,7 +402,7 @@
     "chg_pct": -0.29,
     "nav": 13.68,
     "premium_pct": -0.07,
-    "aum_billion": 0,
+    "aum_billion": 2124.26,
     "is_benchmark": true
   },
   "00830": {
@@ -416,7 +416,7 @@
     "chg_pct": 2.43,
     "nav": 64.4,
     "premium_pct": 4.74,
-    "aum_billion": 0,
+    "aum_billion": 680.04,
     "is_benchmark": true
   },
   "00878": {
@@ -430,7 +430,7 @@
     "chg_pct": -0.88,
     "nav": 29.22,
     "premium_pct": 0.14,
-    "aum_billion": 0,
+    "aum_billion": 5989.49,
     "is_benchmark": true
   },
   "00919": {
@@ -444,7 +444,7 @@
     "chg_pct": -0.35,
     "nav": 28.73,
     "premium_pct": -0.03,
-    "aum_billion": 0,
+    "aum_billion": 5751.42,
     "is_benchmark": true
   }
 }
